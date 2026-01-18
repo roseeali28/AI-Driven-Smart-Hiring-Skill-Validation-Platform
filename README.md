@@ -150,10 +150,10 @@ Cloud deployment
 Database integration
 
 👨‍💻 Author
-Ashmita
-Rose Ali 
-Shrishti Pathak 
-Vansh Soni
+Ashmita,
+Rose Ali, 
+Shrishti Pathak, 
+Vansh Soni,
 Yuv Raj Singh Yadav
 
 Computer Science Undergraduate
