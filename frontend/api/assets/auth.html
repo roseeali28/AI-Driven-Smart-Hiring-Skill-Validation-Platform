@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auhtentication | HireSphere</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Eth page specific styles */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 2rem;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 480px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-tabs {
+            display: flex;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 0.25rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .auth-tab.active {
+            background: var(--bg-dark);
+            color: var(--text-main);
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+        }
+
+        .role-selector {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .role-option {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        .role-option.selected {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        .role-option .icon-box {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            transition: 0.3s;
+        }
+
+        .role-option.selected .icon-box {
+            border-color: var(--primary);
+            background: rgba(124, 58, 237, 0.1);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .divider span {
+            margin: 0 1rem;
+        }
+
+        .social-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+
+        .social-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Form Toggle Animation */
+        .form-view {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .form-view.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Back Home -->
+    <a href="index.html"
+        style="position: absolute; top: 2rem; left: 2rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; z-index: 10;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5" />
+            <path d="M12 19l-7-7 7-7" />
+        </svg>
+        Back to Home
+    </a>
+
+    <div class="auth-container">
+        <!-- Background Elements -->
+        <div
+            style="position: absolute; top: -10%; right: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 60%); filter: blur(60px);">
+        </div>
+
+        <div class="glass-card auth-card animate-fade-in">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 id="auth-title" style="margin-bottom: 0.5rem;">Welcome Back</h2>
+                <p id="auth-desc">Enter your credentials to access the platform.</p>
+            </div>
+
+            <!-- Login/Signup Toggle -->
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-target="login">Log In</div>
+                <div class="auth-tab" data-target="signup">Sign Up</div>
+            </div>
+
+            <!-- Role Selector (Hidden for Login initially, visual choice) -->
+            <div id="role-selector-container" class="role-selector hidden">
+                <div class="role-option selected" data-role="candidate">
+                    <div class="icon-box">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </div>
+                    <div>Candidate</div>
+                </div>
+                <div class="role-option" data-role="recruiter">
+                    <div class="icon-box">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                            <line x1="8" y1="21" x2="16" y2="21" />
+                            <line x1="12" y1="17" x2="12" y2="21" />
+                        </svg>
+                    </div>
+                    <div>Recruiter</div>
+                </div>
+            </div>
+
+            <form id="auth-form" onsubmit="handleAuth(event)">
+                <!-- Shared Inputs -->
+                <div class="input-group">
+                    <input type="email" id="email" class="input-field" placeholder=" " required>
+                    <label for="email" class="input-label">Email Address</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="password" class="input-field" placeholder=" " required>
+                    <label for="password" class="input-label">Password</label>
+                </div>
+
+                <!-- Signup Only Inputs -->
+                <div id="signup-fields" class="hidden">
+                    <div class="input-group">
+                        <input type="text" id="fullname" class="input-field" placeholder=" ">
+                        <label for="fullname" class="input-label">Full Name</label>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center" style="margin-bottom: 1.5rem; font-size: 0.875rem;">
+                    <label class="flex items-center gap-1" style="color: var(--text-muted); cursor: pointer;">
+                        <input type="checkbox" style="accent-color: var(--primary);"> Remember me
+                    </label>
+                    <a href="#" style="color: var(--accent);">Forgot password?</a>
+                </div>
+
+                <button type="submit" id="submit-btn" class="btn btn-primary btn-glow" style="width: 100%;">Log
+                    In</button>
+            </form>
+
+            <div class="divider"><span>OR CONTINUE WITH</span></div>
+
+            <div class="flex gap-1">
+                <button class="social-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg>
+                    Github
+                </button>
+                <button class="social-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307c-1.813-1.693-4.213-3.24-8.213-3.24-6.6 0-12 5.4-12 12s5.4 12 12 12c3.467 0 6.373-1.147 8.453-3.293 2.187-2.187 2.853-5.413 2.853-8.293 0-.827-.08-1.573-.24-2.32h-11.16z" />
+                    </svg>
+                    Google
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/app.js"></script>
+    <script>
+        // Inline script for Auth logic (or moved to app.js)
+        document.addEventListener('DOMContentLoaded', () => {
+            initAuthToggle();
+        });
+    </script>
+</body>
+
+</html>
