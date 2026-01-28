@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pricing | HireSphere</title>
+<link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container nav-container">
+    <a href="index.html" class="nav-logo"><span>HireSphere</span></a>
+  </div>
+</nav>
+
+<section style="padding:140px 0;">
+<div class="container" style="text-align:center;">
+<h2>Choose Your Plan</h2>
+<p>Upgrade to unlock advanced hiring tools.</p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;margin-top:3rem;">
+
+<div class="glass-card">
+<h3>Free</h3>
+<p>₹0 / month</p>
+<ul>
+<li>Basic Profile</li>
+<li>Limited Applications</li>
+</ul>
+<button class="btn btn-outline">Current Plan</button>
+</div>
+
+<div class="glass-card" style="border:1px solid var(--primary);">
+<h3>Pro</h3>
+<p>₹499 / month</p>
+<ul>
+<li>Unlimited Applications</li>
+<li>AI Skill Reports</li>
+<li>Priority Listing</li>
+</ul>
+<button class="btn btn-primary" onclick="buyPlan('pro')">Buy Monthly</button>
+</div>
+
+<div class="glass-card">
+<h3>Elite</h3>
+<p>₹3999 / year</p>
+<ul>
+<li>All Pro Features</li>
+<li>Recruiter Direct Access</li>
+<li>Verified Badge</li>
+</ul>
+<button class="btn btn-primary" onclick="buyPlan('elite')" >Buy Yearly</button>
+</div>
+
+</div>
+</div>
+</section>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>
