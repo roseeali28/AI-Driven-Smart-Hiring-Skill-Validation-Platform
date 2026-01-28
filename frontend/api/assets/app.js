@@ -1,142 +1,306 @@
 /* 
- * HireSphere - Main Application Logic 
- * Handles Navigation, Auth State Simulation, and Global Interactions
+ * HireSphere - AI Hiring Platform Design System 
+ * Theme: Futuristic, Dark Mode, Premium, Glassmorphism
  */
 
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('HireSphere: System Online');
-    initScrollEffects();
-});
+:root {
+    /* --- Core Palette (Dark Mode Restore) --- */
+    --primary-hue: 250;
+    /* Deep Violet */
+    --accent-hue: 180;
+    /* Cyan */
 
-function initScrollEffects() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-            }
-        });
-    }, { threshold: 0.1 });
+    /* Backgrounds */
+    --bg-dark: #0f172a;
+    /* Slate 900 */
+    --bg-card: rgba(30, 41, 59, 0.7);
+    /* Glassy Slate 800 */
+    --bg-glass: rgba(255, 255, 255, 0.05);
+    --border-subtle: rgba(255, 255, 255, 0.1);
 
-    document.querySelectorAll('.animate-fade-in').forEach(el => {
-        observer.observe(el);
-    });
+    /* Primary Colors */
+    --primary: hsl(var(--primary-hue), 70%, 60%);
+    --primary-hover: hsl(var(--primary-hue), 80%, 70%);
+    --primary-glow: hsla(var(--primary-hue), 70%, 60%, 0.5);
+
+    /* Accent Colors */
+    --accent: hsl(var(--accent-hue), 100%, 50%);
+    --accent-glow: hsla(var(--accent-hue), 100%, 50%, 0.5);
+
+    /* Text Colors */
+    --text-main: #f8fafc;
+    /* Slate 50 */
+    --text-muted: #94a3b8;
+    /* Slate 400 */
+    --text-inverse: #ffffff;
+
+    /* Gradients */
+    --gradient-main: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+    --gradient-glow: linear-gradient(135deg, rgba(88, 28, 135, 0.3) 0%, rgba(15, 23, 42, 0) 100%);
+
+    /* Spacing & Layout */
+    --container-width: 1200px;
+    --header-height: 80px;
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-pill: 999px;
+
+    /* Transitions */
+    --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-fast: 0.2s var(--ease-out);
+    --transition-medium: 0.4s var(--ease-out);
 }
 
-/* --- Auth Logic --- */
-let currentMode = 'login';
-let currentRole = 'candidate';
-
-function initAuthToggle() {
-    const tabs = document.querySelectorAll('.auth-tab');
-    const roleSelector = document.getElementById('role-selector-container');
-    const signupFields = document.getElementById('signup-fields');
-    const submitBtn = document.getElementById('submit-btn');
-    const title = document.getElementById('auth-title');
-    const desc = document.getElementById('auth-desc');
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            // Update UI State
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-
-            currentMode = tab.dataset.target;
-
-            if (currentMode === 'signup') {
-                roleSelector.classList.remove('hidden');
-                signupFields.classList.remove('hidden');
-                submitBtn.textContent = 'Create Account';
-                title.textContent = 'Join HireSphere';
-                desc.textContent = 'Start your journey to the perfect career.';
-            } else {
-                roleSelector.classList.add('hidden');
-                signupFields.classList.add('hidden');
-                submitBtn.textContent = 'Log In';
-                title.textContent = 'Welcome Back';
-                desc.textContent = 'Enter your credentials to access the platform.';
-            }
-        });
-    });
-
-    // Role Selection
-    const roleOptions = document.querySelectorAll('.role-option');
-    roleOptions.forEach(opt => {
-        opt.addEventListener('click', () => {
-            roleOptions.forEach(o => o.classList.remove('selected'));
-            opt.classList.add('selected');
-            currentRole = opt.dataset.role;
-        });
-    });
+/* --- Reset & Base --- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-function handleAuth(event) {
-    event.preventDefault();
-    const btn = document.getElementById('submit-btn');
-    const originalText = btn.textContent;
-
-    // Simulate API Call
-    btn.textContent = 'Processing...';
-    btn.style.opacity = '0.7';
-
-    setTimeout(() => {
-        // Mock Redirect Logic
-
-        // Use the currentRole if signing up, otherwise we might default to candidate 
-        // OR in a real app, the backend tells us the role. 
-        // For this mock, we'll assume the user is logging in as what they selected or default.
-
-        // If login mode, let's just default to Candidate for now 
-        // unless we want a way to distinguish (e.g. email contains 'admin').
-
-        const email = document.getElementById('email').value;
-        let redirect = 'dashboard-candidate.html';
-
-        if (email.includes('admin') || currentRole === 'recruiter') {
-            redirect = 'dashboard-recruiter.html';
-        }
-
-        // Save state
-        localStorage.setItem('userRole', currentRole);
-        localStorage.setItem('userEmail', email);
-
-        window.location.href = redirect;
-    }, 1500);
+body {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(20, 184, 166, 0.15) 0%, transparent 40%);
+    min-height: 100vh;
 }
 
-/* --- Flow Toggle Logic --- */
-document.addEventListener('DOMContentLoaded', () => {
-    const flowToggles = document.querySelectorAll('.role-toggle');
-    const flows = document.querySelectorAll('.flow-display');
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition-fast);
+}
 
-    if (flowToggles.length > 0) {
-        flowToggles.forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                // Remove active class from all toggles
-                flowToggles.forEach(t => {
-                    t.classList.remove('active');
-                    t.style.background = 'transparent';
-                    t.style.color = '#94a3b8'; // muted
-                });
+button,
+input,
+textarea {
+    font-family: inherit;
+    border: none;
+    outline: none;
+}
 
-                // Add active class to clicked toggle
-                toggle.classList.add('active');
-                toggle.style.background = 'var(--primary)';
-                toggle.style.color = '#fff';
+ul {
+    list-style: none;
+}
 
-                // Hide all flows
-                flows.forEach(f => f.classList.add('hidden'));
+/* --- Typography --- */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+}
 
-                // Show target flow
-                const targetId = `flow-${toggle.dataset.flow}`;
-                const targetFlow = document.getElementById(targetId);
-                if (targetFlow) {
-                    targetFlow.classList.remove('hidden');
-                    // Reset animations (optional simple hack)
-                    targetFlow.style.animation = 'none';
-                    targetFlow.offsetHeight; /* trigger reflow */
-                    targetFlow.style.animation = null;
-                }
-            });
-        });
-    }
-});
+h1 {
+    font-size: 3.5rem;
+    background: linear-gradient(to right, #fff, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+h2 {
+    font-size: 2.5rem;
+}
+
+h3 {
+    font-size: 1.75rem;
+}
+
+p {
+    color: var(--text-muted);
+    font-size: 1.125rem;
+    margin-bottom: 1.5rem;
+}
+
+/* --- Utility Classes --- */
+.container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.text-gradient {
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.gap-1 {
+    gap: 1rem;
+}
+
+.gap-2 {
+    gap: 2rem;
+}
+
+/* --- Components --- */
+.glass {
+    background: var(--bg-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    padding: 2rem;
+    transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+}
+
+.hidden {
+    display: none !important;
+}
+
+.profile-body {
+  background: #0f172a;
+  font-family: Arial, sans-serif;
+  color: #fff;
+}
+
+.profile-wrapper {
+  padding-top: 120px;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 850px;
+  background: #1e293b;
+  padding: 40px;
+  border-radius: 18px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #6366f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 40px;
+}
+
+.info-box {
+  background: #0f172a;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.profile-section {
+  margin-bottom: 25px;
+}
+
+.profile-section input,
+.profile-section textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  margin-top: 8px;
+  background: #0f172a;
+  color: white;
+}
+
+.save-btn {
+  width: 100%;
+  margin-top: 20px;
+}
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: #0f172a;
+  padding: 18px 40px;
+  display: flex;
+  justify-content: space-between; /* pushes left & right */
+  align-items: center;
+  z-index: 1000;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #6366f1;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 15px; /* space between Home & Logout */
+}
+
+.btn-outline {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 1px solid #6366f1;
+  color: #6366f1;
+  background: transparent;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-outline:hover {
+  background: #6366f1;
+  color: white;
+}
