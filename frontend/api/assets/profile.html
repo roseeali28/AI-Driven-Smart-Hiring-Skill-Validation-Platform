@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Profile | HireSphere</title>
+<link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="profile-body">
+
+<nav class="navbar">
+    <div class="logo">HireSphere</div>
+    <div class="nav-actions">
+        <a href="index.html" class="btn-outline">Home</a>
+        <button onclick="logout()" class="btn-outline" >Logout</button>
+    </div>
+</nav>
+
+<section class="profile-wrapper">
+    <div class="profile-card">
+
+        <!-- Top Section -->
+        <div class="profile-header">
+            <div class="avatar" id="avatarLetter">U</div>
+            <div>
+                <h2 id="p-name">User Name</h2>
+                <p id="p-role">Candidate</p>
+                <p id="p-email">email@example.com</p>
+            </div>
+        </div>
+
+        <!-- Info Grid -->
+        <div class="profile-grid">
+            <div class="info-box">
+                <h4>Skills Score</h4>
+                <p>78%</p>
+            </div>
+            <div class="info-box">
+                <h4>Tests Completed</h4>
+                <p>12</p>
+            </div>
+            <div class="info-box">
+                <h4>Profile Rank</h4>
+                <p>Top 15%</p>
+            </div>
+        </div>
+
+        <!-- Editable Info -->
+        <div class="profile-section">
+            <h3>About</h3>
+            <textarea placeholder="Write about yourself..."></textarea>
+        </div>
+
+        <div class="profile-section">
+            <h3>Education</h3>
+            <input type="text" placeholder="Degree / College">
+        </div>
+
+        <div class="profile-section">
+            <h3>Experience</h3>
+            <input type="text" placeholder="years">
+        </div>
+
+        <div class="profile-section">
+            <h3>Experties</h3>
+            <input type="text" placeholder="languages known">
+        </div>
+
+        <div class="profile-section">
+            <h3>Contact No.</h3>
+            <input type="number" placeholder="Number">
+        </div>
+        <div class="profile-section">
+            <h3>Certificates</h3>
+            <input type="file" placeholder="Certificates">
+        </div>
+        <div class="profile-section">
+            <h3>Resume</h3>
+            <input type="file" placeholder="Resume">
+        </div>
+
+
+
+        <button class="btn-primary save-btn" style="width: 765px; height: 50px;">Save Profile</button>
+
+    </div>
+</section>
+
+</body>
+
+<script>
+const user = JSON.parse(localStorage.getItem("hireSphereUser"));
+
+if (!user) {
+    window.location.href = "auth.html";
+} else {
+    document.getElementById("p-name").textContent = user.fullname;
+    document.getElementById("p-email").textContent = user.email;
+    document.getElementById("p-role").textContent = user.role;
+    document.getElementById("avatarLetter").textContent = user.fullname.charAt(0).toUpperCase();
+}
+
+function logout() {
+    localStorage.removeItem("hireSphereUser");
+    window.location.href = "index.html";
+}
+</script>
+
+</html>
