@@ -1,1 +1,5 @@
-
+To run database on mongodbaltalas
+all this on cd Database/backend
+step-1:npm init
+step-2:npm install express mongoose dotenv cors bcryptjs jsonwebtoken multer
+step-4:node server.js
