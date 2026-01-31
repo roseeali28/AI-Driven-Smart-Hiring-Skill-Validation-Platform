@@ -1,174 +1,273 @@
-AI-Driven Smart Hiring Skill Validation Platform 🚀
+# AI Skill Verification Hiring Platform
 
-An AI-powered hiring platform designed to objectively evaluate candidates, reduce resume bias, and provide skill-based, behavioral, and performance-driven hiring insights for recruiters and organizations.
+A startup-ready AI-powered hiring platform that evaluates real candidate skills, verifies learning credentials, reduces hiring bias, and enables faster, more reliable recruitment for startups and SMEs.
 
-This system focuses on replacing traditional resume screening with data-driven candidate assessment using AI scoring and ranking pipelines.
+This system replaces resume-based hiring with a skill-first, data-driven recruitment pipeline.
 
-🔍 Problem Statement
+---
 
-Traditional hiring methods rely heavily on resumes and manual screening, which leads to:
+## 🚀 Key Features
 
-Skill mismatch
+### 👨‍💼 Recruiter (Admin) Module
+- Secure authentication and role-based access
+- Job role creation and candidate assignment
+- Automated candidate ranking
+- Skill credibility dashboards
+- Certificate verification status
+- Hiring pipeline management
+- Export reports (CSV / PDF)
 
-Resume exaggeration
+### 👩‍💻 Candidate Module
+- Secure registration and login
+- Skill assessments (MCQ + coding challenges)
+- Certificate upload and verification
+- Transparent performance feedback
+- Skill gap analysis
+- Personalized learning recommendations
 
-Biased decision making
+### 🧠 AI & Analytics Engine
+- Hybrid scoring system (ML + rule-based)
+- Learning aptitude analysis
+- Behavioral performance tracking
+- Bias reduction normalization
+- Explainable candidate credibility scores
+- Role-based candidate ranking
 
-Slow recruitment cycles
+---
 
-Startups and companies need an automated, affordable, and intelligent hiring solution that evaluates candidates based on real performance and behavioral metrics.
+## 🏗️ System Architecture
+Frontend (HTML/CSS/JS)
+|
+↓
+Node.js API Gateway (Express)
+|
+┌──────┼─────────┬─────────┐
+↓ ↓ ↓ ↓
+Auth Assessment Certificate Analytics
+Service Engine Verification AI Engine
+| | |
+└──── PostgreSQL / MySQL Database ────┘
 
-💡 Solution Overview
+---
 
-This platform uses AI modules to:
+## 🛠️ Technology Stack
 
-Analyze candidate behavioral traits
+### Frontend
+- HTML5
+- CSS3
+- JavaScript
 
-Score technical and soft skills
+### Backend
+- Node.js
+- Express.js
+- JWT Authentication
 
-Rank candidates objectively
+### AI Services
+- Python
+- FastAPI
+- scikit-learn
+- spaCy
+- Transformers (optional)
 
-Provide recruiter-ready insights
+### Database
+- PostgreSQL (recommended)
+- MySQL (supported)
 
-The system is built with a modular backend architecture allowing easy integration with APIs and frontend dashboards.
+### DevOps
+- REST APIs
+- Docker-ready structure
+- Environment variable configuration
 
-⚙️ Core Features (Planned & In Progress)
-✅ Implemented (Backend Core)
+---
 
-Behavioral analysis module
+## 📁 Project Folder Structure
+/ai-services
+/scoring_engine
+/behavior_analysis
+/certificate_verifier
 
-Candidate scoring engine
+/backend
+/controllers
+/routes
+/middleware
+/models
+/utils
+app.js
+server.js
 
-Ranking pipeline
+/frontend
+/assets
+/pages
+/js
 
-Modular AI engine structure
+/database
+schema.sql
 
-🚧 Upcoming Features
+/docs
+api_docs.md
+architecture.md
 
-REST API using FastAPI
+README.md
 
-Resume parsing system
+---
 
-Interview performance evaluation
+## ⚙️ Installation Guide
 
-Dashboard integration
+### 1️⃣ Clone Repository
+git clone <your-repo-url>
+cd ai-hiring-platform
 
-Real-time candidate leaderboard
+---
 
-ML-based predictive hiring model
+### 2️⃣ Backend Setup (Node.js)
+cd backend
+npm install
+npm start
 
-🏗 Project Structure
-AI-Driven-Smart-Hiring-Skill-Validation-Platform/
-│
-├── backend/
-│   ├── php/
-│   │   └── api.php (future integration layer)
-│   │
-│   └── python/
-│       ├── ai_engine/
-│       │   ├── behavioral.py
-│       │   ├── scoring.py
-│       │   ├── ranking.py
-│       │   └── __init__.py
-│       │
-│       └── main.py (API entry point - upcoming)
-│
-└── README.md
+Backend runs on:
+http://localhost:5000
 
-🧠 AI Engine Workflow
-Candidate Input Data
-        ↓
-Behavioral Analysis Module
-        ↓
-Skill Scoring Engine
-        ↓
-Candidate Ranking System
-        ↓
-Final Hiring Recommendation
+---
 
-🛠 Tech Stack
-Backend
-
-Python
-
-FastAPI (Planned)
-
-PHP (Integration layer)
-
-AI / Logic
-
-Custom scoring algorithms
-
-Behavioral assessment logic
-
-Ranking pipeline
-
-Tools
-
-Git & GitHub
-
-REST APIs
-
-Modular architecture
-
-▶️ How To Run (Backend - Coming Soon)
-
-Once API setup is completed:
-
+### 3️⃣ AI Services Setup (Python)
+cd ai-services
 pip install -r requirements.txt
-python main.py
+uvicorn main:app --reload
 
-
-API will be available at:
-
+AI services run on:
 http://localhost:8000
 
-🎯 Project Goals
+---
 
-Build production-ready AI hiring backend
+### 4️⃣ Frontend
 
-Create recruiter-friendly scoring system
+Simply open:
+frontend/index.html
 
-Develop scalable API architecture
+Or serve using Live Server / local HTTP server.
 
-Prepare startup-level proof of concept
+---
 
-Build strong portfolio project
+## 🔐 Environment Variables
 
-📈 Future Roadmap
+Create a `.env` file inside `/backend`:
+DB_URL=postgresql://username:password@localhost:5432/hiring_db
+JWT_SECRET=your_secret_key
+AI_SERVICE_URL=http://localhost:8000
 
-Machine Learning based skill prediction
+---
 
-Resume NLP parsing engine
+## 📊 AI Skill Credibility Scoring Model
 
-Candidate personality analysis
+Final Candidate Score is computed using a weighted hybrid model:
+Final Score =
 
-Admin dashboard
+(Assessment Performance × 40%)
 
-Cloud deployment
+(Coding Challenge Score × 30%)
 
-Database integration
+(Certificate Trust Score × 15%)
 
-👨‍💻 Author
-Ashmita,
-Rose Ali, 
-Shrishti Pathak, 
-Vansh Soni,
-Yuv Raj Singh Yadav
+(Learning Aptitude Score × 15%)
 
-Computer Science Undergraduate
-AI & Backend Developer
+### Explanation Components
 
-⭐ Support
+- Assessment Performance → Accuracy + difficulty weighting + time efficiency
+- Coding Score → Test case success + runtime performance
+- Certificate Trust → QR verification + metadata validation + issuer trust level
+- Learning Aptitude → Improvement trend + retry behavior + consistency score
 
-If you find this project useful:
+All scores are normalized and bias-adjusted.
 
-Give it a ⭐ Star
+---
 
-Fork and contribute
+## 🛡️ Security Features
 
-Share feedback
+- JWT-based authentication
+- Role-based authorization
+- Password hashing
+- Input validation
+- File type validation
+- Secure sandboxed code execution
+- API rate limiting ready
 
-📄 License
+---
 
-This project is open-source and free to use for educational and research purposes.
+## 📈 MVP Scope
+
+This project delivers a functional MVP including:
+
+- Authentication system
+- Skill assessment engine
+- Coding evaluation system
+- Certificate verification module
+- AI scoring and ranking engine
+- Recruiter dashboard
+- Candidate feedback module
+
+---
+
+## 🌍 Use Cases
+
+- Startup hiring automation
+- Campus recruitment platforms
+- EdTech placement systems
+- Bootcamp skill verification
+- Internship screening tools
+
+---
+
+## 🚀 Future Roadmap
+
+- Video interview AI analysis
+- Online proctoring system
+- SaaS subscription billing
+- ATS integration
+- Blockchain credential verification
+- Enterprise dashboard analytics
+- Mobile app support
+
+---
+
+## 🧪 Synthetic Data & Testing
+
+Synthetic candidate data is used for:
+
+- Model training
+- Scoring simulation
+- Ranking validation
+- Bias testing
+
+This ensures reproducibility and safe experimentation.
+
+---
+
+## 📜 License
+
+MIT License
+
+---
+
+## 🤝 Contribution Guidelines
+
+1. Fork repository
+2. Create feature branch
+3. Commit clean code
+4. Submit pull request
+
+---
+
+## ⭐ Why This Platform Matters
+
+Traditional hiring relies on resumes.
+
+This platform verifies:
+
+- What candidates actually know  
+- What they actually practiced  
+- How fast they can learn  
+- How reliable their credentials are  
+
+This enables fair, fast, and data-driven hiring.
+
+
