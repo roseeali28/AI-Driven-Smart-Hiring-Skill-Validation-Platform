@@ -1,109 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Profile | HireSphere</title>
-<link rel="stylesheet" href="index.css">
-<link rel="stylesheet" href="assets/css/style.css">
+    <meta charset="UTF-8">
+    <title>Profile | HiredUp</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body class="profile-body">
 
-<nav class="navbar">
-    <div class="logo">HireSphere</div>
-    <div class="nav-actions">
-        <a href="index.html" class="btn-outline">Home</a>
-        <button onclick="logout()" class="btn-outline" >Logout</button>
-    </div>
-</nav>
+    <nav class="navbar">
+        <div class="logo">HiredUp</div>
+        <div class="nav-actions">
+            <a href="index.html" class="btn-outline">Home</a>
+            <button onclick="logout()" class="btn-outline">Logout</button>
+        </div>
+    </nav>
 
-<section class="profile-wrapper">
-    <div class="profile-card">
+    <section class="profile-wrapper">
+        <div class="profile-card">
 
-        <!-- Top Section -->
-        <div class="profile-header">
-            <div class="avatar" id="avatarLetter">U</div>
-            <div>
-                <h2 id="p-name">User Name</h2>
-                <p id="p-role">Candidate</p>
-                <p id="p-email">email@example.com</p>
+            <!-- Top Section -->
+            <div class="profile-header">
+                <div class="avatar" id="avatarLetter">U</div>
+                <div>
+                    <h2 id="p-name">User Name</h2>
+                    <p id="p-role">Candidate</p>
+                    <p id="p-email">email@example.com</p>
+                    <p id="resumeStatus"></p>
+                    <p id="certificateStatus"></p>
+
+                </div>
             </div>
-        </div>
 
-        <!-- Info Grid -->
-        <div class="profile-grid">
-            <div class="info-box">
-                <h4>Skills Score</h4>
-                <p>78%</p>
+            <!-- Info Grid -->
+            <div class="profile-grid">
+                <div class="info-box">
+                    <h4>Skills Score</h4>
+                    <p>78%</p>
+                </div>
+                <div class="info-box">
+                    <h4>Tests Completed</h4>
+                    <p>12</p>
+                </div>
+                <div class="info-box">
+                    <h4>Profile Rank</h4>
+                    <p>Top 15%</p>
+                </div>
             </div>
-            <div class="info-box">
-                <h4>Tests Completed</h4>
-                <p>12</p>
+
+            <!-- Editable Info -->
+            <div class="profile-section">
+                <h3>About</h3>
+                <textarea id="about" placeholder="Write about yourself..."></textarea>
             </div>
-            <div class="info-box">
-                <h4>Profile Rank</h4>
-                <p>Top 15%</p>
+
+            <div class="profile-section">
+                <h3>Education</h3>
+                <input id="education" type="text" placeholder="Degree / College">
             </div>
+
+            <div class="profile-section">
+                <h3>Experience</h3>
+                <input id="experience" type="text" placeholder="years">
+            </div>
+
+            <div class="profile-section">
+                <h3>Experties</h3>
+                <input id="expertise" type="text" placeholder="languages known">
+            </div>
+
+            <div class="profile-section">
+                <h3>Contact No.</h3>
+                <input id="phone" type="number" placeholder="Number">
+            </div>
+
+            <div class="profile-section">
+                <h3>Certificates</h3>
+                <input type="file" id="certificateInput" placeholder="Certificates">
+            </div>
+
+            <div class="profile-section">
+                <h3>Resume</h3>
+                <input type="file" id="resumeInput" placeholder="Resume">
+            </div>
+
+            <!-- SAVE BUTTON -->
+            <button onclick="saveProfile()" class="btn-primary save-btn" style="width: 765px; height: 50px;">
+                Save Profile
+            </button>
+
         </div>
-
-        <!-- Editable Info -->
-        <div class="profile-section">
-            <h3>About</h3>
-            <textarea placeholder="Write about yourself..."></textarea>
-        </div>
-
-        <div class="profile-section">
-            <h3>Education</h3>
-            <input type="text" placeholder="Degree / College">
-        </div>
-
-        <div class="profile-section">
-            <h3>Experience</h3>
-            <input type="text" placeholder="years">
-        </div>
-
-        <div class="profile-section">
-            <h3>Experties</h3>
-            <input type="text" placeholder="languages known">
-        </div>
-
-        <div class="profile-section">
-            <h3>Contact No.</h3>
-            <input type="number" placeholder="Number">
-        </div>
-        <div class="profile-section">
-            <h3>Certificates</h3>
-            <input type="file" placeholder="Certificates">
-        </div>
-        <div class="profile-section">
-            <h3>Resume</h3>
-            <input type="file" placeholder="Resume">
-        </div>
-
-
-
-        <button class="btn-primary save-btn" style="width: 765px; height: 50px;">Save Profile</button>
-
-    </div>
-</section>
+    </section>
 
 </body>
 
 <script>
-const user = JSON.parse(localStorage.getItem("hireSphereUser"));
+    const user = JSON.parse(localStorage.getItem("hiredUpUser"));
 
-if (!user) {
-    window.location.href = "auth.html";
-} else {
-    document.getElementById("p-name").textContent = user.fullname;
-    document.getElementById("p-email").textContent = user.email;
-    document.getElementById("p-role").textContent = user.role;
-    document.getElementById("avatarLetter").textContent = user.fullname.charAt(0).toUpperCase();
-}
+    if (!user) {
+        window.location.href = "auth.html";
+    } else {
+        document.getElementById("p-name").textContent = user.fullname;
+        document.getElementById("p-email").textContent = user.email;
+        document.getElementById("p-role").textContent = user.role;
+        document.getElementById("avatarLetter").textContent =
+            user.fullname.charAt(0).toUpperCase();
 
-function logout() {
-    localStorage.removeItem("hireSphereUser");
-    window.location.href = "index.html";
-}
+        // 🟢 LOAD PROFILE DATA ON STARTUP
+        loadProfile();
+    }
+
+    function logout() {
+        localStorage.removeItem("hiredUpUser");
+        window.location.href = "index.html";
+    }
+
+    function loadProfile() {
+        // Add timestamp to prevent caching
+        fetch(`http://localhost:5000/api/auth/profile/${user.email}?t=${new Date().getTime()}`)
+            .then(res => res.json())
+            .then(data => {
+                console.log("Profile Data:", data); // Debugging
+                if (!data) return;
+
+                document.getElementById("about").value = data.about || "";
+                document.getElementById("education").value = data.education || "";
+                document.getElementById("experience").value = data.experience || "";
+                document.getElementById("expertise").value = data.expertise || "";
+                document.getElementById("phone").value = data.phone || "";
+
+                // ✅ DOCUMENT STATUS
+                if (data.resume) {
+                    const resumeLink = document.getElementById("resumeStatus");
+                    if (resumeLink) {
+                        resumeLink.innerHTML = `<a href="http://localhost:5000/uploads/${data.resume}" target="_blank" style="color:#10b981; text-decoration:underline;">Resume uploaded ✔</a>`;
+                    }
+                }
+
+                if (data.certificate) {
+                    console.log("Certificate found:", data.certificate);
+                    const certLink = document.getElementById("certificateStatus");
+                    if (certLink) {
+                        certLink.innerHTML = `<a href="http://localhost:5000/uploads/${data.certificate}" target="_blank" style="color:#10b981; text-decoration:underline;">Certificate uploaded ✔</a>`;
+                    } else {
+                        console.error("Link element not found");
+                    }
+                } else {
+                    console.log("No certificate in data");
+                }
+            })
+            .catch(err => console.error("Error loading profile:", err));
+    }
+
+    // 💾 SAVE PROFILE FUNCTION (Updated for File Uploads)
+    function saveProfile() {
+        const formData = new FormData();
+        formData.append("email", user.email);
+        formData.append("about", document.getElementById("about").value);
+        formData.append("education", document.getElementById("education").value);
+        formData.append("experience", document.getElementById("experience").value);
+        formData.append("expertise", document.getElementById("expertise").value);
+        formData.append("phone", document.getElementById("phone").value);
+
+        const resumeFile = document.getElementById("resumeInput").files[0];
+        const certificateFile = document.getElementById("certificateInput").files[0];
+
+        if (resumeFile) formData.append("resume", resumeFile);
+        if (certificateFile) formData.append("certificate", certificateFile);
+
+        fetch("http://localhost:5000/api/auth/profile", {
+            method: "POST",
+            body: formData // Send as FormData (multipart/form-data)
+        })
+            .then(res => res.json())
+            .then(result => {
+                alert(result.message || "Profile saved successfully");
+                loadProfile(); // Refresh data
+            })
+            .catch(err => {
+                alert("Error saving profile");
+                console.error(err);
+            });
+    }
 </script>
 
 </html>
