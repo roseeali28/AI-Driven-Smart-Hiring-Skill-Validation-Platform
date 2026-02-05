@@ -97,14 +97,31 @@ router.post(
   ]),
   async (req, res) => {
     try {
-      console.log("Profile body:", req.body); // Debugging
-      console.log("Uploaded files:", req.files); // Debugging
+      console.log("=== PROFILE UPDATE START ===");
+      console.log("Request Body:", JSON.stringify(req.body, null, 2));
+      console.log("Request Files:", req.files ? Object.keys(req.files) : "No files");
 
       const { email, about, education, experience, expertise, phone } = req.body;
+
+      if (!email) {
+        console.error("❌ ERROR: Email is missing in request body!");
+        return res.status(400).json({ message: "Email is required to update profile" });
+      }
+
       const updates = { about, education, experience, expertise, phone };
 
-      if (req.files && req.files.resume) updates.resume = req.files.resume[0].filename;
-      if (req.files && req.files.certificate) updates.certificate = req.files.certificate[0].filename;
+      if (req.files && req.files.resume && req.files.resume[0]) {
+        updates.resume = req.files.resume[0].filename;
+        console.log("✅ Setting resume:", updates.resume);
+      }
+
+      if (req.files && req.files.certificate && req.files.certificate[0]) {
+        updates.certificate = req.files.certificate[0].filename;
+        console.log("✅ Setting certificate:", updates.certificate);
+      }
+
+      console.log("Attempting to find user with email:", email);
+      console.log("Updates being applied:", updates);
 
       const user = await User.findOneAndUpdate(
         { email },
@@ -112,11 +129,15 @@ router.post(
         { new: true, runValidators: true }
       );
 
-      if (!user) return res.status(404).json({ message: "User not found" });
+      if (!user) {
+        console.error("❌ ERROR: User not found in DB for email:", email);
+        return res.status(404).json({ message: "User not found" });
+      }
 
+      console.log("✅ User updated successfully:", user.email);
       res.json({ message: "Profile updated successfully", user });
     } catch (err) {
-      console.error(err);
+      console.error("❌ SERVER ERROR:", err);
       res.status(500).json({ message: "Error updating profile" });
     }
   }
