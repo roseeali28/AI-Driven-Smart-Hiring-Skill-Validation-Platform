@@ -108,7 +108,7 @@
         document.getElementById("avatarLetter").textContent =
             user.fullname.charAt(0).toUpperCase();
 
-        // 🟢 LOAD PROFILE DATA ON STARTUP
+        //  LOAD PROFILE DATA ON STARTUP
         loadProfile();
     }
 
@@ -154,7 +154,7 @@
             .catch(err => console.error("Error loading profile:", err));
     }
 
-    // 💾 SAVE PROFILE FUNCTION (Updated for File Uploads)
+    // SAVE PROFILE FUNCTION (Updated for File Uploads)
     function saveProfile() {
         const formData = new FormData();
         formData.append("email", user.email);
