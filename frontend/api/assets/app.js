@@ -157,3 +157,4 @@ async function handleAuth(event) {
     alert("Server error");
   }
 }
+
