@@ -3,9 +3,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const multer = require("multer");
 const path = require("path");
-
 const router = express.Router();
-
 /* ===================== MULTER SETUP ===================== */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -15,9 +13,7 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + "-" + file.originalname);
   }
 });
-
 const upload = multer({ storage });
-
 /* ===================== SIGNUP ===================== */
 router.post("/signup", async (req, res) => {
   try {
@@ -27,7 +23,6 @@ router.post("/signup", async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
@@ -36,7 +31,6 @@ router.post("/signup", async (req, res) => {
       password: hashedPassword,
       role
     });
-
     await user.save();
 
     res.status(201).json({
@@ -51,7 +45,6 @@ router.post("/signup", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
 /* ===================== LOGIN ===================== */
 router.post("/login", async (req, res) => {
   try {
