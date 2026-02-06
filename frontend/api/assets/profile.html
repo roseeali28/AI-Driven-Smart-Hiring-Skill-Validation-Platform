@@ -1,181 +1,189 @@
-/* --- Components --- */
-/* Buttons */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--radius-pill);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    font-size: 1rem;
-}
+<!DOCTYPE html>
+<html lang="en">
 
-.btn-primary {
-    background: var(--gradient-main);
-    color: white;
-    box-shadow: 0 0 15px var(--primary-glow);
-}
+<head>
+    <meta charset="UTF-8">
+    <title>Profile | HiredUp</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="style.css">
+</head>
 
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 25px var(--primary-glow);
-}
+<body class="profile-body">
 
-.btn-outline {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: var(--text-main);
-}
+    <nav class="navbar">
+        <div class="logo">HiredUp</div>
+        <div class="nav-actions">
+            <a href="index.html" class="btn-outline">Home</a>
+            <button onclick="logout()" class="btn-outline">Logout</button>
+        </div>
+    </nav>
 
-.btn-outline:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--text-main);
-}
+    <section class="profile-wrapper">
+        <div class="profile-card">
 
-.btn-glow {
-    position: relative;
-    overflow: hidden;
-}
+            <!-- Top Section -->
+            <div class="profile-header">
+                <div class="avatar" id="avatarLetter">U</div>
+                <div>
+                    <h2 id="p-name">User Name</h2>
+                    <p id="p-role">Candidate</p>
+                    <p id="p-email">email@example.com</p>
+                    <p id="resumeStatus"></p>
+                    <p id="certificateStatus"></p>
 
-.btn-glow::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
-    opacity: 0;
-    transform: scale(0.5);
-    transition: opacity 0.3s, transform 0.3s;
-}
+                </div>
+            </div>
 
-.btn-glow:hover::after {
-    opacity: 1;
-    transform: scale(1);
-}
+            <!-- Info Grid -->
+            <div class="profile-grid">
+                <div class="info-box">
+                    <h4>Skills Score</h4>
+                    <p>78%</p>
+                </div>
+                <div class="info-box">
+                    <h4>Tests Completed</h4>
+                    <p>12</p>
+                </div>
+                <div class="info-box">
+                    <h4>Profile Rank</h4>
+                    <p>Top 15%</p>
+                </div>
+            </div>
 
-/* Inputs */
-.input-group {
-    position: relative;
-    margin-bottom: 1.5rem;
-    width: 100%;
-}
+            <!-- Editable Info -->
+            <div class="profile-section">
+                <h3>About</h3>
+                <textarea id="about" placeholder="Write about yourself..."></textarea>
+            </div>
 
-.input-field {
-    width: 100%;
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--text-main);
-    padding: 1rem 1rem;
-    border-radius: var(--radius-sm);
-    font-size: 1rem;
-    transition: var(--transition-fast);
-}
+            <div class="profile-section">
+                <h3>Education</h3>
+                <input id="education" type="text" placeholder="Degree / College">
+            </div>
 
-.input-field:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px var(--primary-glow);
-}
+            <div class="profile-section">
+                <h3>Experience</h3>
+                <input id="experience" type="text" placeholder="years">
+            </div>
 
-.input-label {
-    position: absolute;
-    left: 1rem;
-    top: 1rem;
-    color: var(--text-muted);
-    pointer-events: none;
-    transition: var(--transition-fast);
-    font-size: 1rem;
-}
+            <div class="profile-section">
+                <h3>Experties</h3>
+                <input id="expertise" type="text" placeholder="languages known">
+            </div>
 
-.input-field:focus~.input-label,
-.input-field:not(:placeholder-shown)~.input-label {
-    top: -0.5rem;
-    left: 0.8rem;
-    font-size: 0.8rem;
-    background: var(--bg-dark);
-    padding: 0 0.4rem;
-    color: var(--primary);
-}
+            <div class="profile-section">
+                <h3>Contact No.</h3>
+                <input id="phone" type="number" placeholder="Number">
+            </div>
 
-/* Animations */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
+            <div class="profile-section">
+                <h3>Certificates</h3>
+                <input type="file" id="certificateInput" placeholder="Certificates">
+            </div>
+
+            <div class="profile-section">
+                <h3>Resume</h3>
+                <input type="file" id="resumeInput" placeholder="Resume">
+            </div>
+
+            <!-- SAVE BUTTON -->
+            <button onclick="saveProfile()" class="btn-primary save-btn" style="width: 765px; height: 50px;">
+                Save Profile
+            </button>
+
+        </div>
+    </section>
+
+</body>
+
+<script>
+    const user = JSON.parse(localStorage.getItem("hiredUpUser"));
+
+    if (!user) {
+        window.location.href = "auth.html";
+    } else {
+        document.getElementById("p-name").textContent = user.fullname;
+        document.getElementById("p-email").textContent = user.email;
+        document.getElementById("p-role").textContent = user.role;
+        document.getElementById("avatarLetter").textContent =
+            user.fullname.charAt(0).toUpperCase();
+
+        // 🟢 LOAD PROFILE DATA ON STARTUP
+        loadProfile();
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    function logout() {
+        localStorage.removeItem("hiredUpUser");
+        window.location.href = "index.html";
     }
-}
 
-.animate-fade-in {
-    animation: fadeIn 0.6s var(--ease-out) forwards;
-}
+    function loadProfile() {
+        // Add timestamp to prevent caching
+        fetch(`http://localhost:5000/api/auth/profile/${user.email}?t=${new Date().getTime()}`)
+            .then(res => res.json())
+            .then(data => {
+                console.log("Profile Data:", data); // Debugging
+                if (!data) return;
 
-.delay-100 {
-    animation-delay: 0.1s;
-}
+                document.getElementById("about").value = data.about || "";
+                document.getElementById("education").value = data.education || "";
+                document.getElementById("experience").value = data.experience || "";
+                document.getElementById("expertise").value = data.expertise || "";
+                document.getElementById("phone").value = data.phone || "";
 
-.delay-200 {
-    animation-delay: 0.2s;
-}
+                // ✅ DOCUMENT STATUS
+                if (data.resume) {
+                    const resumeLink = document.getElementById("resumeStatus");
+                    if (resumeLink) {
+                        resumeLink.innerHTML = `<a href="http://localhost:5000/uploads/${data.resume}" target="_blank" style="color:#10b981; text-decoration:underline;">Resume uploaded ✔</a>`;
+                    }
+                }
 
-.delay-300 {
-    animation-delay: 0.3s;
-}
+                if (data.certificate) {
+                    console.log("Certificate found:", data.certificate);
+                    const certLink = document.getElementById("certificateStatus");
+                    if (certLink) {
+                        certLink.innerHTML = `<a href="http://localhost:5000/uploads/${data.certificate}" target="_blank" style="color:#10b981; text-decoration:underline;">Certificate uploaded ✔</a>`;
+                    } else {
+                        console.error("Link element not found");
+                    }
+                } else {
+                    console.log("No certificate in data");
+                }
+            })
+            .catch(err => console.error("Error loading profile:", err));
+    }
 
-/* Navbar */
-.navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: var(--header-height);
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(20px);
-    z-index: 1000;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
+    // 💾 SAVE PROFILE FUNCTION (Updated for File Uploads)
+    function saveProfile() {
+        const formData = new FormData();
+        formData.append("email", user.email);
+        formData.append("about", document.getElementById("about").value);
+        formData.append("education", document.getElementById("education").value);
+        formData.append("experience", document.getElementById("experience").value);
+        formData.append("expertise", document.getElementById("expertise").value);
+        formData.append("phone", document.getElementById("phone").value);
 
-.nav-container {
-    height: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 3rem;
-}
+        const resumeFile = document.getElementById("resumeInput").files[0];
+        const certificateFile = document.getElementById("certificateInput").files[0];
 
-.nav-logo {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: var(--text-main);
-    letter-spacing: -0.05em;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
+        if (resumeFile) formData.append("resume", resumeFile);
+        if (certificateFile) formData.append("certificate", certificateFile);
 
-.nav-logo span {
-    color: var(--text-main);
-}
+        fetch("http://localhost:5000/api/auth/profile", {
+            method: "POST",
+            body: formData // Send as FormData (multipart/form-data)
+        })
+            .then(res => res.json())
+            .then(result => {
+                alert(result.message || "Profile saved successfully");
+                loadProfile(); // Refresh data
+            })
+            .catch(err => {
+                alert("Error saving profile");
+                console.error(err);
+            });
+    }
+</script>
 
-.nav-links {
-    display: flex;
-    gap: 2rem;
-}
-
-.nav-link {
-    color: var(--text-muted);
-    font-weight: 500;
-    transition: color 0.2s;
-}
-
-.nav-link:hover,
-.nav-link.active {
-    color: var(--text-main);
-}
+</html>
