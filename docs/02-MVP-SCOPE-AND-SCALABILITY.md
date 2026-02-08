@@ -1,6 +1,6 @@
 # MVP Scope vs Future Scalability
 
-**Project:** SkillFirst Hire  
+**Project:** HiredUp
 **Version:** 1.0  
 **Date:** February 7, 2025
 
