@@ -1,6 +1,6 @@
 # System Architecture — AI-Powered Hiring Platform
 
-**Project:** SkillFirst Hire  
+**Project:** HiredUp  
 **Version:** 1.0  
 **Date:** February 7, 2025
 
