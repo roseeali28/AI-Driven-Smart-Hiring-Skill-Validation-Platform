@@ -8,7 +8,7 @@
 
 ## 1. Executive Summary
 
-SkillFirst Hire is a full-stack AI-powered hiring platform that combines **skill-based assessment**, **certificate verification**, and **behavioral learning aptitude analysis** into a unified, explainable credibility score for technical talent.
+HiredUp is a full-stack AI-powered hiring platform that combines **skill-based assessment**, **certificate verification**, and **behavioral learning aptitude analysis** into a unified, explainable credibility score for technical talent.
 
 ---
 
