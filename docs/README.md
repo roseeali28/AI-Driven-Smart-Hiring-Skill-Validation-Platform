@@ -13,7 +13,3 @@
 | [03-PHASED-DEVELOPMENT-ROADMAP.md](./03-PHASED-DEVELOPMENT-ROADMAP.md) | 6-phase development plan with tasks and approval gates |
 
 ---
-
-## Next Step
-
-**Awaiting approval** to proceed with **Phase 0: Foundation** (project setup, auth, database).
