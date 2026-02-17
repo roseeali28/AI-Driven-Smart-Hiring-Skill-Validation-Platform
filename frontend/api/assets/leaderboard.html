@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Leaderboard | HiredUp</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .podium-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 1rem;
+            margin-top: 3rem;
+            margin-bottom: 4rem;
+            padding: 0 1rem;
+            /* Prevent overflow on small screens */
+        }
+
+        .podium-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .podium-rank {
+            width: 100px;
+            /* Base width */
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: none;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 1rem;
+            font-size: 3rem;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Gold (1st) */
+        .podium-step.gold {
+            z-index: 2;
+            /* Bring to front */
+        }
+
+        .podium-step.gold .avatar {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5rem;
+            border: 3px solid #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            margin-bottom: 1rem;
+        }
+
+        .podium-step.gold .podium-rank {
+            height: 200px;
+            background: linear-gradient(180deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.05) 100%);
+            border-color: rgba(255, 215, 0, 0.3);
+            color: #FFD700;
+            width: 140px;
+        }
+
+        /* Silver (2nd) */
+        .podium-step.silver .avatar {
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+            border: 3px solid #C0C0C0;
+            box-shadow: 0 0 15px rgba(192, 192, 192, 0.4);
+            margin-bottom: 0.8rem;
+        }
+
+        .podium-step.silver .podium-rank {
+            height: 150px;
+            background: linear-gradient(180deg, rgba(192, 192, 192, 0.2) 0%, rgba(192, 192, 192, 0.05) 100%);
+            border-color: rgba(192, 192, 192, 0.3);
+            color: #C0C0C0;
+            width: 120px;
+        }
+
+        /* Bronze (3rd) */
+        .podium-step.bronze .avatar {
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+            border: 3px solid #CD7F32;
+            box-shadow: 0 0 15px rgba(205, 127, 50, 0.4);
+            margin-bottom: 0.8rem;
+        }
+
+        .podium-step.bronze .podium-rank {
+            height: 120px;
+            background: linear-gradient(180deg, rgba(205, 127, 50, 0.2) 0%, rgba(205, 127, 50, 0.05) 100%);
+            border-color: rgba(205, 127, 50, 0.3);
+            color: #CD7F32;
+            width: 120px;
+        }
+
+        /* Stats & Details */
+        .podium-info {
+            position: absolute;
+            bottom: -60px;
+            text-align: center;
+            width: 200px;
+        }
+
+        .podium-info h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .podium-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .match-score {
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-main);
+            border-radius: 4px;
+            width: 0%;
+            /* Animate width */
+            transition: width 1s ease-out;
+        }
+
+        .leaderboard-list {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body class="profile-body">
+
+    <nav class="navbar">
+        <div class="logo">HiredUp</div>
+        <div class="nav-actions">
+            <a href="profile.html" class="btn-outline">Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 100px; padding-bottom: 4rem;">
+
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h1 class="text-gradient">Top Candidates</h1>
+            <p>Real-time skill ranking based on AI assessments.</p>
+        </div>
+
+        <!-- Podium -->
+        <div class="podium-container">
+            <!-- 2nd Place -->
+            <div class="podium-step silver">
+                <div class="avatar" style="background: var(--bg-card);">P</div>
+                <div class="podium-rank">2</div>
+                <div class="podium-info">
+                    <h3>Priya Sharma</h3>
+                    <p>88% Match</p>
+                </div>
+            </div>
+
+            <!-- 1st Place -->
+            <div class="podium-step gold">
+                <div class="avatar" style="background: var(--bg-card);">R</div>
+                <div class="podium-rank">1</div>
+                <div class="podium-info">
+                    <h3>Rahul Verma</h3>
+                    <p class="match-score">92% Match</p>
+                </div>
+            </div>
+
+            <!-- 3rd Place -->
+            <div class="podium-step bronze">
+                <div class="avatar" style="background: var(--bg-card);">A</div>
+                <div class="podium-rank">3</div>
+                <div class="podium-info">
+                    <h3>Aman Gupta</h3>
+                    <p>84% Match</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 5rem;"></div>
+
+        <!-- List View -->
+        <div class="leaderboard-list">
+            <h3 style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                Honorable Mentions</h3>
+
+            <!-- Item 4 -->
+            <div class="glass-card"
+                style="padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem;">
+                <div style="font-weight: bold; color: var(--text-muted); width: 20px;">4</div>
+                <div class="avatar" style="width: 40px; height: 40px; font-size: 1rem; background: #6366f1;">S</div>
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                        <strong>Sarah Lee</strong>
+                        <span style="color: #10b981; font-weight: bold;">81%</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-fill" style="width: 81%;"></div>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-outline">View</button>
+            </div>
+
+            <!-- Item 5 -->
+            <div class="glass-card"
+                style="padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem;">
+                <div style="font-weight: bold; color: var(--text-muted); width: 20px;">5</div>
+                <div class="avatar" style="width: 40px; height: 40px; font-size: 1rem; background: #ec4899;">K</div>
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                        <strong>Kevin Wu</strong>
+                        <span style="color: #10b981; font-weight: bold;">79%</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-fill" style="width: 79%;"></div>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-outline">View</button>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
