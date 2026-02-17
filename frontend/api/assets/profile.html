@@ -21,78 +21,327 @@
     <section class="profile-wrapper">
         <div class="profile-card">
 
-            <!-- Top Section -->
+            <!-- Shared Header (adaptable) -->
             <div class="profile-header">
                 <div class="avatar" id="avatarLetter">U</div>
                 <div>
                     <h2 id="p-name">User Name</h2>
                     <p id="p-role">Candidate</p>
                     <p id="p-email">email@example.com</p>
-                    <p id="resumeStatus"></p>
-                    <p id="certificateStatus"></p>
-
                 </div>
             </div>
 
-            <!-- Info Grid -->
-            <div class="profile-grid">
-                <div class="info-box">
-                    <h4>Skills Score</h4>
-                    <p>78%</p>
+            <!-- CANDIDATE VIEW -->
+            <div id="candidate-view">
+                <!-- Info Grid -->
+                <div class="profile-grid">
+                    <div class="info-box">
+                        <h4>Skills Score</h4>
+                        <p>78%</p>
+                    </div>
+                    <div class="info-box">
+                        <h4>Tests Completed</h4>
+                        <p>12</p>
+                    </div>
+                    <div class="info-box">
+                        <h4>Profile Rank</h4>
+                        <p>Top 15%</p>
+                    </div>
                 </div>
-                <div class="info-box">
-                    <h4>Tests Completed</h4>
-                    <p>12</p>
+
+                <!-- Leaderboard Access -->
+                <div style="margin-bottom: 2rem; text-align: center;">
+                    <a href="leaderboard.html" class="btn btn-primary btn-glow"
+                        style="width: 100%; display: block;">View Global Leaderboard 🏆</a>
                 </div>
-                <div class="info-box">
-                    <h4>Profile Rank</h4>
-                    <p>Top 15%</p>
+
+                <!-- Editable Info -->
+                <div class="profile-section">
+                    <h3>About</h3>
+                    <textarea placeholder="Write about yourself..."></textarea>
                 </div>
+
+                <div class="profile-section">
+                    <h3>Education</h3>
+                    <input type="text" placeholder="Degree / College">
+                </div>
+
+                <div class="profile-section">
+                    <h3>Experience</h3>
+                    <input type="text" placeholder="years">
+                </div>
+
+                <div class="profile-section">
+                    <h3>Experties</h3>
+                    <input type="text" placeholder="languages known">
+                </div>
+
+                <div class="profile-section">
+                    <h3>Contact No.</h3>
+                    <input type="number" placeholder="Number">
+                </div>
+                <div class="profile-section">
+                    <h3>Certificates & Verification</h3>
+
+                    <!-- Upload Button -->
+                    <div style="margin-bottom: 1rem;">
+                        <input type="file" id="cert-upload" class="hidden">
+                        <label for="cert-upload" class="btn btn-outline"
+                            style="cursor: pointer; width: 100%; border-style: dashed;">
+                            + Upload New Certificate
+                        </label>
+                    </div>
+
+                    <!-- Certificate List -->
+                    <div class="cert-list" style="display: flex; flex-direction: column; gap: 0.8rem;">
+                        <!-- Mock Vertified Item -->
+                        <div class="glass-card"
+                            style="padding: 1rem; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div style="font-size: 1.5rem; color: #ef4444;">📄</div> <!-- PDF Icon -->
+                                <div>
+                                    <h4 style="margin: 0; font-size: 1rem;">Python_Advanced.pdf</h4>
+                                    <span class="badge"
+                                        style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">Verified</span>
+                                </div>
+                            </div>
+                            <button class="btn-icon"
+                                onclick="openCertModal('Python Advanced Certification', 'verified')"
+                                style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;">
+                                👁️
+                            </button>
+                        </div>
+
+                        <!-- Mock Pending Item -->
+                        <div class="glass-card"
+                            style="padding: 1rem; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div style="font-size: 1.5rem; color: #3b82f6;">🖼️</div> <!-- Image Icon -->
+                                <div>
+                                    <h4 style="margin: 0; font-size: 1rem;">React_Bootcamp_Cert.jpg</h4>
+                                    <span class="badge"
+                                        style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">Pending
+                                        Verification</span>
+                                </div>
+                            </div>
+                            <button class="btn-icon" onclick="openCertModal('React Bootcamp', 'pending')"
+                                style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;">
+                                👁️
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-section">
+                    <h3>Resume</h3>
+                    <input type="file" placeholder="Resume">
+                </div>
+
+                <button class="btn-primary save-btn" style="width: 100%; height: 50px; margin-top: 2rem;">Save
+                    Profile</button>
             </div>
 
-            <!-- Editable Info -->
-            <div class="profile-section">
-                <h3>About</h3>
-                <textarea id="about" placeholder="Write about yourself..."></textarea>
-            </div>
+            <!-- RECRUITER VIEW -->
+            <div id="recruiter-view" class="hidden">
+                <!-- RECRUITER ONBOARDING (JOB FORM) -->
+                <div id="recruiter-onboarding" class="profile-section">
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <h2>Welcome, Recruiter!</h2>
+                        <p>To start finding the perfect candidates, please post your job requirements first.</p>
+                    </div>
 
-            <div class="profile-section">
-                <h3>Education</h3>
-                <input id="education" type="text" placeholder="Degree / College">
-            </div>
+                    <div class="glass-card" style="padding: 2rem;">
+                        <h4 style="margin-bottom: 1.5rem; color: var(--accent);">Job Details</h4>
+                        <div class="profile-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 1rem;">
+                            <div class="input-group">
+                                <input type="text" class="input-field" placeholder=" " id="company-name">
+                                <label class="input-label">Company Name</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" class="input-field" placeholder=" " id="recruiter-role-input">
+                                <label class="input-label">Your Designation</label>
+                            </div>
+                        </div>
 
-            <div class="profile-section">
-                <h3>Experience</h3>
-                <input id="experience" type="text" placeholder="years">
-            </div>
+                        <div class="input-group">
+                            <input type="text" class="input-field" placeholder=" " id="job-title">
+                            <label class="input-label">Job Title</label>
+                        </div>
 
-            <div class="profile-section">
-                <h3>Experties</h3>
-                <input id="expertise" type="text" placeholder="languages known">
-            </div>
+                        <div class="input-group">
+                            <textarea class="input-field" placeholder=" " id="job-desc"
+                                style="resize: vertical; min-height: 100px;"></textarea>
+                            <label class="input-label">Job Description</label>
+                        </div>
 
-            <div class="profile-section">
-                <h3>Contact No.</h3>
-                <input id="phone" type="number" placeholder="Number">
-            </div>
+                        <div class="input-group">
+                            <input type="text" class="input-field" placeholder=" " id="job-skills">
+                            <label class="input-label">Required Skills (comma separated)</label>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">e.g., Python,
+                                React, AI/ML, Data Structures</p>
+                        </div>
 
-            <div class="profile-section">
-                <h3>Certificates</h3>
-                <input type="file" id="certificateInput" placeholder="Certificates">
-            </div>
+                        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                            <button class="btn btn-primary btn-glow" id="post-job-btn" style="width: 100%;">Post Job &
+                                Find Candidates</button>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="profile-section">
-                <h3>Resume</h3>
-                <input type="file" id="resumeInput" placeholder="Resume">
-            </div>
+                <!-- RECRUITER DASHBOARD (Initially Hidden) -->
+                <div id="recruiter-dashboard" class="hidden">
+                    <!-- Context Header -->
+                    <div
+                        style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 id="dash-job-title" style="margin-bottom: 0.25rem;">Software Engineer</h3>
+                            <p id="dash-company" style="margin-bottom: 0; color: var(--accent);">Tech Corp</p>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <a href="leaderboard.html" class="btn btn-sm btn-primary">View Leaderboard</a>
+                            <button class="btn btn-sm btn-outline" onclick="window.location.reload()">Post Another
+                                Job</button>
+                        </div>
+                    </div>
 
-            <!-- SAVE BUTTON -->
-            <button onclick="saveProfile()" class="btn-primary save-btn" style="width: 765px; height: 50px;">
-                Save Profile
-            </button>
+                    <!-- Stats Row -->
+                    <div class="profile-grid"
+                        style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 2rem;">
+                        <div class="info-box highlight-box">
+                            <h4>Total Applicants</h4>
+                            <p>12</p>
+                        </div>
+                        <div class="info-box">
+                            <h4>Avg Match Score</h4>
+                            <p>88%</p>
+                        </div>
+                        <div class="info-box">
+                            <h4>Shortlisted</h4>
+                            <p>3</p>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="recruiter-controls" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                        <div class="input-group" style="flex: 1; margin-bottom: 0;">
+                            <input type="text" class="input-field" placeholder="Search candidates..."
+                                id="candidate-search">
+                        </div>
+                        <div class="input-group" style="width: 200px; margin-bottom: 0;">
+                            <select class="input-field" id="skill-filter" style="appearance: none; cursor: pointer;">
+                                <option value="">Filter by Skill</option>
+                                <option value="python">Python</option>
+                                <option value="javascript">JavaScript</option>
+                                <option value="react">React</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Top Candidate Card -->
+                    <div class="profile-section">
+                        <h3>Top Match</h3>
+                        <div class="glass-card candidate-card"
+                            style="padding: 1.5rem; display: flex; align-items: center; gap: 1.5rem; border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="avatar"
+                                style="width: 60px; height: 60px; font-size: 1.5rem; background: var(--accent);">JD
+                            </div>
+                            <div style="flex: 1;">
+                                <h4 style="margin: 0; font-size: 1.2rem;">Jane Doe</h4>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;">Full Stack Developer</p>
+                                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;" id="top-candidate-badges">
+                                    <span class="badge">Python</span>
+                                    <span class="badge">React</span>
+                                    <span class="badge">98% Match</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-sm btn-primary">View Profile</button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Applicants List -->
+                    <div class="profile-section" style="margin-top: 2rem;">
+                        <h3>All Candidates</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <!-- Mock Item 1 -->
+                            <div class="glass-card"
+                                style="padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>Alex Smith</strong>
+                                    <span
+                                        style="color: var(--text-muted); font-size: 0.9rem; margin-left: 0.5rem;">Frontend
+                                        Engineer</span>
+                                </div>
+                                <div style="color: #10b981; font-weight: bold;">92% Score</div>
+                            </div>
+                            <!-- Mock Item 2 -->
+                            <div class="glass-card"
+                                style="padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>Michael Chen</strong>
+                                    <span
+                                        style="color: var(--text-muted); font-size: 0.9rem; margin-left: 0.5rem;">Backend
+                                        Developer</span>
+                                </div>
+                                <div style="color: #10b981; font-weight: bold;">89% Score</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Recent Applicants List (Placeholder) -->
+                <div class="profile-section" style="margin-top: 2rem;">
+                    <h3>Recent Applicants</h3>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Mock Item 1 -->
+                        <div class="glass-card"
+                            style="padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>Alex Smith</strong>
+                                <span style="color: var(--text-muted); font-size: 0.9rem; margin-left: 0.5rem;">Frontend
+                                    Engineer</span>
+                            </div>
+                            <div style="color: #10b981; font-weight: bold;">92% Score</div>
+                        </div>
+                        <!-- Mock Item 2 -->
+                        <div class="glass-card"
+                            style="padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>Michael Chen</strong>
+                                <span style="color: var(--text-muted); font-size: 0.9rem; margin-left: 0.5rem;">Backend
+                                    Developer</span>
+                            </div>
+                            <div style="color: #10b981; font-weight: bold;">89% Score</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
 
         </div>
     </section>
+
+    <!-- Certificate Preview Modal -->
+    <div id="cert-modal" class="modal hidden"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; display: flex;">
+        <div class="glass-card"
+            style="width: 90%; max-width: 600px; position: relative; max-height: 90vh; overflow-y: auto;">
+            <button onclick="closeCertModal()"
+                style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
+
+            <h3 id="modal-title" style="margin-bottom: 0.5rem; padding-right: 2rem;">Certificate Preview</h3>
+            <div id="modal-status" style="margin-bottom: 1.5rem;"></div>
+
+            <div
+                style="width: 100%; height: 300px; background: #334155; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: #94a3b8;">
+                [Document Preview Placeholder]
+            </div>
+
+            <div style="margin-top: 1.5rem; text-align: right;">
+                <button class="btn btn-outline" onclick="closeCertModal()">Close</button>
+            </div>
+        </div>
+    </div>
 
 </body>
 
@@ -105,11 +354,72 @@
         document.getElementById("p-name").textContent = user.fullname;
         document.getElementById("p-email").textContent = user.email;
         document.getElementById("p-role").textContent = user.role;
-        document.getElementById("avatarLetter").textContent =
-            user.fullname.charAt(0).toUpperCase();
+        document.getElementById("avatarLetter").textContent = user.fullname.charAt(0).toUpperCase();
 
-        // 🟢 LOAD PROFILE DATA ON STARTUP
-        loadProfile();
+        // Role-based view toggle
+        const candidateView = document.getElementById('candidate-view');
+        const recruiterView = document.getElementById('recruiter-view');
+
+        // Recruiter Sub-views
+        const recruiterOnboarding = document.getElementById('recruiter-onboarding');
+        const recruiterDashboard = document.getElementById('recruiter-dashboard');
+
+        if (user.role === 'Recruiter') {
+            candidateView.classList.add('hidden');
+            recruiterView.classList.remove('hidden');
+
+            // Default to Onboarding (Job Form) first
+            recruiterOnboarding.classList.remove('hidden');
+            recruiterDashboard.classList.add('hidden');
+
+        } else {
+            candidateView.classList.remove('hidden');
+            recruiterView.classList.add('hidden');
+        }
+    }
+
+    // Post Job Logic
+    const postJobBtn = document.getElementById('post-job-btn');
+
+    if (postJobBtn) {
+        postJobBtn.addEventListener('click', () => {
+            // Validation
+            const company = document.getElementById('company-name').value;
+            const title = document.getElementById('job-title').value;
+            const skills = document.getElementById('job-skills').value;
+
+            if (!company || !title) {
+                alert('Please fill in required fields (Company & Job Title)');
+                return;
+            }
+
+            // Transition to Dashboard
+            const recruiterOnboarding = document.getElementById('recruiter-onboarding');
+            const recruiterDashboard = document.getElementById('recruiter-dashboard');
+
+            alert('Job Posted Successfully!\nFinding candidates for ' + title + ' at ' + company + '...');
+
+            recruiterOnboarding.classList.add('hidden');
+            recruiterDashboard.classList.remove('hidden');
+
+            // Update Dashboard Context
+            document.getElementById('dash-job-title').textContent = title;
+            document.getElementById('dash-company').textContent = company;
+
+            // Dynamic Skill Matching (Mock)
+            if (skills) {
+                const skillList = skills.split(',').map(s => s.trim()).filter(s => s).slice(0, 2);
+                if (skillList.length > 0) {
+                    const badgeContainer = document.getElementById('top-candidate-badges');
+                    // Keep the "98% Match" badge but replace others
+                    badgeContainer.innerHTML = '';
+                    skillList.forEach(skill => {
+                        badgeContainer.innerHTML += `<span class="badge">${skill}</span>`;
+                    });
+                    badgeContainer.innerHTML += `<span class="badge">98% Match</span>`;
+                }
+            }
+        });
     }
 
     function logout() {
@@ -117,73 +427,38 @@
         window.location.href = "index.html";
     }
 
-    function loadProfile() {
-        // Add timestamp to prevent caching
-        fetch(`http://localhost:5000/api/auth/profile/${user.email}?t=${new Date().getTime()}`)
-            .then(res => res.json())
-            .then(data => {
-                console.log("Profile Data:", data); // Debugging
-                if (!data) return;
+    // Modal Logic
+    const certModal = document.getElementById('cert-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalStatus = document.getElementById('modal-status');
 
-                document.getElementById("about").value = data.about || "";
-                document.getElementById("education").value = data.education || "";
-                document.getElementById("experience").value = data.experience || "";
-                document.getElementById("expertise").value = data.expertise || "";
-                document.getElementById("phone").value = data.phone || "";
+    function openCertModal(title, status) {
+        if (!certModal) return;
 
-                // ✅ DOCUMENT STATUS
-                if (data.resume) {
-                    const resumeLink = document.getElementById("resumeStatus");
-                    if (resumeLink) {
-                        resumeLink.innerHTML = `<a href="http://localhost:5000/uploads/${data.resume}" target="_blank" style="color:#10b981; text-decoration:underline;">Resume uploaded ✔</a>`;
-                    }
-                }
+        modalTitle.textContent = title;
 
-                if (data.certificate) {
-                    console.log("Certificate found:", data.certificate);
-                    const certLink = document.getElementById("certificateStatus");
-                    if (certLink) {
-                        certLink.innerHTML = `<a href="http://localhost:5000/uploads/${data.certificate}" target="_blank" style="color:#10b981; text-decoration:underline;">Certificate uploaded ✔</a>`;
-                    } else {
-                        console.error("Link element not found");
-                    }
-                } else {
-                    console.log("No certificate in data");
-                }
-            })
-            .catch(err => console.error("Error loading profile:", err));
+        let statusHtml = '';
+        if (status === 'verified') {
+            statusHtml = '<span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">Verified by HiredUp AI</span>';
+        } else {
+            statusHtml = '<span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">Verification In Progress...</span>';
+        }
+        modalStatus.innerHTML = statusHtml;
+
+        certModal.classList.remove('hidden');
     }
 
-    // 💾 SAVE PROFILE FUNCTION (Updated for File Uploads)
-    function saveProfile() {
-        const formData = new FormData();
-        formData.append("email", user.email);
-        formData.append("about", document.getElementById("about").value);
-        formData.append("education", document.getElementById("education").value);
-        formData.append("experience", document.getElementById("experience").value);
-        formData.append("expertise", document.getElementById("expertise").value);
-        formData.append("phone", document.getElementById("phone").value);
-
-        const resumeFile = document.getElementById("resumeInput").files[0];
-        const certificateFile = document.getElementById("certificateInput").files[0];
-
-        if (resumeFile) formData.append("resume", resumeFile);
-        if (certificateFile) formData.append("certificate", certificateFile);
-
-        fetch("http://localhost:5000/api/auth/profile", {
-            method: "POST",
-            body: formData // Send as FormData (multipart/form-data)
-        })
-            .then(res => res.json())
-            .then(result => {
-                alert(result.message || "Profile saved successfully");
-                loadProfile(); // Refresh data
-            })
-            .catch(err => {
-                alert("Error saving profile");
-                console.error(err);
-            });
+    function closeCertModal() {
+        if (certModal) certModal.classList.add('hidden');
     }
+
+    // Upload Handler (Mock)
+    document.getElementById('cert-upload')?.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            alert('File "' + e.target.files[0].name + '" uploaded successfully! \nStatus: Pending Verification');
+            // Logic to append to list would go here
+        }
+    });
 </script>
 
 </html>
