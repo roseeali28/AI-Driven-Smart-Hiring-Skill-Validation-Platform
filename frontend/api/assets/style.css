@@ -1,4 +1,5 @@
 /* --- Components --- */
+
 /* Buttons */
 .btn {
     display: inline-flex;
@@ -66,7 +67,7 @@
 
 .input-field {
     width: 100%;
-    background: rgba(15, 23, 42, 0.6);
+    background: var(--bg-card);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-main);
     padding: 1rem 1rem;
@@ -136,7 +137,7 @@
     left: 0;
     width: 100%;
     height: var(--header-height);
-    background: rgba(15, 23, 42, 0.8);
+    background: rgba(11, 14, 20, 0.8);
     backdrop-filter: blur(20px);
     z-index: 1000;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -178,4 +179,49 @@
 .nav-link:hover,
 .nav-link.active {
     color: var(--text-main);
+}
+
+/* --- Recruiter Dashboard --- */
+
+.highlight-box {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(15, 23, 42, 0) 100%);
+    border: 1px solid var(--primary);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+}
+
+.highlight-box h4 {
+    color: var(--primary-hover);
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.badge:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--text-main);
+}
+
+.candidate-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    transition: all var(--transition-fast);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .recruiter-controls {
+        flex-direction: column;
+    }
+
+    .input-group {
+        width: 100% !important;
+    }
 }
