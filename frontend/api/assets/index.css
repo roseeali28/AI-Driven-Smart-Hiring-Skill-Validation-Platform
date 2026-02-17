@@ -4,38 +4,34 @@
  */
 
 :root {
-  /* --- Core Palette (Dark Mode Restore) --- */
-  --primary-hue: 250;
-  /* Deep Violet */
-  --accent-hue: 180;
-  /* Cyan */
+  /* --- Deep Space Palette --- */
 
   /* Backgrounds */
-  --bg-dark: #0f172a;
-  /* Slate 900 */
-  --bg-card: rgba(30, 41, 59, 0.7);
-  /* Glassy Slate 800 */
-  --bg-glass: rgba(255, 255, 255, 0.05);
-  --border-subtle: rgba(255, 255, 255, 0.1);
+  --bg-dark: #0B0E14;
+  /* Deep Space Navy */
+  --bg-card: rgba(11, 14, 20, 0.7);
+  --bg-glass: rgba(255, 255, 255, 0.03);
+  --border-subtle: rgba(255, 255, 255, 0.08);
 
-  /* Primary Colors */
-  --primary: hsl(var(--primary-hue), 70%, 60%);
-  --primary-hover: hsl(var(--primary-hue), 80%, 70%);
-  --primary-glow: hsla(var(--primary-hue), 70%, 60%, 0.5);
+  /* Primary */
+  --primary: #6C63FF;
+  /* Vibrant Purple */
+  --primary-hover: #5a52d5;
+  --primary-glow: rgba(108, 99, 255, 0.5);
 
-  /* Accent Colors */
-  --accent: hsl(var(--accent-hue), 100%, 50%);
-  --accent-glow: hsla(var(--accent-hue), 100%, 50%, 0.5);
+  /* Accent */
+  --accent: #00F5D4;
+  /* Neon Cyan */
+  --accent-glow: rgba(0, 245, 212, 0.5);
 
   /* Text Colors */
-  --text-main: #f8fafc;
-  /* Slate 50 */
-  --text-muted: #94a3b8;
-  /* Slate 400 */
-  --text-inverse: #ffffff;
+  --text-main: #FFFFFF;
+  --text-muted: #94A3B8;
+  --text-inverse: #0B0E14;
 
   /* Gradients */
-  --gradient-main: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+  --gradient-main: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);
+  --gradient-text: linear-gradient(to right, #FFFFFF, #e9d5ff);
   --gradient-glow: linear-gradient(135deg, rgba(88, 28, 135, 0.3) 0%, rgba(15, 23, 42, 0) 100%);
 
   /* Spacing & Layout */
@@ -67,9 +63,10 @@ body {
   color: var(--text-main);
   line-height: 1.6;
   overflow-x: hidden;
+  /* Ambient Lighting */
   background-image:
-    radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(20, 184, 166, 0.15) 0%, transparent 40%);
+    radial-gradient(circle at 10% 20%, rgba(108, 99, 255, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(0, 245, 212, 0.1) 0%, transparent 40%);
   min-height: 100vh;
 }
 
@@ -107,7 +104,8 @@ h6 {
 
 h1 {
   font-size: 3.5rem;
-  background: linear-gradient(to right, #fff, #94a3b8);
+  background: var(--gradient-text);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -135,6 +133,7 @@ p {
 
 .text-gradient {
   background: var(--gradient-main);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -177,10 +176,10 @@ p {
 
 .glass-card {
   background: var(--bg-card);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 20px rgba(13, 27, 42, 0.05);
+  /* Soft Blue Shadow */
   padding: 2rem;
   transition: transform var(--transition-fast), border-color var(--transition-fast);
 }
@@ -195,9 +194,14 @@ p {
 }
 
 .profile-body {
-  background: #0f172a;
-  font-family: Arial, sans-serif;
-  color: #fff;
+  background: var(--bg-dark);
+  font-family: 'Outfit', 'Inter', sans-serif;
+  color: var(--text-main);
+  /* Ensure ambient lighting matches body */
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(108, 99, 255, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(0, 245, 212, 0.1) 0%, transparent 40%);
+  min-height: 100vh;
 }
 
 .profile-wrapper {
@@ -209,9 +213,12 @@ p {
 .profile-card {
   width: 100%;
   max-width: 850px;
-  background: #1e293b;
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   padding: 40px;
   border-radius: 18px;
+  border: 1px solid var(--border-subtle);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
 
@@ -242,10 +249,11 @@ p {
 }
 
 .info-box {
-  background: #0f172a;
+  background: rgba(255, 255, 255, 0.03);
   padding: 20px;
   border-radius: 12px;
   text-align: center;
+  border: 1px solid var(--border-subtle);
 }
 
 .profile-section {
@@ -257,10 +265,10 @@ p {
   width: 100%;
   padding: 12px;
   border-radius: 8px;
-  border: none;
+  border: 1px solid var(--border-subtle);
   margin-top: 8px;
-  background: #0f172a;
-  color: white;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--text-main);
 }
 
 .save-btn {
@@ -272,13 +280,16 @@ p {
   position: fixed;
   top: 0;
   width: 100%;
-  background: #0f172a;
+  background: rgba(11, 14, 20, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   padding: 18px 40px;
   display: flex;
   justify-content: space-between;
   /* pushes left & right */
   align-items: center;
   z-index: 1000;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .logo {
@@ -296,14 +307,16 @@ p {
 .btn-outline {
   padding: 8px 18px;
   border-radius: 8px;
-  border: 1px solid #6366f1;
-  color: #6366f1;
+  border: 1px solid var(--primary);
+  color: var(--primary);
   background: transparent;
   cursor: pointer;
   text-decoration: none;
+  transition: all 0.3s ease;
 }
 
 .btn-outline:hover {
-  background: #6366f1;
+  background: var(--primary);
   color: white;
+  box-shadow: 0 0 15px var(--primary-glow);
 }
