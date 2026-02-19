@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Menlo:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --leetcode-dark-bg: #1a1a1a;
+    --leetcode-dark-layer: #282828;
+    --leetcode-dark-border: #3e3e3e;
+    --leetcode-easy: #00b8a3;
+    --leetcode-medium: #ffb800;
+    --leetcode-hard: #ff2d55;
+    --text-primary: #eff1f6f2;
+    --text-secondary: #8a8a8e;
+  }
+
+  body {
+    @apply bg-[#1a1a1a] text-[#eff1f6f2] antialiased selection:bg-blue-500/30;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  code,
+  pre {
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  }
+}
+
+@layer components {
+
+  /* LeetCode Card Style */
+  .lc-card {
+    @apply bg-[#282828] border border-[#3e3e3e] rounded-lg shadow-sm;
+  }
+
+  /* Difficulty Badges */
+  .badge-easy {
+    @apply text-[#00b8a3] bg-[#00b8a3]/10;
+  }
+
+  .badge-medium {
+    @apply text-[#ffb800] bg-[#ffb800]/10;
+  }
+
+  .badge-hard {
+    @apply text-[#ff2d55] bg-[#ff2d55]/10;
+  }
+
+  /* Buttons */
+  .btn-lc {
+    @apply px-4 py-1.5 rounded-md font-medium text-sm transition-all flex items-center justify-center gap-2;
+  }
+
+  .btn-lc-primary {
+    @apply bg-[#3a3a3a] text-white hover:bg-[#4a4a4a] border border-[#4a4a4a];
+  }
+
+  .btn-lc-green {
+    @apply bg-[#2cbb5d]/10 text-[#2cbb5d] hover:bg-[#2cbb5d]/20;
+  }
+
+  .btn-lc-white {
+    @apply bg-white text-black hover:bg-gray-200;
+  }
+
+  /* Navigation Pills */
+  .nav-pill {
+    @apply px-4 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer;
+  }
+
+  .nav-pill-active {
+    @apply bg-[#3a3a3a] text-white;
+  }
+
+  .nav-pill-inactive {
+    @apply text-[#8a8a8e] hover:text-white hover:bg-[#282828];
+  }
+}
+
+/* Custom Scrollbar for LeetCode look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-[#1a1a1a];
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-[#3e3e3e] rounded-full hover:bg-[#4e4e4e] transition-colors;
+}
+
+/* Specific Monaco Editor Overrides if needed can be done in components */
