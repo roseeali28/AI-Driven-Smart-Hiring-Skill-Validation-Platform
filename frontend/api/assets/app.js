@@ -57,6 +57,13 @@ function initRoleToggle() {
             }
         });
     });
+
+    // Initialize state based on active class in HTML
+    const activeToggle = document.querySelector('.role-toggle.active');
+    if (activeToggle && activeToggle.getAttribute('data-flow') === 'recruiter') {
+        flowCandidate.classList.add('hidden');
+        flowRecruiter.classList.remove('hidden');
+    }
 }
 
 // --- Auth.html Login/Signup Toggle ---
@@ -113,36 +120,47 @@ function buyPlan(plan) {
     // Logic to redirect or open modal would go here
 }
 
-function handleAuth(event) {
-    event.preventDefault();
-    // Simulate Login
-    const email = document.getElementById('email').value;
-    const submitBtn = document.getElementById('submit-btn');
+async function handleAuth(event) {
+  event.preventDefault();
 
-    const isSignup = submitBtn.textContent === 'Sign Up';
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const fullname = document.getElementById("fullname")?.value;
+  const submitBtn = document.getElementById("submit-btn");
+  const isSignup = submitBtn.textContent === "Sign Up";
 
-    // Use selected role or default to candidate
-    let role = 'Candidate';
-    const selectedRoleEl = document.querySelector('.role-option.selected');
-    if (selectedRoleEl) {
-        role = selectedRoleEl.querySelector('div:last-child').textContent;
+  let role = "Candidate";
+  const selectedRole = document.querySelector(".role-option.selected");
+  if (selectedRole) {
+    role = selectedRole.querySelector("div:last-child").textContent;
+  }
+
+  const url = isSignup
+    ? "http://localhost:5000/api/auth/signup"
+    : "http://localhost:5000/api/auth/login";
+
+  const body = isSignup
+    ? { fullname, email, password, role }
+    : { email, password };
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message);
+      return;
     }
 
-    const userData = {
-        email: email,
-        fullname: document.getElementById('fullname')?.value || 'User Name',
-        role: role
-    };
+    localStorage.setItem("hiredUpUser", JSON.stringify(data.user));
+    window.location.href = "profile.html";
 
-    // Save mock user
-    localStorage.setItem('hiredUpUser', JSON.stringify(userData));
-
-    // Redirect
-    if (isSignup) {
-        alert('Account created successfully! Redirecting to profile...');
-    } else {
-        // alert('Logged in successfully!');
-    }
-
-    window.location.href = 'profile.html';
+  } catch (err) {
+    alert("Server error");
+  }
 }
