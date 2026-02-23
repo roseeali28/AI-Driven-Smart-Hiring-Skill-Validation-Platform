@@ -114,53 +114,91 @@ function initAuthToggle() {
 }
 
 
+// --- Global UI Helpers ---
+function showToast(message, type = 'info') {
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <span class="toast-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+        <span class="toast-message">${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(20px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+function showLoader() {
+    let loader = document.getElementById('global-loader');
+    if (!loader) {
+        loader = document.createElement('div');
+        loader.id = 'global-loader';
+        loader.innerHTML = '<div class="spinner"></div>';
+        document.body.appendChild(loader);
+    }
+    loader.classList.add('active');
+}
+
+function hideLoader() {
+    const loader = document.getElementById('global-loader');
+    if (loader) loader.classList.remove('active');
+}
+
 // --- Global Actions ---
 function buyPlan(plan) {
-    alert(`Redirecting to payment gateway for ${plan.toUpperCase()} plan...`);
-    // Logic to redirect or open modal would go here
+    showToast(`Redirecting to payment gateway for ${plan.toUpperCase()} plan...`, 'info');
 }
 
 async function handleAuth(event) {
-  event.preventDefault();
+    event.preventDefault();
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const fullname = document.getElementById("fullname")?.value;
-  const submitBtn = document.getElementById("submit-btn");
-  const isSignup = submitBtn.textContent === "Sign Up";
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const fullname = document.getElementById("fullname")?.value;
+    const submitBtn = document.getElementById("submit-btn");
+    const isSignup = submitBtn.textContent === "Sign Up";
 
-  let role = "Candidate";
-  const selectedRole = document.querySelector(".role-option.selected");
-  if (selectedRole) {
-    role = selectedRole.querySelector("div:last-child").textContent;
-  }
-
-  const url = isSignup
-    ? "http://localhost:5000/api/auth/signup"
-    : "http://localhost:5000/api/auth/login";
-
-  const body = isSignup
-    ? { fullname, email, password, role }
-    : { email, password };
-
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.message);
-      return;
+    let role = "Candidate";
+    const selectedRole = document.querySelector(".role-option.selected");
+    if (selectedRole) {
+        role = selectedRole.querySelector("div:last-child").textContent;
     }
 
-    localStorage.setItem("hiredUpUser", JSON.stringify(data.user));
-    window.location.href = "profile.html";
+    const endpoint = isSignup ? "/auth/signup" : "/auth/login";
+    const body = isSignup ? { fullname, email, password, role } : { email, password };
 
-  } catch (err) {
-    alert("Server error");
-  }
+    showLoader();
+
+    try {
+        // Using the new centralized API utility
+        if (!window.hiredUpApi) {
+            throw new Error("API Utility not loaded");
+        }
+
+        const data = await window.hiredUpApi.post(endpoint, body);
+
+        showToast(isSignup ? "Account created successfully!" : "Welcome back!", "success");
+
+        localStorage.setItem("hiredUpUser", JSON.stringify(data.user));
+
+        setTimeout(() => {
+            window.location.href = "profile.html";
+        }, 1000);
+
+    } catch (err) {
+        showToast(err.message || "Server error", "error");
+    } finally {
+        hideLoader();
+    }
 }
