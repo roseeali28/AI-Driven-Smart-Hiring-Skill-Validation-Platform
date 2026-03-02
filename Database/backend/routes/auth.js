@@ -3,7 +3,9 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const multer = require("multer");
 const path = require("path");
+
 const router = express.Router();
+
 /* ===================== MULTER SETUP ===================== */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -13,40 +15,77 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + "-" + file.originalname);
   }
 });
+
 const upload = multer({ storage });
+
 /* ===================== SIGNUP ===================== */
 router.post("/signup", async (req, res) => {
+  if (req.isOffline) {
+    return res.status(201).json({
+      message: "Account created (OFFLINE MODE)",
+      user: {
+        fullname: req.body.fullname,
+        email: req.body.email,
+        role: req.body.role,
+        companyName: req.body.companyName,
+        designation: req.body.designation
+      }
+    });
+  }
   try {
-    const { fullname, email, password, role } = req.body;
+    const { fullname, email, password, role, companyName, designation } = req.body;
+    console.log("📝 Incoming Signup Request:", { fullname, email, role, companyName, designation });
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
       fullname,
       email,
       password: hashedPassword,
-      role
+      role,
+      companyName,
+      designation
     });
+
+    console.log("💾 Attempting to save user:", user);
     await user.save();
+    console.log("✅ User saved successfully!");
 
     res.status(201).json({
       message: "Account created",
       user: {
         fullname: user.fullname,
         email: user.email,
-        role: user.role
+        role: user.role,
+        companyName: user.companyName,
+        designation: user.designation
       }
     });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
 });
+
 /* ===================== LOGIN ===================== */
 router.post("/login", async (req, res) => {
+  if (req.isOffline) {
+    return res.json({
+      message: "Login successful (OFFLINE MODE)",
+      user: {
+        fullname: "Offline Recruiter",
+        email: req.body.email,
+        role: "Recruiter",
+        companyName: "HiredUp Global Corp",
+        designation: "Senior Talent Acquisition",
+        about: "Offline demo account"
+      }
+    });
+  }
   try {
     const { email, password } = req.body;
 
@@ -73,7 +112,9 @@ router.post("/login", async (req, res) => {
         expertise: user.expertise || "",
         phone: user.phone || "",
         resume: user.resume || "",
-        certificate: user.certificate || ""
+        certificate: user.certificate || "",
+        companyName: user.companyName || "",
+        designation: user.designation || ""
       }
     });
   } catch (err) {
