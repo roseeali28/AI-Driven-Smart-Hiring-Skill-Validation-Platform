@@ -5,6 +5,12 @@ import api from '../api';
 import ProblemPanel from '../components/ProblemPanel';
 import OutputConsole from '../components/OutputConsole';
 
+const DEFAULT_TEMPLATES = {
+    javascript: `// Write your JavaScript code here\n\nfunction solution() {\n    console.log("Hello, HiredUp!");\n}\n\nsolution();`,
+    python: `# Write your Python code here\n\ndef solution():\n    print("Hello, HiredUp!")\n\nif __name__ == "__main__":\n    solution()`,
+    cpp: `// Write your C++ code here\n#include <iostream>\n\nint main() {\n    std::cout << "Hello, HiredUp!" << std::endl;\n    return 0;\n}`
+};
+
 const ProblemSolve = () => {
     const { id } = useParams();
     const [problem, setProblem] = useState(null);
@@ -26,9 +32,16 @@ const ProblemSolve = () => {
             try {
                 const { data } = await api.get(`/problems/${id}`);
                 setProblem(data);
-                setCode(data.starterCode?.[language.id] || '');
+
+                // Use starter code from DB if exists, otherwise use template
+                const starter = data.starterCode?.[language.id] || DEFAULT_TEMPLATES[language.id] || '';
+                setCode(starter);
             } catch (err) {
                 console.error('Failed to fetch problem', err);
+                // Even if problem fetch fails (e.g. for general practice), set a template
+                setCode(DEFAULT_TEMPLATES[language.id]);
+                // Set a mock problem for general practice if id is not found or it's a generic route
+                setProblem({ title: 'General Practice', description: 'Practice your coding skills here.' });
             }
         };
         fetchProblem();
@@ -41,7 +54,7 @@ const ProblemSolve = () => {
             const { data } = await api.post('/execute/run', {
                 code,
                 language: language.id,
-                testCases: problem.testCases
+                testCases: problem?.testCases || []
             });
             setOutput(data.output);
             setStatus(data.success ? 'Accepted' : 'Wrong Answer');
@@ -75,9 +88,13 @@ const ProblemSolve = () => {
     const handleLanguageChange = (e) => {
         const selected = languages.find(l => l.id === e.target.value);
         setLanguage(selected);
+        // Update code when language changes if it's currently a template
+        if (code === DEFAULT_TEMPLATES[language.id] || code === '') {
+            setCode(DEFAULT_TEMPLATES[selected.id]);
+        }
     };
 
-    if (!problem) return (
+    if (!problem && id !== 'practice') return (
         <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-gray-600 border-t-white rounded-full animate-spin"></div>
         </div>
@@ -94,7 +111,7 @@ const ProblemSolve = () => {
                     </Link>
                     <div className="h-6 w-[1px] bg-[#3e3e3e]"></div>
                     <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-200">{problem.title}</span>
+                        <span className="text-sm font-medium text-gray-200">{problem?.title || 'Coding Practice'}</span>
                     </div>
                 </div>
 
@@ -136,8 +153,8 @@ const ProblemSolve = () => {
                 </div>
 
                 {/* Right: Editor & Console */}
-                <div className="flex-1 flex flex-col bg-[#1e1e1e]">
-                    <div className="flex-1 min-h-[400px]">
+                <div className="flex-1 flex flex-col bg-[#1e1e1e] overflow-hidden">
+                    <div className="flex-1 relative min-h-0">
                         <Editor
                             height="100%"
                             language={language.id === 'cpp' ? 'cpp' : language.id}
@@ -158,8 +175,8 @@ const ProblemSolve = () => {
                             }}
                         />
                     </div>
-                    {/* Console Section */}
-                    <div className="h-[250px] border-t border-[#3e3e3e]">
+                    {/* Console Section - Fixed height, scroll handled inside OutputConsole */}
+                    <div className="h-[250px] border-t border-[#3e3e3e] flex-shrink-0">
                         <OutputConsole output={output} status={status} loading={loading} />
                     </div>
                 </div>
