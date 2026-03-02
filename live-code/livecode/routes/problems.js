@@ -5,6 +5,13 @@ const Problem = require('../models/Problem');
 
 // GET all problems
 router.get('/', async (req, res) => {
+    if (req.isOffline) {
+        return res.json([
+            { _id: '1', title: 'Two Sum', difficulty: 'Easy', description: 'Find two numbers that add up to a target.' },
+            { _id: '2', title: 'Reverse String', difficulty: 'Easy', description: 'Reverse a given string.' },
+            { _id: '3', title: 'Add Two Numbers', difficulty: 'Medium', description: 'Add two linked lists.' }
+        ]);
+    }
     try {
         const problems = await Problem.find();
         res.json(problems);
