@@ -11,11 +11,22 @@ const PORT = process.env.PORT || 5001;
 app.use(cors());
 app.use(express.json());
 
-// Database Connection
+// Database Connection with Offline Fallback
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/livecode';
-mongoose.connect(MONGODB_URI)
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.log(err));
+let isOffline = false;
+
+mongoose.connect(MONGODB_URI, { serverSelectionTimeoutMS: 2000 })
+    .then(() => console.log('✅ Live Code DB Connected'))
+    .catch(err => {
+        isOffline = true;
+        console.log('⚠️ Live Code DB Error: Running in OFFLINE MODE');
+    });
+
+// Middleware to pass offline status
+app.use((req, res, next) => {
+    req.isOffline = isOffline;
+    next();
+});
 
 // Routes
 const problemsRouter = require('./routes/problems');
@@ -34,4 +45,3 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
-
