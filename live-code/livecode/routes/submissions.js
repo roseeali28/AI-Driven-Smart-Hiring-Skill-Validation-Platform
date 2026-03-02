@@ -30,6 +30,12 @@ router.post('/', async (req, res) => {
 
 // GET /api/submissions - Fetch all submissions (for AI Analysis)
 router.get('/', async (req, res) => {
+    if (req.isOffline) {
+        return res.json([
+            { _id: 's1', problemId: '1', code: 'console.log("hello")', status: 'Accepted', createdAt: new Date() },
+            { _id: 's2', problemId: '2', code: 'return s.reverse()', status: 'Accepted', createdAt: new Date() }
+        ]);
+    }
     try {
         const submissions = await Submission.find().sort({ createdAt: -1 }).limit(10);
         res.json(submissions);
