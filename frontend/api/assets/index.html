@@ -275,7 +275,7 @@
                         whiteboard inversions of binary trees.</p>
                 </div>
 
-                <div class="glass-card animate-fade-in delay-300">
+                <div class="glass-card animate-fade-in delay-300" id="aptitude-feature-card">
                     <div
                         style="width: 48px; height: 48px; background: rgba(16, 185, 129, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: #10b981;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -285,8 +285,30 @@
                         </svg>
                     </div>
                     <h3>Learning Aptitude</h3>
-                    <p style="margin-top: 0.5rem;">We track how candidates research and adapt during the test to measure
+                    <p style="margin-top: 0.5rem; margin-bottom: 1.5rem;">We track how candidates research and adapt
+                        during the test to measure
                         future potential.</p>
+                    <div class="flex flex-col gap-2">
+                        <button class="btn btn-sm btn-primary"
+                            onclick="window.location.href='http://localhost:5173/aptitude-selection'"
+                            style="width: 100%;">Take Aptitude Test</button>
+                        <button class="btn btn-sm btn-outline" onclick="runAptitudeDemo()"
+                            style="width: 100%; border-color: #10b981; color: #10b981;">Run Engine Demo</button>
+                    </div>
+
+                    <!-- Demo Overlay (Hidden) -->
+                    <div id="aptitude-demo-ui" class="hidden"
+                        style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px dashed #10b981; text-align: left;">
+                        <div
+                            style="font-size: 0.75rem; color: #10b981; font-family: monospace; display: flex; justify-content: space-between;">
+                            <span>ENGINE: ACTIVE</span>
+                            <span class="blink">●</span>
+                        </div>
+                        <div id="demo-logs"
+                            style="font-size: 0.7rem; font-family: monospace; color: #86efac; margin-top: 0.5rem; height: 60px; overflow: hidden;">
+                            > Initializing tracking...
+                        </div>
+                    </div>
                 </div>
 
                 <div class="glass-card animate-fade-in delay-100">
