@@ -703,7 +703,6 @@ p {
   opacity: 1;
   visibility: visible;
 }
-
 .spinner {
   width: 40px;
   height: 40px;
@@ -712,7 +711,6 @@ p {
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
-
 @keyframes spin {
   to {
     transform: rotate(360deg);
