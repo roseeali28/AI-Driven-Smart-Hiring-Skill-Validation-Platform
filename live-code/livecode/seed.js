@@ -1,16 +1,146 @@
 
 const mongoose = require('mongoose');
 const Problem = require('./models/Problem');
+const AptitudeQuestion = require('./models/AptitudeQuestion');
 require('dotenv').config();
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/livecode';
 
 mongoose.connect(MONGODB_URI)
-    .then(() => console.log('MongoDB Connected'))
+    .then(() => console.log('✅ MongoDB Connected'))
     .catch(err => {
-        console.log('MongoDB Connection Error:', err);
+        console.log('❌ MongoDB Connection Error:', err);
         process.exit(1);
     });
+
+const gratitudeQuestions = [
+    // Simple Interest
+    {
+        question: "What is the simple interest on Rs. 5000 at 10% per annum for 2 years?",
+        options: ["Rs. 500", "Rs. 1000", "Rs. 1200", "Rs. 1500"],
+        correctAnswer: 1,
+        category: "Quantitative",
+        topic: "Simple Interest",
+        difficulty: "Easy"
+    },
+    {
+        question: "A sum of money doubles itself in 8 years at simple interest. What is the rate of interest per annum?",
+        options: ["10%", "12.5%", "15%", "20%"],
+        correctAnswer: 1,
+        category: "Quantitative",
+        topic: "Simple Interest",
+        difficulty: "Medium"
+    },
+    {
+        question: "In how many years will a sum of Rs. 3000 yield a simple interest of Rs. 1080 at 12% per annum?",
+        options: ["3 years", "4 years", "5 years", "2.5 years"],
+        correctAnswer: 0,
+        category: "Quantitative",
+        topic: "Simple Interest",
+        difficulty: "Medium"
+    },
+    // Compound Interest
+    {
+        question: "If Rs. 1000 is invested at 10% compound interest per annum, what is the amount after 2 years?",
+        options: ["Rs. 1100", "Rs. 1200", "Rs. 1210", "Rs. 1300"],
+        correctAnswer: 2,
+        category: "Quantitative",
+        topic: "Compound Interest",
+        difficulty: "Easy"
+    },
+    {
+        question: "The difference between simple and compound interest on Rs. 1200 for 2 years at 5% per annum is:",
+        options: ["Rs. 3", "Rs. 4", "Rs. 5", "Rs. 6"],
+        correctAnswer: 0,
+        category: "Quantitative",
+        topic: "Compound Interest",
+        difficulty: "Hard"
+    },
+    // Logical / Syllogism
+    {
+        question: "If all Bloops are Razzies and all Razzies are Lazzies, then: ",
+        options: ["All Bloops are definitely Lazzies", "Some Bloops are Lazzies", "No Bloops are Lazzies", "Cannot be determined"],
+        correctAnswer: 0,
+        category: "Logical",
+        topic: "Syllogism",
+        difficulty: "Easy"
+    },
+    {
+        question: "Statement: Some kings are queens. All queens are beautiful. Conclusion: I. All kings are beautiful. II. Some kings are beautiful.",
+        options: ["Only I follows", "Only II follows", "Both I and II follow", "Neither follows"],
+        correctAnswer: 1,
+        category: "Logical",
+        topic: "Syllogism",
+        difficulty: "Medium"
+    },
+    // Logical / Series
+    {
+        question: "Find the next number in the series: 2, 6, 12, 20, 30, ...",
+        options: ["40", "42", "44", "46"],
+        correctAnswer: 1,
+        category: "Quantitative",
+        topic: "Series Completion",
+        difficulty: "Easy"
+    },
+    {
+        question: "Find the missing number: 7, 10, 8, 11, 9, 12, ...",
+        options: ["7", "10", "12", "13"],
+        correctAnswer: 1,
+        category: "Logical",
+        topic: "Series Completion",
+        difficulty: "Easy"
+    },
+    {
+        question: "Look at this series: 36, 34, 30, 28, 24, ... What number should come next?",
+        options: ["20", "22", "23", "26"],
+        correctAnswer: 1,
+        category: "Logical",
+        topic: "Series Completion",
+        difficulty: "Medium"
+    },
+    // Percentages
+    {
+        question: "What is 15% of 34% of 2000?",
+        options: ["102", "110", "120", "98"],
+        correctAnswer: 0,
+        category: "Quantitative",
+        topic: "Percentages",
+        difficulty: "Medium"
+    },
+    {
+        question: "If A's salary is 20% less than B's salary, then how much percent is B's salary more than A's?",
+        options: ["20%", "25%", "15%", "30%"],
+        correctAnswer: 1,
+        category: "Quantitative",
+        topic: "Percentages",
+        difficulty: "Medium"
+    },
+    // Coding Logic (Job related)
+    {
+        question: "What is the time complexity of searching an element in a binary search tree in the worst case?",
+        options: ["O(1)", "O(log n)", "O(n)", "O(n log n)"],
+        correctAnswer: 2,
+        category: "Logical",
+        topic: "CS Fundamentals",
+        difficulty: "Medium"
+    },
+    {
+        question: "Which of the following is NOT a fundamental pillar of Oops?",
+        options: ["Inheritance", "Polymorphism", "Compilation", "Encapsulation"],
+        correctAnswer: 2,
+        category: "Logical",
+        topic: "CS Fundamentals",
+        difficulty: "Easy"
+    },
+    {
+        question: "Which data structure uses LIFO (Last In First Out) principle?",
+        options: ["Queue", "Stack", "Linked List", "Array"],
+        correctAnswer: 1,
+        category: "Logical",
+        topic: "CS Fundamentals",
+        difficulty: "Easy"
+    }
+];
 
 const problems = [
     // === DSA - ARRAYS & STRINGS ===
@@ -310,9 +440,13 @@ const seedDB = async () => {
     try {
         await Problem.deleteMany({});
         await Problem.insertMany(problems);
-        console.log(`Database Seeded with ${problems.length} Problems!`);
+        console.log(`✅ Database Seeded with ${problems.length} Problems!`);
+
+        await AptitudeQuestion.deleteMany({});
+        await AptitudeQuestion.insertMany(gratitudeQuestions);
+        console.log(`✅ Database Seeded with ${gratitudeQuestions.length} Aptitude Questions!`);
     } catch (err) {
-        console.error('Seeding Error:', err);
+        console.error('❌ Seeding Error:', err);
     } finally {
         mongoose.connection.close();
     }
