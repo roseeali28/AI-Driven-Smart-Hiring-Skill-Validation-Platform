@@ -203,15 +203,27 @@
     color: var(--text-main);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
 .badge:hover {
     background: rgba(255, 255, 255, 0.2);
     border-color: var(--text-main);
 }
+
 .candidate-card:hover {
     border-color: var(--accent);
     transform: translateY(-2px);
     transition: all var(--transition-fast);
 }
+
+/* Blink effect for active engine */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+.blink {
+    animation: blink 1s infinite;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .recruiter-controls {
