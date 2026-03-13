@@ -73,6 +73,7 @@ function initAuthToggle() {
     const authDesc = document.getElementById('auth-desc');
     const submitBtn = document.getElementById('submit-btn');
     const signupFields = document.getElementById('signup-fields');
+    const recruiterFields = document.getElementById('recruiter-fields');
     const roleSelector = document.getElementById('role-selector-container');
     const authForm = document.getElementById('auth-form');
 
@@ -80,7 +81,6 @@ function initAuthToggle() {
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
-            // UI Toggle
             tabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
 
@@ -89,14 +89,19 @@ function initAuthToggle() {
                 authTitle.textContent = 'Welcome Back';
                 authDesc.textContent = 'Enter your credentials to access the platform.';
                 submitBtn.textContent = 'Log In';
-                signupFields.classList.add('hidden');
-                roleSelector.classList.add('hidden');
+                signupFields?.classList.add('hidden');
+                recruiterFields?.classList.add('hidden');
             } else {
                 authTitle.textContent = 'Create Account';
                 authDesc.textContent = 'Join the future of hiring today.';
                 submitBtn.textContent = 'Sign Up';
-                signupFields.classList.remove('hidden');
-                roleSelector.classList.remove('hidden');
+                signupFields?.classList.remove('hidden');
+
+                // Show recruiter fields if recruiter is selected
+                const selectedRole = document.querySelector(".role-option.selected")?.getAttribute('data-role');
+                if (selectedRole === 'recruiter') {
+                    recruiterFields?.classList.remove('hidden');
+                }
             }
         });
     });
@@ -108,6 +113,13 @@ function initAuthToggle() {
             opt.addEventListener('click', () => {
                 roleOptions.forEach(r => r.classList.remove('selected'));
                 opt.classList.add('selected');
+
+                const role = opt.getAttribute('data-role');
+                if (role === 'recruiter' && submitBtn.textContent === 'Sign Up') {
+                    recruiterFields?.classList.remove('hidden');
+                } else {
+                    recruiterFields?.classList.add('hidden');
+                }
             });
         });
     }
@@ -162,39 +174,57 @@ function buyPlan(plan) {
 
 async function handleAuth(event) {
     event.preventDefault();
+    console.log("🚀 handleAuth triggered");
 
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
     const fullname = document.getElementById("fullname")?.value;
+    const companyName = document.getElementById("companyName")?.value;
+    const designation = document.getElementById("designation")?.value;
     const submitBtn = document.getElementById("submit-btn");
     const isSignup = submitBtn.textContent === "Sign Up";
 
     let role = "Candidate";
     const selectedRole = document.querySelector(".role-option.selected");
     if (selectedRole) {
-        role = selectedRole.querySelector("div:last-child").textContent;
+        role = selectedRole.getAttribute('data-role') === 'recruiter' ? 'Recruiter' : 'Candidate';
     }
 
-    const endpoint = isSignup ? "/auth/signup" : "/auth/login";
-    const body = isSignup ? { fullname, email, password, role } : { email, password };
+    if (isSignup && role === 'Recruiter') {
+        if (!companyName || !designation) {
+            showToast("⚠️ Recruiter details (Company & Designation) are mandatory.", "error");
+            return;
+        }
+    }
 
     showLoader();
 
     try {
-        // Using the new centralized API utility
+        const body = isSignup
+            ? { fullname, email, password, role, companyName, designation }
+            : { email, password };
+
         if (!window.hiredUpApi) {
-            throw new Error("API Utility not loaded");
+            // Fallback to fetch if utility not loaded
+            const endpoint = isSignup ? "/api/auth/signup" : "/api/auth/login";
+            const res = await fetch(`http://localhost:5000${endpoint}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message);
+
+            showToast(isSignup ? "Account created successfully!" : "Welcome back!", "success");
+            localStorage.setItem("hiredUpUser", JSON.stringify(data.user));
+            setTimeout(() => { window.location.href = data.user.role === "Recruiter" ? "profile.html" : "profile.html"; }, 1000);
+        } else {
+            const endpoint = isSignup ? "/auth/signup" : "/auth/login";
+            const data = await window.hiredUpApi.post(endpoint, body);
+            showToast(isSignup ? "Account created successfully!" : "Welcome back!", "success");
+            localStorage.setItem("hiredUpUser", JSON.stringify(data.user));
+            setTimeout(() => { window.location.href = "profile.html"; }, 1000);
         }
-
-        const data = await window.hiredUpApi.post(endpoint, body);
-
-        showToast(isSignup ? "Account created successfully!" : "Welcome back!", "success");
-
-        localStorage.setItem("hiredUpUser", JSON.stringify(data.user));
-
-        setTimeout(() => {
-            window.location.href = "profile.html";
-        }, 1000);
 
     } catch (err) {
         showToast(err.message || "Server error", "error");
@@ -202,3 +232,49 @@ async function handleAuth(event) {
         hideLoader();
     }
 }
+
+// --- Navigation Guards ---
+function checkAuth(target) {
+    if (target && target.includes(':5173')) {
+        window.location.href = target;
+        return;
+    }
+    const user = JSON.parse(localStorage.getItem('hiredUpUser'));
+    if (!user) {
+        showToast('Please login to access this feature.', 'error');
+        setTimeout(() => { window.location.href = 'auth.html'; }, 1000);
+        return;
+    }
+    if (target) window.location.href = target;
+}
+
+function requireRole(role) {
+    const user = JSON.parse(localStorage.getItem('hiredUpUser'));
+    if (!user) {
+        window.location.href = 'auth.html';
+        return;
+    }
+    if (user.role !== role) {
+        showToast(`Access Denied: This area is restricted to ${role}s only.`, 'error');
+        setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+    }
+}
+
+// --- Legacy Navigation Helper (Restored) ---
+function linkPage(url) {
+    const user = JSON.parse(localStorage.getItem('hiredUpUser'));
+    if (!user && url !== 'index.html' && url !== 'auth.html') {
+        showToast('Please login to access this section.', 'error');
+        setTimeout(() => { window.location.href = 'auth.html'; }, 1000);
+        return;
+    }
+    window.location.href = url;
+}
+
+// Global exposure
+window.checkAuth = checkAuth;
+window.linkPage = linkPage;
+window.logout = () => {
+    localStorage.removeItem("hiredUpUser");
+    window.location.href = "index.html";
+};
