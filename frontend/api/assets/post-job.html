@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post a Job | HiredUp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --neon-glow: 0 0 20px rgba(79, 70, 229, 0.3);
+        }
+
+        body {
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a, #000);
+            min-height: 100vh;
+        }
+
+        .form-section {
+            display: none;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .step-indicator {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            justify-content: center;
+            position: relative;
+        }
+
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 25%;
+            right: 25%;
+            height: 1px;
+            background: var(--glass-border);
+            z-index: 0;
+        }
+
+        .step {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--text-muted);
+            border: 2px solid var(--glass-border);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: var(--primary);
+            color: var(--text-main);
+            border-color: var(--primary);
+            box-shadow: 0 0 25px rgba(79, 70, 229, 0.6);
+            transform: scale(1.1);
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.2);
+        }
+
+        .tag-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            min-height: 55px;
+        }
+
+        .tag {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .tag span {
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        .tag span:hover {
+            opacity: 1;
+        }
+
+        .challenge-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .challenge-card:hover {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.05);
+        }
+
+        .challenge-card.selected {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.1);
+            box-shadow: inset 0 0 15px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn-glow-primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-glow-primary:hover {
+            box-shadow: 0 0 30px rgba(79, 70, 229, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        // Immediate auth check
+        const user = JSON.parse(localStorage.getItem('hiredUpUser'));
+        if (!user || user.role !== 'Recruiter') {
+            alert('🚫 ACCESS DENIED: Mission Launch requires Recruiter clearance.');
+            window.location.href = 'auth.html';
+        }
+    </script>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="nav-logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#logo-grad)" stroke-width="2"
+                        stroke-linejoin="round" />
+                    <path d="M2 17L12 22L22 17" stroke="url(#logo-grad)" stroke-width="2" stroke-linejoin="round" />
+                    <path d="M2 12L12 17L22 12" stroke="url(#logo-grad)" stroke-width="2" stroke-linejoin="round" />
+                    <defs>
+                        <linearGradient id="logo-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#4f46e5" />
+                            <stop offset="1" stop-color="#06b6d4" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>HiredUp</span>
+            </a>
+            <div class="nav-links">
+                <a href="recruiter.html" class="nav-link">Dashboard</a>
+                <a href="#" class="nav-link active">Post Job</a>
+            </div>
+            <div>
+                <a href="profile.html" class="btn btn-sm btn-outline">My Profile</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="py-20" style="padding-top: 140px;">
+        <div class="container" style="max-width: 850px;">
+            <div class="text-center mb-12">
+                <span class="badge badge-primary mb-4"
+                    style="background: rgba(79, 70, 229, 0.1); color: #818cf8; border: 1px solid rgba(129, 140, 248, 0.3);">Recruiter
+                    Flow</span>
+                <h1 style="font-size: 3rem; font-weight: 800; letter-spacing: -1px;">Launch Your <span
+                        class="text-gradient">Next Mission</span></h1>
+                <p style="opacity: 0.7; font-size: 1.1rem;">Define the role, tech stack, and set AI challenges to find
+                    top talent.</p>
+            </div>
+
+            <div class="step-indicator">
+                <div class="step active" id="step-1-dot">1</div>
+                <div class="step" id="step-2-dot">2</div>
+                <div class="step" id="step-3-dot">3</div>
+            </div>
+
+            <div class="glass-card p-12" style="border-radius: 24px;">
+                <form id="post-job-form">
+                    <!-- Section 1: Job Details -->
+                    <div id="section-1" class="form-section active">
+                        <div class="flex items-center gap-4 mb-8">
+                            <div
+                                style="width: 40px; height: 40px; background: rgba(79, 70, 229, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary);">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <h2 style="font-size: 1.5rem; margin: 0;">Job Overview</h2>
+                        </div>
+
+                        <div class="form-group mb-6">
+                            <label>Professional Job Title</label>
+                            <input type="text" id="job-title" placeholder="e.g. Senior Software Architect" required>
+                        </div>
+
+                        <div class="form-group mb-6">
+                            <label>Description & Scope</label>
+                            <textarea id="job-desc" rows="6"
+                                placeholder="What makes this role exciting? Define the impact..." required></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-6 mb-4">
+                            <div class="form-group">
+                                <label>Work Location</label>
+                                <input type="text" id="job-location" placeholder="Remote / Hybrid / City">
+                            </div>
+                            <div class="form-group">
+                                <label>Comp Package</label>
+                                <input type="text" id="job-salary" placeholder="e.g. $150k - $200k + Equity">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end mt-12">
+                            <button type="button" class="btn btn-primary btn-glow-primary px-10"
+                                onclick="nextStep(2)">Continue to Tech</button>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Tech Stack & Requirements -->
+                    <div id="section-2" class="form-section">
+                        <div class="flex items-center gap-4 mb-8">
+                            <div
+                                style="width: 40px; height: 40px; background: rgba(6, 182, 212, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--accent);">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="16 18 22 12 16 6"></polyline>
+                                    <polyline points="8 6 2 12 8 18"></polyline>
+                                </svg>
+                            </div>
+                            <h2 style="font-size: 1.5rem; margin: 0;">Stack & Requirements</h2>
+                        </div>
+
+                        <div class="form-group mb-8">
+                            <label>Required Tech Stack <span
+                                    style="font-weight: 400; font-size: 0.8rem; opacity: 0.6;">(Type & Press
+                                    Enter)</span></label>
+                            <div class="tag-input-container" id="tech-stack-tags">
+                                <input type="text" id="tech-stack-input" placeholder="e.g. TypeScript, Rust, Docker..."
+                                    style="border: none; background: transparent; padding: 0.2rem; outline: none; margin: 0; width: auto; flex: 1; font-size: 0.9rem;">
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-6">
+                            <label>Key Requirements <span
+                                    style="font-weight: 400; font-size: 0.8rem; opacity: 0.6;">(One per
+                                    line)</span></label>
+                            <textarea id="job-requirements" rows="5"
+                                placeholder="• 5+ years of distributed systems experience&#10;• Experience with high-availability architecture&#10;• Mentorship capability..."></textarea>
+                        </div>
+
+                        <div class="flex justify-between mt-12">
+                            <button type="button" class="btn btn-outline px-8" onclick="nextStep(1)">Back</button>
+                            <button type="button" class="btn btn-primary btn-glow-primary px-10"
+                                onclick="nextStep(3)">Set Challenges</button>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Set Challenges -->
+                    <div id="section-3" class="form-section">
+                        <div class="flex items-center gap-4 mb-8">
+                            <div
+                                style="width: 40px; height: 40px; background: rgba(16, 185, 129, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--success);">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                            </div>
+                            <h2 style="font-size: 1.5rem; margin: 0;">AI Challenges</h2>
+                        </div>
+
+                        <p class="mb-8" style="opacity: 0.7;">Select the challenges that will benchmark candidates. Our
+                            AI engine evaluates efficiency, style, and correctness automatically.</p>
+
+                        <div id="challenges-list" class="flex flex-col gap-4 mb-10">
+                            <!-- Challenges will be loaded here -->
+                            <div class="loading-spinner"></div>
+                        </div>
+
+                        <div class="flex justify-between mt-12">
+                            <button type="button" class="btn btn-outline px-8" onclick="nextStep(2)">Back</button>
+                            <button type="submit" id="publish-btn"
+                                class="btn btn-primary btn-glow-primary px-12">Publish Mission</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        // Tech Stack Tag Logic
+        const techInput = document.getElementById('tech-stack-input');
+        const techContainer = document.getElementById('tech-stack-tags');
+        const techStack = [];
+
+        techInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const val = techInput.value.trim();
+                if (val && !techStack.includes(val)) {
+                    techStack.push(val);
+                    renderTags();
+                }
+                techInput.value = '';
+            }
+        });
+
+        function renderTags() {
+            const children = Array.from(techContainer.children);
+            children.forEach(child => {
+                if (child !== techInput) child.remove();
+            });
+
+            techStack.forEach((tag, index) => {
+                const tagEl = document.createElement('div');
+                tagEl.className = 'tag';
+                tagEl.innerHTML = `${tag} <span onclick="removeTag(${index})">&times;</span>`;
+                techContainer.insertBefore(tagEl, techInput);
+            });
+        }
+
+        function removeTag(index) {
+            techStack.splice(index, 1);
+            renderTags();
+        }
+
+        // Multi-step Logic
+        function nextStep(step) {
+            document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(`section-${step}`).classList.add('active');
+
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            for (let i = 1; i <= step; i++) {
+                document.getElementById(`step-${i}-dot`).classList.add('active');
+            }
+
+            if (step === 3) fetchChallenges();
+            window.scrollTo({ top: 100, behavior: 'smooth' });
+        }
+
+        async function fetchChallenges() {
+            const listEl = document.getElementById('challenges-list');
+            try {
+                // Using relative path for robustness, but fallback to localhost:5001
+                let res;
+                try {
+                    res = await fetch('http://localhost:5001/api/problems');
+                } catch (e) {
+                    res = await fetch('http://127.0.0.1:5001/api/problems');
+                }
+
+                const problems = await res.json();
+
+                listEl.innerHTML = '';
+                problems.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'challenge-card p-6 rounded-xl flex justify-between items-center';
+                    card.onclick = () => toggleChallenge(card, p._id);
+                    card.innerHTML = `
+                        <div>
+                            <h4 class="mb-1" style="font-size: 1.1rem; font-weight: 700;">${p.title}</h4>
+                            <div class="flex gap-3">
+                                <span class="badge ${p.difficulty.toLowerCase() === 'easy' ? 'badge-success' : p.difficulty.toLowerCase() === 'medium' ? 'badge-warning' : 'badge-danger'}" style="font-size: 0.65rem; padding: 0.2rem 0.5rem;">${p.difficulty}</span>
+                                <span style="font-size: 0.7rem; opacity: 0.5;">Code Efficiency Test</span>
+                            </div>
+                        </div>
+                        <div class="checkbox-ui" style="width: 24px; height: 24px; border: 2px solid var(--glass-border); border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                            <input type="checkbox" name="challenge" value="${p._id}" class="hidden-check" style="display:none;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="display:none;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                    `;
+                    listEl.appendChild(card);
+                });
+            } catch (err) {
+                listEl.innerHTML = '<div class="glass-card p-6 border-danger text-center"><p class="text-danger mb-2">Failed to load challenges.</p><p class="text-xs opacity-60">Please ensure the Live Code Engine (Port 5001) is running.</p></div>';
+            }
+        }
+
+        function toggleChallenge(card, id) {
+            const check = card.querySelector('.hidden-check');
+            const svg = card.querySelector('svg');
+            const box = card.querySelector('.checkbox-ui');
+
+            check.checked = !check.checked;
+            if (check.checked) {
+                card.classList.add('selected');
+                svg.style.display = 'block';
+                box.style.background = 'var(--primary)';
+                box.style.borderColor = 'var(--primary)';
+            } else {
+                card.classList.remove('selected');
+                svg.style.display = 'none';
+                box.style.background = 'transparent';
+                box.style.borderColor = 'var(--glass-border)';
+            }
+        }
+
+        // Form Submit
+        document.getElementById('post-job-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('publish-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Publishing...';
+            submitBtn.disabled = true;
+
+            const selectedChallenges = Array.from(document.querySelectorAll('input[name="challenge"]:checked')).map(cb => cb.value);
+            const user = JSON.parse(localStorage.getItem('hiredUpUser'));
+
+            const jobData = {
+                title: document.getElementById('job-title').value,
+                description: document.getElementById('job-desc').value,
+                techStack: techStack,
+                requirements: document.getElementById('job-requirements').value.split('\n').filter(r => r.trim()),
+                location: document.getElementById('job-location').value,
+                salaryRange: document.getElementById('job-salary').value,
+                challenges: selectedChallenges,
+                postedBy: user ? user._id : null
+            };
+
+            try {
+                // Try localhost first, then 127.0.0.1
+                let response;
+                try {
+                    response = await fetch('http://localhost:5000/api/jobs', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(jobData)
+                    });
+                } catch (e) {
+                    response = await fetch('http://127.0.0.1:5000/api/jobs', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(jobData)
+                    });
+                }
+
+                if (response.ok) {
+                    alert('✨ Job Mission Published Successfully!');
+                    window.location.href = 'recruiter.html';
+                } else {
+                    const err = await response.json();
+                    alert('Error: ' + (err.error || err.message || 'Unknown error'));
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            } catch (err) {
+                alert('❌ Connection Error: Backend API (Port 5000) seems unreachable.\nPlease ensure your backend server is running.');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>
