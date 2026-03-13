@@ -32,10 +32,12 @@ app.use((req, res, next) => {
 const problemsRouter = require('./routes/problems');
 const codeExecRouter = require('./routes/codeExec');
 const submissionsRouter = require('./routes/submissions');
+const aptitudeRouter = require('./routes/aptitude');
 
 app.use('/api/problems', problemsRouter);
 app.use('/api/execute', codeExecRouter);
 app.use('/api/submissions', submissionsRouter);
+app.use('/api/aptitude', aptitudeRouter);
 
 app.get('/', (req, res) => {
     res.send('Live Code Practice API is running');
