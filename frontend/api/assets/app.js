@@ -271,7 +271,50 @@ function linkPage(url) {
     window.location.href = url;
 }
 
+// --- Learning Aptitude Demo ---
+function runAptitudeDemo() {
+    const demoUi = document.getElementById('aptitude-demo-ui');
+    const demoLogs = document.getElementById('demo-logs');
+    const button = document.querySelector('#aptitude-feature-card button');
+
+    if (!demoUi || !demoLogs || !button) return;
+
+    if (demoUi.classList.contains('hidden')) {
+        demoUi.classList.remove('hidden');
+        button.textContent = 'Reset Engine';
+
+        const logs = [
+            "> Analyzing user research patterns...",
+            "> Detected: Tab change (Browser: Chrome)",
+            "> Duration: 42s (Search session)",
+            "> Detected: Implementation burst started",
+            "> Efficiency Score: 92% (High Adaptation)",
+            "> Copy-Paste Check: 0 external matches",
+            "> FINAL SCORE: [94/100] - Exceptional Potential"
+        ];
+
+        let i = 0;
+        demoLogs.innerHTML = "";
+        const interval = setInterval(() => {
+            if (i >= logs.length) {
+                clearInterval(interval);
+                return;
+            }
+            const logEntry = document.createElement('div');
+            logEntry.style.marginBottom = '4px';
+            logEntry.textContent = logs[i];
+            demoLogs.appendChild(logEntry);
+            demoLogs.scrollTop = demoLogs.scrollHeight;
+            i++;
+        }, 800);
+    } else {
+        demoUi.classList.add('hidden');
+        button.textContent = 'Run Engine Demo';
+    }
+}
+
 // Global exposure
+window.runAptitudeDemo = runAptitudeDemo;
 window.checkAuth = checkAuth;
 window.linkPage = linkPage;
 window.logout = () => {
