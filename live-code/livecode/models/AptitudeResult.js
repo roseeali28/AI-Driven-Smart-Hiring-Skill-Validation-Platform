@@ -8,7 +8,7 @@ const aptitudeResultSchema = new mongoose.Schema({
     },
     topic: {
         type: String,
-        required: true
+        required: true  
     },
     category: {
         type: String,
