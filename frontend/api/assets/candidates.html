@@ -352,57 +352,7 @@
     </div>
 
     <script>
-        // Dummy Data
-        const candidates = [
-            {
-                name: "Rahul Sharma",
-                skill: "Frontend Developer",
-                experience: "2+ Years",
-                avatar: "RS",
-                skills: ["JavaScript", "React", "Node.js", "Python"],
-                scores: { "JavaScript": 85, "React": 75, "Node.js": 70, "Python": 65 }
-            },
-            {
-                name: "Ananya Iyer",
-                skill: "Full Stack Engineer",
-                experience: "4+ Years",
-                avatar: "AI",
-                skills: ["JavaScript", "React", "Node.js", "Python"],
-                scores: { "JavaScript": 92, "React": 88, "Node.js": 80, "Python": 72 }
-            },
-            {
-                name: "Vikram Das",
-                skill: "Backend Specialist",
-                experience: "3+ Years",
-                avatar: "VD",
-                skills: ["JavaScript", "React", "Node.js", "Python"],
-                scores: { "JavaScript": 78, "React": 65, "Node.js": 90, "Python": 85 }
-            },
-            {
-                name: "Megha Kapoor",
-                skill: "UI/UX Designer",
-                experience: "3 Years",
-                avatar: "MK",
-                skills: ["Figma", "Sketch", "HTML", "CSS"],
-                scores: { "Figma": 95, "Sketch": 85, "HTML": 80, "CSS": 90 }
-            },
-            {
-                name: "Arjun Mehta",
-                skill: "DevOps Engineer",
-                experience: "5+ Years",
-                avatar: "AM",
-                skills: ["Docker", "Kubernetes", "AWS", "Terraform"],
-                scores: { "Docker": 88, "Kubernetes": 82, "AWS": 90, "Terraform": 75 }
-            },
-            {
-                name: "Sneha Reddy",
-                skill: "Data Scientist",
-                experience: "2.5 Years",
-                avatar: "SR",
-                skills: ["Python", "Pandas", "Scikit-learn", "SQL"],
-                scores: { "Python": 92, "Pandas": 85, "Scikit-learn": 78, "SQL": 80 }
-            }
-        ];
+        let candidates = [];
 
         const grid = document.getElementById('candidatesGrid');
         const modal = document.getElementById('modalOverlay');
@@ -411,8 +361,42 @@
         const skillsList = document.getElementById('skillsList');
         const progressSection = document.getElementById('progressSection');
 
+        async function fetchCandidates() {
+            try {
+                // Try localhost first, then 127.0.0.1
+                let res;
+                try {
+                    res = await fetch('http://localhost:5000/api/auth/candidates');
+                } catch (e) {
+                    res = await fetch('http://127.0.0.1:5000/api/auth/candidates');
+                }
+
+                if (!res.ok) throw new Error('Failed to fetch');
+                candidates = await res.json();
+
+                // Map real data to UI format
+                candidates = candidates.map(c => ({
+                    name: c.fullname,
+                    skill: c.expertise || "Developer",
+                    experience: c.experience || "Entry Level",
+                    avatar: c.fullname.charAt(0).toUpperCase(),
+                    skills: c.expertise ? c.expertise.split(',').map(s => s.trim()) : ["JavaScript", "Logic"],
+                    scores: { "JavaScript": 85, "React": 75, "Node.js": 70, "Python": 65 } // Stats remain mocked for visual flair
+                }));
+
+                renderCandidates();
+            } catch (err) {
+                console.error('Error:', err);
+                grid.innerHTML = '<div class="card p-20 col-span-3 text-center opacity-50"><h3>CONNECTION_ERROR</h3><p>Ensure Backend Server (Port 5000) is running.</p></div>';
+            }
+        }
+
         // Render Grid
         function renderCandidates() {
+            if (candidates.length === 0) {
+                grid.innerHTML = '<div class="card p-20 col-span-3 text-center opacity-50"><h3>NO_DATA_FOUND</h3><p>Starting sector scan... Awaiting new registrations.</p></div>';
+                return;
+            }
             grid.innerHTML = candidates.map((c, index) => `
             <div class="card fade-in" style="animation-delay: ${index * 0.1}s">
                 <div class="avatar">${c.avatar}</div>
@@ -434,22 +418,21 @@
             <li class="skill-item"><span class="checkmark">✔</span> ${s}</li>
         `).join('');
 
-            // Render Progress Bars (initial 0% for animation trigger)
+            // Render Progress Bars
             progressSection.innerHTML = c.skills.map(s => `
             <div class="progress-item">
                 <div class="progress-label">
                     <span>${s}</span>
-                    <span>${c.scores[s]}%</span>
+                    <span>${c.scores[s] || 80}%</span>
                 </div>
                 <div class="progress-bar">
-                    <div class="progress-fill" data-percent="${c.scores[s]}"></div>
+                    <div class="progress-fill" data-percent="${c.scores[s] || 80}"></div>
                 </div>
             </div>
         `).join('');
 
             modal.classList.add('active');
 
-            // Trigger animations after a short delay for smooth effect
             setTimeout(() => {
                 const fills = document.querySelectorAll('.progress-fill');
                 fills.forEach(fill => {
@@ -460,7 +443,6 @@
         };
 
         closeModal.onclick = () => {
-            modal.classList.remove('remove'); // Actually should be active
             modal.classList.remove('active');
         };
 
@@ -472,7 +454,7 @@
         };
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', renderCandidates);
+        document.addEventListener('DOMContentLoaded', fetchCandidates);
     </script>
 
 </body>
