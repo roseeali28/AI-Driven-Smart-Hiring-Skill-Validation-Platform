@@ -9,6 +9,7 @@ const JUDGE0_API_URL = 'https://judge0-ce.p.rapidapi.com/submissions';
 const API_KEY = process.env.RAPIDAPI_KEY;
 
 router.post('/run', async (req, res) => {
+    console.log("Incoming /run request body:", req.body);
     const { language_id, source_code, stdin, problemId } = req.body;
 
     // Validate that source_code is not empty or just comments
@@ -17,7 +18,7 @@ router.post('/run', async (req, res) => {
     }
 
     let problem = null;
-    if (problemId) {
+    if (problemId && !stdin) {
         try {
             const Problem = require('../models/Problem');
             problem = await Problem.findById(problemId);
@@ -68,20 +69,30 @@ router.post('/run', async (req, res) => {
                             });
 
                             try {
-                                // Try to call solution function if it exists
-                                // This is a bit hacky but works for the template
-                                const scriptToRun = `${source_code}\n\n// Run test\nconsole.log(JSON.stringify(solution(${testCase.input})));`;
-                                vm.run(scriptToRun);
-
+                                // Dynamic evaluation logic to turn string test cases like "[2,7,11,15]\n9" into arguments
+                                let argsScript = `
+                                    let rawInput = \`${testCase.input.replace(/`/g, '\\`')}\`;
+                                    let args = rawInput.split('\\n').filter(l => l.trim()).map(l => {
+                                        try { return JSON.parse(l); } catch(e) { return l; }
+                                    });
+                                    JSON.stringify(solution(...args));
+                                `;
+                                const scriptToRun = `${source_code}\n\n// Run test\n${argsScript}`;
+                                const result = vm.run(scriptToRun);
+                                
+                                // Clean the result if it came back as undefined
+                                const actualOutput = (result === undefined || result === null) ? String(result) : result;
+                                // We also captured console logs
                                 const lastLog = logOutput[logOutput.length - 1];
-                                const actualOutput = lastLog || "No output";
-                                const status = actualOutput.trim() === testCase.output.trim() ? "Accepted" : "Wrong Answer";
+                                const finalOutput = actualOutput !== undefined ? String(actualOutput) : (lastLog || "No output");
+
+                                const status = finalOutput.trim() === testCase.output.trim() ? "Accepted" : "Wrong Answer";
 
                                 return {
                                     testCaseId: index + 1,
                                     input: testCase.input,
                                     expectedOutput: testCase.output,
-                                    actualOutput: actualOutput,
+                                    actualOutput: finalOutput,
                                     status: status
                                 };
                             } catch (err) {
@@ -114,7 +125,16 @@ router.post('/run', async (req, res) => {
                             }
                         }
                     });
-                    vm.run(source_code);
+                    if (stdin) {
+                        try {
+                            const scriptToRun = `${source_code}\n\n// Run test\nconsole.log(JSON.stringify(solution(${stdin})));`;
+                            vm.run(scriptToRun);
+                        } catch (e) {
+                            vm.run(source_code);
+                        }
+                    } else {
+                        vm.run(source_code);
+                    }
                     return res.json({
                         stdout: logOutput.join('\n') || "No output",
                         stderr: null,
@@ -135,88 +155,224 @@ router.post('/run', async (req, res) => {
 
             // 2. Local Python Execution (71)
             if (langId === 71) {
-                const baseName = `solution_${Date.now()}`;
-                const pyFile = path.join(tempDir, `${baseName}.py`);
-                fs.writeFileSync(pyFile, source_code);
+                if (problem && problem.testCases && problem.testCases.length > 0) {
+                    const results = [];
+                    for (let i = 0; i < problem.testCases.length; i++) {
+                        const testCase = problem.testCases[i];
+                        const baseName = `solution_${Date.now()}_${i}`;
+                        const pyFile = path.join(tempDir, `${baseName}.py`);
+                        
+                        // Create Python wrapper that auto-calls solution
+                        const wrapperCode = `
+import ast
+import sys
+import json
 
-                return new Promise((resolve) => {
-                    exec(`python "${pyFile}"`, (error, stdout, stderr) => {
-                        if (fs.existsSync(pyFile)) fs.unlinkSync(pyFile);
+${source_code}
 
-                        if (problem && problem.testCases && problem.testCases.length > 0) {
-                            const results = problem.testCases.map((testCase, index) => ({
-                                testCaseId: index + 1,
+if __name__ == "__main__":
+    try:
+        # Parse arguments from stdin safely
+        args_str = sys.stdin.read().strip()
+        # Fallback if multiple args are separated by newlines instead of one tuple
+        lines = [l.strip() for l in args_str.split('\\n') if l.strip()]
+        
+        parsed_args = []
+        for line in lines:
+            try:
+                parsed_args.append(ast.literal_eval(line))
+            except:
+                parsed_args.append(line)
+                
+        # Call solution function
+        if 'solution' in globals():
+            res = solution(*parsed_args)
+            if res is not None:
+                # Format boolean/null to json to match expected output format
+                if isinstance(res, bool):
+                    print(str(res).lower())
+                else:
+                    print(json.dumps(res).replace(' ', ''))
+    except Exception as e:
+        print(f"Runtime Error: {e}", file=sys.stderr)
+`;
+                        fs.writeFileSync(pyFile, wrapperCode);
+                        
+                        const inFile = path.join(tempDir, `${baseName}.in`);
+                        fs.writeFileSync(inFile, testCase.input);
+                        
+                        try {
+                            const { stdout, stderr } = await new Promise((resolve) => {
+                                exec(`python "${pyFile}" < "${inFile}"`, (error, stdout, stderr) => {
+                                    resolve({ error, stdout, stderr });
+                                });
+                            });
+                            
+                            if (fs.existsSync(pyFile)) fs.unlinkSync(pyFile);
+                            if (fs.existsSync(inFile)) fs.unlinkSync(inFile);
+
+                            const actualOutput = stdout ? stdout.trim() : (stderr ? "Runtime Error" : "No output");
+                            const status = actualOutput === testCase.output.trim() ? "Accepted" : "Wrong Answer";
+
+                            results.push({
+                                testCaseId: i + 1,
                                 input: testCase.input,
                                 expectedOutput: testCase.output,
-                                actualOutput: error ? "Error" : testCase.output,
-                                status: error ? "Runtime Error" : "Accepted"
-                            }));
-                            res.json({
-                                status: { description: !error ? "Accepted" : "Runtime Error" },
-                                testCaseResults: results,
-                                stdout: stdout || "",
-                                stderr: stderr || (error ? error.message : null)
+                                actualOutput: actualOutput,
+                                status: stderr ? "Runtime Error" : status
                             });
-                        } else {
+                        } catch (e) {
+                            if (fs.existsSync(pyFile)) fs.unlinkSync(pyFile);
+                            if (fs.existsSync(inFile)) fs.unlinkSync(inFile);
+                            results.push({
+                                testCaseId: i + 1,
+                                input: testCase.input,
+                                expectedOutput: testCase.output,
+                                actualOutput: "Execution Failed",
+                                status: "Runtime Error"
+                            });
+                        }
+                    }
+                    
+                    const allPassed = results.every(r => r.status === "Accepted");
+                    return res.json({
+                        status: { description: allPassed ? "Accepted" : "Wrong Answer" },
+                        testCaseResults: results,
+                        stdout: "Test cases processed locally."
+                    });
+                } else {
+                    // Single execution (Custom testcase or no testcases)
+                    const baseName = `solution_${Date.now()}`;
+                    const pyFile = path.join(tempDir, `${baseName}.py`);
+                    const inFile = path.join(tempDir, `${baseName}.in`);
+                    fs.writeFileSync(pyFile, source_code);
+                    if (stdin) fs.writeFileSync(inFile, stdin);
+
+                    const cmd = stdin ? `python "${pyFile}" < "${inFile}"` : `python "${pyFile}"`;
+
+                    return new Promise((resolve) => {
+                        exec(cmd, (error, stdout, stderr) => {
+                            if (fs.existsSync(pyFile)) fs.unlinkSync(pyFile);
+                            if (fs.existsSync(inFile)) fs.unlinkSync(inFile);
+
                             res.json({
                                 stdout: stdout || "",
                                 stderr: stderr || (error ? error.message : null),
                                 status: { id: error ? 11 : 3, description: error ? 'Runtime Error' : 'Accepted' }
                             });
-                        }
-                        resolve();
+                            resolve();
+                        });
                     });
-                });
+                }
             }
 
             // 3. Local C++ Execution (54)
             if (langId === 54) {
-                const baseName = `solution_${Date.now()}`;
-                const cppFile = path.join(tempDir, `${baseName}.cpp`);
-                const exeFile = path.join(tempDir, `${baseName}.exe`);
-                fs.writeFileSync(cppFile, source_code);
+                if (problem && problem.testCases && problem.testCases.length > 0) {
+                    const baseName = `solution_${Date.now()}`;
+                    const cppFile = path.join(tempDir, `${baseName}.cpp`);
+                    const exeFile = path.join(tempDir, `${baseName}.exe`);
+                    fs.writeFileSync(cppFile, source_code);
 
-                return new Promise((resolve) => {
-                    exec(`g++ "${cppFile}" -o "${exeFile}"`, (compileError, compileStdout, compileStderr) => {
-                        if (compileError) {
-                            if (fs.existsSync(cppFile)) fs.unlinkSync(cppFile);
-                            res.json({
-                                stdout: "",
-                                stderr: compileStderr || compileError.message,
-                                status: { id: 6, description: 'Compilation Error' }
-                            });
-                            return resolve();
-                        }
+                    return new Promise((resolve) => {
+                        exec(`g++ "${cppFile}" -o "${exeFile}"`, async (compileError, compileStdout, compileStderr) => {
+                            if (compileError) {
+                                if (fs.existsSync(cppFile)) fs.unlinkSync(cppFile);
+                                res.json({
+                                    stdout: "",
+                                    stderr: compileStderr || compileError.message,
+                                    status: { id: 6, description: 'Compilation Error' }
+                                });
+                                return resolve();
+                            }
 
-                        exec(`"${exeFile}"`, (runError, runStdout, runStderr) => {
+                            const results = [];
+                            for (let i = 0; i < problem.testCases.length; i++) {
+                                const testCase = problem.testCases[i];
+                                const inFile = path.join(tempDir, `${baseName}_${i}.in`);
+                                fs.writeFileSync(inFile, testCase.input);
+
+                                try {
+                                    const { stdout, stderr } = await new Promise((runResolve) => {
+                                        exec(`"${exeFile}" < "${inFile}"`, (error, stdout, stderr) => {
+                                            runResolve({ error, stdout, stderr });
+                                        });
+                                    });
+
+                                    if (fs.existsSync(inFile)) fs.unlinkSync(inFile);
+
+                                    const actualOutput = stdout ? stdout.trim() : (stderr ? "Runtime Error" : "No output");
+                                    const status = actualOutput === testCase.output.trim() ? "Accepted" : "Wrong Answer";
+
+                                    results.push({
+                                        testCaseId: i + 1,
+                                        input: testCase.input,
+                                        expectedOutput: testCase.output,
+                                        actualOutput: actualOutput,
+                                        status: stderr ? "Runtime Error" : status
+                                    });
+                                } catch (e) {
+                                    if (fs.existsSync(inFile)) fs.unlinkSync(inFile);
+                                    results.push({
+                                        testCaseId: i + 1,
+                                        input: testCase.input,
+                                        expectedOutput: testCase.output,
+                                        actualOutput: "Execution Failed",
+                                        status: "Runtime Error"
+                                    });
+                                }
+                            }
+
                             if (fs.existsSync(cppFile)) fs.unlinkSync(cppFile);
                             if (fs.existsSync(exeFile)) fs.unlinkSync(exeFile);
 
-                            if (problem && problem.testCases && problem.testCases.length > 0) {
-                                const results = problem.testCases.map((testCase, index) => ({
-                                    testCaseId: index + 1,
-                                    input: testCase.input,
-                                    expectedOutput: testCase.output,
-                                    actualOutput: runError ? "Error" : testCase.output,
-                                    status: runError ? "Runtime Error" : "Accepted"
-                                }));
+                            const allPassed = results.every(r => r.status === "Accepted");
+                            res.json({
+                                status: { description: allPassed ? "Accepted" : "Wrong Answer" },
+                                testCaseResults: results,
+                                stdout: "Test cases processed locally."
+                            });
+                            resolve();
+                        });
+                    });
+                } else {
+                    // Single execution (Custom testcase or no testcases)
+                    const baseName = `solution_${Date.now()}`;
+                    const cppFile = path.join(tempDir, `${baseName}.cpp`);
+                    const exeFile = path.join(tempDir, `${baseName}.exe`);
+                    const inFile = path.join(tempDir, `${baseName}.in`);
+                    fs.writeFileSync(cppFile, source_code);
+                    if (stdin) fs.writeFileSync(inFile, stdin);
+
+                    return new Promise((resolve) => {
+                        exec(`g++ "${cppFile}" -o "${exeFile}"`, (compileError, compileStdout, compileStderr) => {
+                            if (compileError) {
+                                if (fs.existsSync(cppFile)) fs.unlinkSync(cppFile);
+                                if (fs.existsSync(inFile)) fs.unlinkSync(inFile);
                                 res.json({
-                                    status: { description: !runError ? "Accepted" : "Runtime Error" },
-                                    testCaseResults: results,
-                                    stdout: runStdout || "",
-                                    stderr: runStderr || (runError ? runError.message : null)
+                                    stdout: "",
+                                    stderr: compileStderr || compileError.message,
+                                    status: { id: 6, description: 'Compilation Error' }
                                 });
-                            } else {
+                                return resolve();
+                            }
+
+                            const cmd = stdin ? `"${exeFile}" < "${inFile}"` : `"${exeFile}"`;
+                            exec(cmd, (runError, runStdout, runStderr) => {
+                                if (fs.existsSync(cppFile)) fs.unlinkSync(cppFile);
+                                if (fs.existsSync(exeFile)) fs.unlinkSync(exeFile);
+                                if (fs.existsSync(inFile)) fs.unlinkSync(inFile);
+
                                 res.json({
                                     stdout: runStdout || "",
                                     stderr: runStderr || (runError ? runError.message : null),
                                     status: { id: runError ? 11 : 3, description: runError ? 'Runtime Error' : 'Accepted' }
                                 });
-                            }
-                            resolve();
+                                resolve();
+                            });
                         });
                     });
-                });
+                }
             }
 
             // Fallback
