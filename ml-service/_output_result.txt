@@ -1,0 +1,72 @@
+{
+  "keywords": [
+    "PostgreSQL / SQL",
+    "AWS / Cloud",
+    "Agile / Scrum",
+    "Docker / Containerization",
+    "Golang",
+    "MongoDB / NoSQL",
+    "NLP / AI",
+    "Node.js / Backend",
+    "Python",
+    "Python / Backend"
+  ],
+  "match_score": "100.0%",
+  "strengths": [
+    "Demonstrates advanced technical depth across 2 complex domains",
+    "5+ years of industry experience \u2014 proven track record",
+    "Strong job fit (100.0% skill alignment with role)",
+    "Demonstrates transferable concepts beyond listed keywords",
+    "Evidence of test-driven development",
+    "Participates in code reviews",
+    "Applies design patterns / SOLID principles"
+  ],
+  "weaknesses": [
+    "Missing key required skills: Kubernetes / Orchestration, CI/CD / DevOps",
+    "Resume uses 3 passive/weak phrases \u2014 reduces ATS impact"
+  ],
+  "skill_gaps": [
+    "Kubernetes / Orchestration",
+    "CI/CD / DevOps"
+  ],
+  "resume_improvements": {
+    "improved_summary": "A 5-year software engineer with proven expertise in Node.js / Backend, Node.js / Backend, Node.js / Backend and a strong track record of delivering scalable, production-grade systems. Adept at cross-functional collaboration, performance optimization, and system design. Seeking to leverage deep technical skills to drive high-impact outcomes.",
+    "bullet_rewrites": [
+      {
+        "original": "Responsible for backend APIs, helped with DevOps, and worked on React frontends.",
+        "improved": "Architected backend apis, helped with devops, and worked on react frontends.",
+        "issue": "Passive phrase: 'responsible for'"
+      },
+      {
+        "original": "- Responsible for microservices architecture using Python and FastAPI",
+        "improved": "- built microservices architecture using python and fastapi",
+        "issue": "Passive phrase: 'responsible for'"
+      },
+      {
+        "original": "- Worked on React dashboard with 50k daily users",
+        "improved": "- designed react dashboard with 50k daily users",
+        "issue": "Passive phrase: 'worked on'"
+      }
+    ],
+    "keyword_additions": [
+      {
+        "keyword": "Kubernetes",
+        "suggestion": "Add 'Kubernetes' naturally to your Skills or Projects section to improve ATS ranking."
+      },
+      {
+        "keyword": "CI/CD",
+        "suggestion": "Add 'CI/CD' naturally to your Skills or Projects section to improve ATS ranking."
+      }
+    ],
+    "improved_project_template": "\u2022 Architected and deployed [ProjectName] \u2014 a [type] system handling [X]K+ requests/day, reducing latency by [Y]% using [TechStack].\n\u2022 Implemented real-time [feature] with [technology], improving [metric] by [%].\n\u2022 Led a team of [N] engineers to deliver [project] on schedule, cutting infra costs by [$X].",
+    "weak_phrases_found": [
+      "responsible for",
+      "worked on",
+      "helped with"
+    ]
+  },
+  "final_score": "86.1/100",
+  "recommendation": "Strong Yes",
+  "performance_score": "81.7/100",
+  "summary": "Exceptional candidate \u2014 strong technical depth, high job alignment, and polished resume."
+}
