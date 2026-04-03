@@ -271,6 +271,45 @@ function linkPage(url) {
     window.location.href = url;
 }
 
+// Fetch and display recent talent on landing page
+async function fetchRecentTalent() {
+    const section = document.getElementById('recent-talent-section');
+    const ticker = document.getElementById('talent-ticker');
+    if (!section || !ticker) return;
+
+    try {
+        let res;
+        try {
+            res = await fetch('http://localhost:5000/api/auth/candidates');
+        } catch (e) {
+            res = await fetch('http://127.0.0.1:5000/api/auth/candidates');
+        }
+
+        if (!res.ok) throw new Error('Failed to fetch');
+        const candidates = await res.json();
+
+        if (candidates.length > 0) {
+            section.classList.remove('hidden');
+            // Show last 4 candidates
+            ticker.innerHTML = candidates.reverse().slice(0, 4).map((c, idx) => `
+                <div class="glass-card" style="padding: 1.5rem; width: 220px; transition: 0.3s; border-color: rgba(0, 245, 212, 0.1);">
+                    <div style="width: 40px; height: 40px; background: rgba(0, 245, 212, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent); margin-bottom: 1rem;">
+                        ${c.fullname.charAt(0).toUpperCase()}
+                    </div>
+                    <div style="font-weight: 800; font-size: 0.9rem;">${c.fullname.split(' ')[0].toUpperCase()}</div>
+                    <div style="font-size: 0.7rem; opacity: 0.4; font-family: monospace; margin-top: 0.25rem;">${c.expertise || 'DEVELOPER'}</div>
+                    <div class="flex items-center gap-2 mt-4">
+                        <div style="width: 6px; height: 6px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent);"></div>
+                        <span style="font-size: 0.6rem; font-weight: 800; letter-spacing: 1px; color: var(--accent);">NEW_INFILTRATION</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+    } catch (err) {
+        console.error('Error fetching recent talent:', err);
+    }
+}
+
 // --- Learning Aptitude Demo ---
 function runAptitudeDemo() {
     const demoUi = document.getElementById('aptitude-demo-ui');
@@ -321,3 +360,5 @@ window.logout = () => {
     localStorage.removeItem("hiredUpUser");
     window.location.href = "index.html";
 };
+
+document.addEventListener('DOMContentLoaded', fetchRecentTalent);
