@@ -119,121 +119,136 @@
                         style="border-radius: var(--radius-pill); padding: 0.5rem 1.5rem; color: var(--text-muted); background: transparent; transition: 0.3s;">Recruiter</button>
                 </div>
             </div>
+        </div>
 
-            <!-- Flow Container (Candidate) -->
-            <div id="flow-candidate" class="flow-display"
-                style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; position: relative;">
-                <!-- Connection Line -->
-                <div
-                    style="position: absolute; top: 50%; left: 10%; right: 10%; height: 2px; background: rgba(255,255,255,0.1); z-index: 0; transform: translateY(-50%); display: var(--desktop-line, block);">
-                </div>
-
-                <!-- Step 1 -->
-                <div class="glass-card animate-fade-in"
-                    style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
-                    <div
-                        style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--primary); font-weight: bold;">
-                        1</div>
-                    <h3 style="font-size: 1.25rem;">Create Profile</h3>
-                    <p style="font-size: 0.9rem; margin-top:0.5rem;">Sign up and highlight your key skills.</p>
-                </div>
-
-                <!-- Step 2 -->
-                <div class="glass-card animate-fade-in delay-100"
-                    style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem; cursor: pointer;"
-                    onclick="window.location.href='http://localhost:5173'">
-                    <div
-                        style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--accent); font-weight: bold;">
-                        2</div>
-                    <h3 style="font-size: 1.25rem;">Live Code</h3>
-                    <p style="font-size: 0.9rem; margin-top:0.5rem;">Solve real-world challenges in our IDE.</p>
-                </div>
-
-                <!-- Step 3 -->
-                <div class="glass-card animate-fade-in delay-200"
-                    style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
-                    <div
-                        style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #a855f7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #a855f7; font-weight: bold;">
-                        3</div>
-                    <h3 style="font-size: 1.25rem;">AI Analysis</h3>
-                    <p style="font-size: 0.9rem; margin-top:0.5rem;">Get instant feedback on efficiency & style.</p>
-                </div>
-
-                <!-- Step 4 -->
-                <div class="glass-card animate-fade-in delay-300"
-                    style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
-                    <div
-                        style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #ec4899; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #ec4899; font-weight: bold;">
-                        4</div>
-                    <h3 style="font-size: 1.25rem;">Earn Badges</h3>
-                    <p style="font-size: 0.9rem; margin-top:0.5rem;">Unlock verified skill credentials for your
-                        profile.</p>
-                </div>
-
-                <!-- Step 5 -->
-                <div class="glass-card animate-fade-in delay-300"
-                    style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
-                    <div
-                        style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #10b981; font-weight: bold;">
-                        5</div>
-                    <h3 style="font-size: 1.25rem;">Get Hired</h3>
-                    <p style="font-size: 0.9rem; margin-top:0.5rem;">Direct interview invites from top tech companies.
-                    </p>
-                </div>
+        <!-- Flow Container (Candidate) -->
+        <div id="flow-candidate" class="flow-display"
+            style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; position: relative;">
+            <!-- Connection Line -->
+            <div
+                style="position: absolute; top: 50%; left: 10%; right: 10%; height: 2px; background: rgba(255,255,255,0.1); z-index: 0; transform: translateY(-50%); display: var(--desktop-line, block);">
             </div>
 
-            <!-- Flow Container (Recruiter) - Hidden by default -->
-            <div id="flow-recruiter" class="flow-display hidden"
-                style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; position: relative;">
-                <!-- Connection Line -->
+            <!-- Step 1 -->
+            <div class="glass-card animate-fade-in"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
                 <div
-                    style="position: absolute; top: 50%; left: 10%; right: 10%; height: 2px; background: rgba(255,255,255,0.1); z-index: 0; transform: translateY(-50%); display: var(--desktop-line, block);">
-                </div>
-
-                <!-- Step 1 -->
-                <div class="glass-card animate-fade-in"
-                    style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem; cursor: pointer;"
-                    onclick="checkAuth('post-job.html')">
-                    <div
-                        style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #f59e0b; font-weight: bold;">
-                        1</div>
-                    <h3 style="font-size: 1.25rem;">Post Job</h3>
-                    <p style="font-size: 0.9rem; margin-top:0.5rem;">Define role requirements and required tech stack.
-                    </p>
-                </div>
-
-                <!-- Step 2 -->
-                <div class="glass-card animate-fade-in delay-100"
-                    style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
-                    <div
-                        style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #ef4444; font-weight: bold;">
-                        2</div>
-                    <h3 style="font-size: 1.25rem;">Set Challenges</h3>
-                    <p style="font-size: 0.9rem; margin-top:0.5rem;">Choose from our library of AI-graded coding tasks.
-                    </p>
-                </div>
-
-                <!-- Step 3 -->
-                <div class="glass-card animate-fade-in delay-200"
-                    style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
-                    <div
-                        style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #3b82f6; font-weight: bold;">
-                        3</div>
-                    <h3 style="font-size: 1.25rem;">Smart Ranking</h3>
-                    <p style="font-size: 0.9rem; margin-top:0.5rem;">See candidates sorted by skill, not keywords.</p>
-                </div>
-
-                <!-- Step 4 -->
-                <div class="glass-card animate-fade-in delay-300"
-                    style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
-                    <div
-                        style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #10b981; font-weight: bold;">
-                        4</div>
-                    <h3 style="font-size: 1.25rem;">Instant Hire</h3>
-                    <p style="font-size: 0.9rem; margin-top:0.5rem;">Unlock contacting details for top performers.</p>
-                </div>
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--primary); font-weight: bold;">
+                    1</div>
+                <h3 style="font-size: 1.25rem;">Create Profile</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">Sign up and highlight your key skills.</p>
             </div>
 
+            <!-- Step 2 -->
+            <div class="glass-card animate-fade-in delay-100"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--accent); font-weight: bold;">
+                    2</div>
+                <h3 style="font-size: 1.25rem;">Live Code</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">Solve real-world challenges in our IDE.</p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="glass-card animate-fade-in delay-200"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #a855f7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #a855f7; font-weight: bold;">
+                    3</div>
+                <h3 style="font-size: 1.25rem;">AI Analysis</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">Get instant feedback on efficiency & style.</p>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="glass-card animate-fade-in delay-300"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #ec4899; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #ec4899; font-weight: bold;">
+                    4</div>
+                <h3 style="font-size: 1.25rem;">Earn Badges</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">Unlock verified skill credentials for your
+                    profile.</p>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="glass-card animate-fade-in delay-300"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #10b981; font-weight: bold;">
+                    5</div>
+                <h3 style="font-size: 1.25rem;">Get Hired</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">Direct interview invites from top tech companies.
+                </p>
+            </div>
+        </div>
+
+        <!-- Flow Container (Recruiter) - Hidden by default -->
+        <div id="flow-recruiter" class="flow-display hidden"
+            style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; position: relative;">
+            <!-- Connection Line -->
+            <div
+                style="position: absolute; top: 50%; left: 10%; right: 10%; height: 2px; background: rgba(255,255,255,0.1); z-index: 0; transform: translateY(-50%); display: var(--desktop-line, block);">
+            </div>
+
+            <!-- Step 1 -->
+            <div class="glass-card animate-fade-in"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #f59e0b; font-weight: bold;">
+                    1</div>
+                <h3 style="font-size: 1.25rem;">Post Job</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">Define role requirements and required tech stack.
+                </p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="glass-card animate-fade-in delay-100"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #ef4444; font-weight: bold;">
+                    2</div>
+                <h3 style="font-size: 1.25rem;">Set Challenges</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">Choose from our library of AI-graded coding tasks.
+                </p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="glass-card animate-fade-in delay-200"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #3b82f6; font-weight: bold;">
+                    3</div>
+                <h3 style="font-size: 1.25rem;">Smart Ranking</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">See candidates sorted by skill, not keywords.</p>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="glass-card animate-fade-in delay-300"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #10b981; font-weight: bold;">
+                    4</div>
+                <h3 style="font-size: 1.25rem;">Instant Hire</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">Unlock contacting details for top performers.</p>
+            </div>
+        </div>
+
+        </div>
+
+        <!-- Recently Registered Talent -->
+        <div id="recent-talent-section" class="hidden" style="margin-top: 6rem;">
+            <div class="text-center mb-10">
+                <span class="badge"
+                    style="background: rgba(0, 245, 212, 0.1); color: var(--accent); border: 1px solid rgba(0, 245, 212, 0.2); padding: 0.25rem 1rem; border-radius: 100px; font-size: 0.7rem; font-weight: 800; letter-spacing: 2px;">LIVE_INFILTRATION_FEED</span>
+                <h2 style="font-size: 2.25rem; font-weight: 800; margin-top: 1rem;">Recent <span
+                        class="text-gradient">Talent</span></h2>
+                <p style="opacity: 0.5; margin-top: 0.5rem;">Elite developers recently integrated into the HiredUp
+                    network.</p>
+            </div>
+            <div id="talent-ticker"
+                style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; transition: 0.5s;">
+                <!-- Talent mini-cards injected by JS -->
+            </div>
         </div>
     </section>
 
@@ -271,8 +286,11 @@
                         </svg>
                     </div>
                     <h3>Real-World Code</h3>
-                    <p style="margin-top: 0.5rem;">Candidates solve actual problems in a browser-based IDE. No more
+                    <p style="margin-top: 0.5rem; margin-bottom: 1.5rem;">Candidates solve actual problems in a
+                        browser-based IDE. No more
                         whiteboard inversions of binary trees.</p>
+                    <button class="btn btn-sm btn-primary" onclick="window.location.href='http://localhost:5173'"
+                        style="width: 100%; background: var(--accent); border-color: var(--accent);">Launch IDE</button>
                 </div>
 
                 <div class="glass-card animate-fade-in delay-300" id="aptitude-feature-card">
@@ -322,8 +340,11 @@
                         </svg>
                     </div>
                     <h3>Recruiter Dashboard</h3>
-                    <p style="margin-top: 0.5rem;">Comprehensive analytics and export tools for faster, informed
+                    <p style="margin-top: 0.5rem; margin-bottom: 1.5rem;">Comprehensive analytics and export tools for
+                        faster, informed
                         shortlisting.</p>
+                    <button class="btn btn-sm btn-primary" onclick="linkPage('recruiter.html')"
+                        style="width: 100%;">View Dashboard</button>
                 </div>
 
                 <div class="glass-card animate-fade-in delay-200">
@@ -338,8 +359,12 @@
                         </svg>
                     </div>
                     <h3>Candidate Feedback</h3>
-                    <p style="margin-top: 0.5rem;">Transparent performance insights and personalized upskilling
+                    <p style="margin-top: 0.5rem; margin-bottom: 1.5rem;">Transparent performance insights and
+                        personalized upskilling
                         recommendations.</p>
+                    <button class="btn btn-sm btn-primary" onclick="linkPage('feedback.html')"
+                        style="width: 100%; background: var(--accent); border-color: var(--accent);">View
+                        Insights</button>
                 </div>
 
                 <div class="glass-card animate-fade-in delay-300">
