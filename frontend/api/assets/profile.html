@@ -4,351 +4,489 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile | HiredUp</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="style.css">
+    <title>Candidate Dashboard | HiredUp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        .profile-wrapper {
-            padding-top: 80px;
-            padding-bottom: 80px;
-            background: #020617;
-            /* Darker bg for profile */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #0a0f2c, #020617);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            display: flex;
             min-height: 100vh;
         }
 
-        .input-group-v2 {
-            margin-bottom: 1.5rem;
+        /* LEFT PANEL */
+        .left {
+            flex: 3;
+            padding: 40px 60px;
         }
 
-        .input-field-v2 {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 1rem;
-            border-radius: 12px;
-            outline: none;
+        /* PROFILE HEADER */
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 40px;
         }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6d5cff, #3c5bff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            font-weight: 800;
+            box-shadow: 0 0 30px rgba(109, 92, 255, 0.3);
+            border: 4px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .name {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            background: linear-gradient(to bottom, #fff, #a2a7c7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(109, 92, 255, 0.15);
+            border: 1px solid rgba(109, 92, 255, 0.3);
+            padding: 5px 14px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 8px;
+            color: #8f85ff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .email {
+            color: #a2a7c7;
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+
+        .upload-status {
+            margin-top: 15px;
+            color: #9aa3d3;
+            font-size: 14px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .logout {
+            align-self: flex-start;
+            background: rgba(15, 22, 58, 0.5);
+            border: 1px solid rgba(75, 102, 255, 0.4);
+            padding: 12px 24px;
+            border-radius: 100px;
+            color: white;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .logout:hover {
+            background: rgba(244, 63, 94, 0.1);
+            border-color: #f43f5e;
+            color: #f43f5e;
+        }
+
+        /* ACTION BAR */
+        .actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .pill-btn {
+            background: rgba(14, 21, 53, 0.6);
+            border: 1px solid rgba(43, 58, 140, 0.5);
+            padding: 18px;
+            border-radius: 100px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .pill-btn:hover {
+            background: rgba(43, 58, 140, 0.3);
+            border-color: #4b66ff;
+            transform: translateY(-2px);
+        }
+
+        .ai-btn { flex: 2; }
+        .practice-btn { flex: 1; border-color: #4b66ff; background: rgba(75, 102, 255, 0.05); }
+
+        /* STATS GRID */
+        .stats {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .card {
+            background: rgba(11, 17, 43, 0.4);
+            padding: 30px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: rgba(109, 92, 255, 0.3);
+            transform: translateY(-5px);
+            background: rgba(11, 17, 43, 0.6);
+        }
+
+        .card h3 {
+            font-size: 13px;
+            color: #a6aacf;
+            letter-spacing: 1.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .card h1 {
+            margin-top: 20px;
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .pending { color: #38e6c5; }
+        .text-accent { color: #22d3ee; }
+
+        /* BUTTONS */
+        .buttons {
+            margin-top: 40px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .btn-large {
+            flex: 1;
+            padding: 18px;
+            border-radius: 100px;
+            font-weight: 800;
+            font-size: 18px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .leaderboard {
+            background: linear-gradient(90deg, #6d5cff, #3c5bff);
+            border: none;
+            color: white;
+            box-shadow: 0 15px 30px rgba(60, 91, 255, 0.3);
+        }
+
+        .leaderboard:hover {
+            transform: scale(1.02) translateY(-3px);
+            box-shadow: 0 20px 40px rgba(60, 91, 255, 0.5);
+        }
+
+        .start {
+            border: 1px solid rgba(75, 102, 255, 0.5);
+            background: rgba(255, 255, 255, 0.03);
+            color: white;
+        }
+
+        .start:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #4b66ff;
+        }
+
+        /* RESULTS BAR */
+        .results-trigger {
+            margin-top: 40px;
+            padding: 20px 30px;
+            background: rgba(11, 17, 43, 0.4);
+            border-radius: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #a6aacf;
+            transition: all 0.3s;
+        }
+
+        .results-trigger:hover {
+            background: rgba(11, 17, 43, 0.6);
+            border-color: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        #aptitude-results-container {
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        /* RIGHT PANEL */
+        .right {
+            flex: 1;
+            background: rgba(7, 13, 38, 0.7);
+            padding: 40px;
+            border-left: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .right h2 {
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .right label {
+            display: block;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #9aa3d3;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .right input,
+        .right textarea {
+            width: 100%;
+            margin-top: 8px;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(45, 55, 102, 0.6);
+            background: rgba(10, 15, 44, 0.5);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .right input:focus,
+        .right textarea:focus {
+            border-color: #6d5cff;
+            background: rgba(10, 15, 44, 0.8);
+            box-shadow: 0 0 15px rgba(109, 92, 255, 0.2);
+        }
+
+        .uploadbox {
+            margin-top: 15px;
+            padding: 40px 20px;
+            border: 2px dashed rgba(60, 79, 163, 0.5);
+            border-radius: 16px;
+            text-align: center;
+            color: #a4a9d5;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .uploadbox:hover {
+            border-color: #6d5cff;
+            background: rgba(109, 92, 255, 0.05);
+            color: #fff;
+        }
+
+        .save {
+            margin-top: 40px;
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 100px;
+            background: linear-gradient(90deg, #6d5cff, #9b4dff);
+            color: white;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 15px 30px rgba(155, 77, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+        .save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(155, 77, 255, 0.5);
+        }
+
+        .hidden { display: none !important; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
     </style>
 </head>
 
 <body>
 
-    <nav class="navbar">
-        <div class="container nav-container">
-            <a href="index.html" class="nav-logo">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#logo-grad)" stroke-width="2"
-                        stroke-linejoin="round" />
-                    <path d="M2 17L12 22L22 17" stroke="url(#logo-grad)" stroke-width="2" stroke-linejoin="round" />
-                    <path d="M2 12L12 17L22 12" stroke="url(#logo-grad)" stroke-width="2" stroke-linejoin="round" />
-                    <defs>
-                        <linearGradient id="logo-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="#4f46e5" />
-                            <stop offset="1" stop-color="#06b6d4" />
-                        </linearGradient>
-                    </defs>
-                </svg>
-                <span>HiredUp</span>
-            </a>
-            <div class="nav-actions">
-                <a href="index.html" class="btn btn-outline btn-sm">Home</a>
-                <a href="candidates.html" class="btn btn-outline btn-sm">Candidates</a>
-                <button onclick="logout()" class="btn btn-outline btn-sm">Logout</button>
-            </div>
-        </div>
-    </nav>
+    <div class="container">
 
-    <section class="profile-wrapper">
-        <div class="container" style="max-width: 800px;">
-            <div class="profile-card">
+        <!-- LEFT DASHBOARD -->
+        <div class="left">
 
-                <!-- Header Info -->
-                <div class="profile-hdr">
-                    <div class="avatar-v" id="avatarLetter">V</div>
-                    <div class="profile-info">
-                        <h1 id="p-name">Vansh</h1>
-                        <p id="p-role" class="badge">Candidate</p>
-                        <p id="p-email" style="color: var(--text-muted); margin-top: 0.5rem;">sample5@gmail.com</p>
+            <div class="profile">
+                <div class="avatar" id="avatarLetter">V</div>
+                <div class="profile-info">
+                    <div class="name" id="p-name">vansh</div>
+                    <div class="badge" id="p-role">Candidate</div>
+                    <div class="email" id="p-email">sample5@gmail.com</div>
 
-                        <div class="status-links">
-                            <span id="resumeStatus" class="status-link">Resume Uploaded ✓</span>
-                            <span id="certificateStatus" class="status-link">Certificate Uploaded ✓</span>
-                        </div>
+                    <div class="upload-status">
+                        <span id="resumeStatus">Resume Uploaded ✓</span>
+                        <span id="certificateStatus">Certificate Uploaded ✓</span>
                     </div>
-                    <button onclick="logout()" class="btn-primary btn-sm logout-tr"
-                        style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 1.5rem; border-radius: 100px;">Log
-                        Out ></button>
                 </div>
+                <button class="logout" onclick="logout()">Log Out ></button>
+            </div>
 
-                <!-- AI Performance Button -->
-                <button id="aiBtn" onclick="triggerAIAnalysis()" class="btn-ai-wide">
-                    🤖 Run AI Performance Analysis
+            <div class="actions">
+                <button id="aiBtn" onclick="triggerAIAnalysis()" class="pill-btn ai-btn">
+                    Run AI Performance Analysis
                 </button>
-                <div id="aiLoading" class="hidden text-sm text-info mt-2 text-center">
-                    AI Engine analyzing your code...
-                </div>
-
-                <!-- 2x2 Stats Grid -->
-                <div class="stats-2x2">
-                    <div class="stat-box-lite">
-                        <h4>Skills Score</h4>
-                        <p id="skillScoreDisplay" class="text-accent">Pending</p>
-                    </div>
-                    <div class="stat-box-lite">
-                        <h4>Tests Completed</h4>
-                        <p id="testsCompletedDisplay">12</p>
-                    </div>
-                    <div class="stat-box-lite">
-                        <h4>Profile Rank</h4>
-                        <p id="profileRankDisplay">N/A</p>
-                    </div>
-                    <div class="stat-box-lite">
-                        <h4>Profile Rank</h4>
-                        <p>N/A</p>
-                    </div>
-                </div>
-
-                <!-- Main Action Row -->
-                <div class="action-row">
-                    <a href="leaderboard.html" class="btn-leaderboard">View Leaderboard 🏆</a>
-                    <a href="http://localhost:5173" class="btn-practice-v2">Live Practice 💻</a>
-                </div>
-
-                <!-- Content Sections -->
-                <div id="profile-content" style="position: relative;">
-                    <!-- About Section -->
-                    <div class="section-container">
-                        <span class="section-label">About</span>
-                        <div id="about-display" class="display-text">Tell us about yourself...</div>
-                        <div id="about-edit" class="hidden input-group-v2">
-                            <textarea id="about" class="input-field-v2" rows="4"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Education Section -->
-                    <div class="section-container">
-                        <span class="section-label">Education</span>
-                        <div id="education-display" class="display-text">Add education...</div>
-                        <div id="education-edit" class="hidden input-group-v2">
-                            <input id="education" type="text" class="input-field-v2">
-                        </div>
-                    </div>
-
-                    <!-- Additional Details (Hidden in display mode if empty, or shown grouped) -->
-                    <div id="extra-edit" class="hidden">
-                        <div class="section-container">
-                            <span class="section-label">Experience</span>
-                            <div class="input-group-v2">
-                                <input id="experience" type="text" class="input-field-v2">
-                            </div>
-                        </div>
-                        <div class="section-container">
-                            <span class="section-label">Expertise</span>
-                            <div class="input-group-v2">
-                                <input id="expertise" type="text" class="input-field-v2">
-                            </div>
-                        </div>
-                        <div class="section-container">
-                            <span class="section-label">Contact No.</span>
-                            <div class="input-group-v2">
-                                <input id="phone" type="text" class="input-field-v2">
-                            </div>
-                        </div>
-                        <div class="section-container">
-                            <span class="section-label">Files</span>
-                            <div class="grid grid-cols-2 gap-4">
-                                <input type="file" id="resumeInput" class="input-field-v2" style="font-size: 0.8rem;">
-                                <input type="file" id="certificateInput" class="input-field-v2"
-                                    style="font-size: 0.8rem;">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Edit Toggle -->
-                    <button id="editToggle" onclick="toggleEditMode()" class="edit-details-btn">✎ Edit Details</button>
-
-                    <!-- Save Btn (Only in edit mode) -->
-                    <button id="saveBtn" onclick="saveProfile()" class="btn btn-primary btn-glow mt-8 w-full hidden">
-                        Save Changes
-                    </button>
-                </div>
-
-                <!-- RECRUITER VIEW -->
-                <div id="recruiter-view" class="hidden">
-                    <!-- RECRUITER ONBOARDING (JOB FORM) -->
-                    <div id="recruiter-onboarding" class="form-section">
-                        <div style="text-align: center; margin-bottom: 2rem;">
-                            <h3>Welcome, Recruiter!</h3>
-                            <p>To start finding the perfect candidates, please post your job requirements first.</p>
-                        </div>
-
-                        <div class="glass-card" style="padding: 2rem; border: 1px solid var(--border-subtle);">
-                            <h4 style="margin-bottom: 1.5rem; color: var(--accent);">Job Details</h4>
-                            <div class="grid grid-cols-2 gap-6" style="margin-bottom: 1rem;">
-                                <div class="input-group">
-                                    <input type="text" class="input-field" placeholder="Company Name" id="company-name">
-                                </div>
-                                <div class="input-group">
-                                    <input type="text" class="input-field" placeholder="Your Designation"
-                                        id="recruiter-role-input">
-                                </div>
-                            </div>
-
-                            <div class="input-group">
-                                <input type="text" class="input-field" placeholder="Job Title" id="job-title">
-                            </div>
-
-                            <div class="input-group">
-                                <textarea class="input-field" placeholder="Job Description" id="job-desc"
-                                    style="resize: vertical; min-height: 100px;"></textarea>
-                            </div>
-
-                            <div class="input-group">
-                                <input type="text" class="input-field" placeholder="Required Skills (comma separated)"
-                                    id="job-skills">
-                                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">e.g.,
-                                    Python,
-                                    React, AI/ML, Data Structures</p>
-                            </div>
-
-                            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
-                                <button class="btn btn-primary btn-glow" id="post-job-btn" style="width: 100%;"
-                                    onclick="window.location.href='post-job.html'">Post Mission (Advanced)</button>
-                            </div>
-                            <div style="text-align: center; margin-top: 1rem; opacity: 0.5; font-size: 0.8rem;">
-                                Redirects to Elite Post-Job Console
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- RECRUITER DASHBOARD -->
-                    <div id="recruiter-dashboard" class="hidden">
-                        <!-- Context Header -->
-                        <div
-                            style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                            <div>
-                                <h3 id="dash-job-title" style="margin-bottom: 0.25rem;">Command Center</h3>
-                                <p id="dash-company" style="margin-bottom: 0; color: var(--accent);">Active Missions</p>
-                            </div>
-                            <div style="display: flex; gap: 1rem;">
-                                <a href="leaderboard.html" class="btn btn-sm btn-primary"
-                                    style="background: rgba(124, 58, 237, 0.2); border: 1px solid rgba(124, 58, 237, 0.4); border-radius: 8px; padding: 0.5rem 1rem;">View
-                                    Leaderboard</a>
-                                <a href="post-job.html" class="btn btn-sm btn-outline"
-                                    style="border-radius: 8px; padding: 0.5rem 1rem;">Post Another Job</a>
-                            </div>
-                        </div>
-
-                        <!-- Stats Row -->
-                        <div class="stats-2x2">
-                            <div class="stat-box-lite">
-                                <h4>Active Missions</h4>
-                                <p id="stats-jobs">0</p>
-                            </div>
-                            <div class="stat-box-lite">
-                                <h4>Identified Assets</h4>
-                                <p id="stats-candidates">0</p>
-                            </div>
-                            <div class="stat-box-lite">
-                                <h4>Match Precision</h4>
-                                <p id="stats-score" class="text-success">0%</p>
-                            </div>
-                            <div class="stat-box-lite">
-                                <h4>System Status</h4>
-                                <p class="text-success">Ready</p>
-                            </div>
-                        </div>
-
-                        <!-- Dynamic Missions Grid -->
-                        <div class="form-section">
-                            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Active Hunt Missions</h3>
-                            <div id="jobs-grid" class="grid grid-cols-2 gap-6 mb-8">
-                                <div class="glass-card text-center text-muted opacity-30">SCANNING SECTORS...</div>
-                            </div>
-                        </div>
-
-                        <!-- Candidates List -->
-                        <div class="form-section">
-                            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Top Candidate Spectrum</h3>
-                            <div id="applicants-list" class="flex flex-col" style="gap: 1rem;">
-                                <div class="glass-card text-center opacity-30">AWAITING ELITE INFILTRATIONS...</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                <a href="http://localhost:5173" class="pill-btn practice-btn">
+                    Live Practice
+                </a>
             </div>
+
+            <div class="stats">
+                <div class="card">
+                    <h3>TOTAL TESTS COMPLETED</h3>
+                    <h1 id="testsCompletedDisplay">12</h1>
+                </div>
+                <div class="card">
+                    <h3>SKILLS SCORE</h3>
+                    <h1 class="pending" id="skillScoreDisplay">Pending</h1>
+                </div>
+                <div class="card">
+                    <h3>ACCURACY</h3>
+                    <h1>N/A</h1>
+                </div>
+                <div class="card">
+                    <h3>PROFILE RANK</h3>
+                    <h1>N/A</h1>
+                </div>
+                <div class="card">
+                    <h3>PROFILE RANK</h3>
+                    <h1>N/A</h1>
+                </div>
+                <div class="card">
+                    <h3>PROFILE RANK</h3>
+                    <h1>N/A</h1>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <a href="leaderboard.html" class="btn-large leaderboard">
+                    View Leaderboard 🏆
+                </a>
+                <a href="http://localhost:5173" class="btn-large start">
+                    Start Practice
+                </a>
+            </div>
+
+            <div class="results-trigger" onclick="toggleAptitudeResults()">
+                <span>Aptitude Assessment Results</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </div>
+            <div id="aptitude-results-container" class="hidden"></div>
+
         </div>
-    </section>
 
+        <!-- RIGHT PANEL -->
+        <aside class="right">
+            <h2>Edit Profile</h2>
+
+            <label>About</label>
+            <textarea id="about" rows="4" placeholder="Tell us about yourself..."></textarea>
+
+            <label>Education</label>
+            <input type="text" id="education" placeholder="Education background">
+
+            <label>Experience</label>
+            <input type="text" id="experience" placeholder="Years of experience">
+
+            <label>Expertise</label>
+            <input type="text" id="expertise" placeholder="Skills & Expertise">
+
+            <label>Contact No.</label>
+            <input type="text" id="phone" placeholder="Phone number">
+
+            <label>Upload Files</label>
+            <div class="uploadbox" onclick="document.getElementById('resumeInput').click()">
+                <div style="font-size: 2rem; margin-bottom: 10px;">📄</div>
+                Drag & drop your <span style="color: #6d5cff; text-decoration: underline;">resume</span>
+            </div>
+            <input type="file" id="resumeInput" class="hidden">
+            <input type="file" id="certificateInput" class="hidden">
+
+            <button class="save" onclick="saveProfile()">
+                Save Changes
+            </button>
+        </aside>
+
+    </div>
+
+    <!-- Logic Script -->
+    <script src="app.js"></script>
     <script>
-        let isEditMode = false;
-
-        function toggleEditMode() {
-            isEditMode = !isEditMode;
-            const btn = document.getElementById('editToggle');
-            const saveBtn = document.getElementById('saveBtn');
-
-            // About
-            document.getElementById('about-display').classList.toggle('hidden', isEditMode);
-            document.getElementById('about-edit').classList.toggle('hidden', !isEditMode);
-
-            // Education
-            document.getElementById('education-display').classList.toggle('hidden', isEditMode);
-            document.getElementById('education-edit').classList.toggle('hidden', !isEditMode);
-
-            // Extras
-            document.getElementById('extra-edit').classList.toggle('hidden', !isEditMode);
-
-            saveBtn.classList.toggle('hidden', !isEditMode);
-            btn.textContent = isEditMode ? '✖ Cancel' : '✎ Edit Details';
-
-            if (!isEditMode) loadProfile(); // Re-sync display values if canceled
-        }
-
         const user = JSON.parse(localStorage.getItem("hiredUpUser"));
         if (!user) {
             window.location.href = "auth.html";
         } else {
-            document.getElementById("p-name").textContent = user.fullname;
+            document.getElementById("p-name").textContent = user.fullname.toLowerCase();
             document.getElementById("p-email").textContent = user.email;
             document.getElementById("p-role").textContent = user.role;
             document.getElementById("avatarLetter").textContent = user.fullname.charAt(0).toUpperCase();
 
-            // Role-based view toggle
-            const profileCard = document.querySelector('.profile-card');
-            const recruiterView = document.getElementById('recruiter-view');
-            const candidateStats = document.querySelector('.stats-2x2');
-            const aiBtn = document.getElementById('aiBtn');
-            const actionRow = document.querySelector('.action-row');
-            const candidateContent = document.getElementById('profile-content');
+            loadProfile();
+            loadAptitudeResults();
+        }
 
-            if (user.role === 'Recruiter') {
-                // Hide Candidate specific UI
-                if (candidateStats) candidateStats.classList.add('hidden');
-                if (aiBtn) aiBtn.classList.add('hidden');
-                if (actionRow) actionRow.classList.add('hidden');
-                if (candidateContent) candidateContent.classList.add('hidden');
-
-                // Show Recruiter Dashboard
-                if (recruiterView) {
-                    recruiterView.classList.remove('hidden');
-                    document.getElementById('recruiter-dashboard')?.classList.remove('hidden');
-                    document.getElementById('recruiter-onboarding')?.classList.add('hidden');
-                    loadJobs();
-                    loadCandidates();
-                }
-            } else {
-                // Candidate View (default)
-                if (recruiterView) recruiterView.classList.add('hidden');
-                if (candidateContent) candidateContent.classList.remove('hidden');
-                loadProfile();
-            }
+        function toggleAptitudeResults() {
+            const container = document.getElementById('aptitude-results-container');
+            container.classList.toggle('hidden');
         }
 
         async function safeFetch(url, options) {
@@ -356,97 +494,66 @@
             catch (e) { return await fetch(url.replace('localhost', '127.0.0.1'), options); }
         }
 
-        // 🤖 AI ANALYSIS FUNCTION
+        function loadProfile() {
+            fetch(`http://localhost:5000/api/auth/profile/${user.email}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data) return;
+                    document.getElementById("about").value = data.about || "";
+                    document.getElementById("education").value = data.education || "";
+                    document.getElementById("experience").value = data.experience || "";
+                    document.getElementById("expertise").value = data.expertise || "";
+                    document.getElementById("phone").value = data.phone || "";
+
+                    if (user.skillScore) {
+                        document.getElementById("skillScoreDisplay").textContent = user.skillScore + "%";
+                        document.getElementById("skillScoreDisplay").classList.remove("pending");
+                    }
+
+                    document.getElementById("resumeStatus").textContent = data.resume ? "Resume Uploaded ✓" : "Resume Not Uploaded";
+                    document.getElementById("certificateStatus").textContent = data.certificate ? "Certificate Uploaded ✓" : "Certificate Not Uploaded";
+                });
+        }
+
+        async function loadAptitudeResults() {
+            const container = document.getElementById('aptitude-results-container');
+            try {
+                const res = await safeFetch(`http://localhost:5001/api/aptitude/results/${user._id}`);
+                const results = await res.json();
+                if (results.length > 0) {
+                    container.innerHTML = results.map(r => `
+                        <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05);">
+                            <div>
+                                <div style="font-weight: 700; font-size: 1.1rem; color: #fff;">${r.topic}</div>
+                                <div style="font-size: 0.85rem; color: #a2a7c7; margin-top: 4px;">${r.category} • ${new Date(r.completedAt).toLocaleDateString()}</div>
+                            </div>
+                            <div style="font-weight: 800; color: #38e6c5; font-size: 1.4rem;">${r.score}%</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) { console.error("Aptitude fetch failed", err); }
+        }
+
         async function triggerAIAnalysis() {
             const aiBtn = document.getElementById("aiBtn");
-            const loading = document.getElementById("aiLoading");
-
+            const originalHTML = aiBtn.innerHTML;
+            aiBtn.innerHTML = "⏳ Analyzing Performance...";
             aiBtn.disabled = true;
-            loading.classList.remove("hidden");
 
             try {
                 const subRes = await fetch("http://localhost:5001/api/submissions");
                 const submissions = await subRes.json();
-
-                if (!submissions || submissions.length === 0) {
-                    alert("No code submissions found to analyze. Please go to Live Code practice first!");
-                    aiBtn.disabled = false;
-                    loading.classList.add("hidden");
-                    return;
-                }
-
-                const aiData = {
-                    responses: submissions.map(s => ({
-                        domain: "Technical",
-                        is_correct: s.status === "Accepted",
-                        time_taken: parseInt(s.executionTime) || 120,
-                        difficulty: "medium"
-                    }))
-                };
-
-                const aiRes = await fetch("http://localhost:8000/api/ai/score", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(aiData)
-                });
+                const aiData = { responses: submissions.map(s => ({ domain: "Technical", is_correct: s.status === "Accepted", time_taken: 120, difficulty: "medium" })) };
+                const aiRes = await fetch("http://localhost:8000/api/ai/score", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(aiData) });
                 const scores = await aiRes.json();
-
-                const techScore = scores.Technical || { total_score: 0 };
-                const finalScore = techScore.total_score;
-
+                const finalScore = scores.Technical.total_score;
                 document.getElementById("skillScoreDisplay").textContent = finalScore + "%";
-                document.getElementById("profileRankDisplay").textContent = finalScore > 85 ? "Top 5%" : (finalScore > 70 ? "Top 15%" : "Top 40%");
-                document.getElementById("testsCompletedDisplay").textContent = submissions.length;
-
+                document.getElementById("skillScoreDisplay").classList.remove("pending");
                 user.skillScore = finalScore;
                 localStorage.setItem("hiredUpUser", JSON.stringify(user));
-
-                alert("AI Analysis Complete! Your profile has been updated.");
-
-            } catch (err) {
-                console.error("AI Analysis failed:", err);
-                alert("AI Engine is offline or could not reach the server. Please ensure AI backend is running.");
-            } finally {
-                aiBtn.disabled = false;
-                loading.classList.add("hidden");
-            }
-        }
-
-        function loadProfile() {
-            if (user.skillScore) {
-                document.getElementById("skillScoreDisplay").textContent = user.skillScore + "%";
-                document.getElementById("profileRankDisplay").textContent = user.skillScore > 85 ? "Top 5%" : (user.skillScore > 70 ? "Top 15%" : "Top 40%");
-            }
-
-            fetch(`http://localhost:5000/api/auth/profile/${user.email}?t=${new Date().getTime()}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (!data) return;
-
-                    // Text Displays
-                    document.getElementById("about-display").textContent = data.about || "Write something about yourself...";
-                    document.getElementById("education-display").textContent = data.education || "Add education...";
-
-                    // Form Fields
-                    if (document.getElementById("about")) document.getElementById("about").value = data.about || "";
-                    if (document.getElementById("education")) document.getElementById("education").value = data.education || "";
-                    if (document.getElementById("experience")) document.getElementById("experience").value = data.experience || "";
-                    if (document.getElementById("expertise")) document.getElementById("expertise").value = data.expertise || "";
-                    if (document.getElementById("phone")) document.getElementById("phone").value = data.phone || "";
-
-                    if (data.resume) {
-                        document.getElementById("resumeStatus").innerHTML = `<a href="http://localhost:5000/uploads/${data.resume}" target="_blank" style="color: inherit;">Resume Uploaded ✓</a>`;
-                    } else {
-                        document.getElementById("resumeStatus").textContent = "Resume Not Uploaded";
-                    }
-
-                    if (data.certificate) {
-                        document.getElementById("certificateStatus").innerHTML = `<a href="http://localhost:5000/uploads/${data.certificate}" target="_blank" style="color: inherit;">Certificate Uploaded ✓</a>`;
-                    } else {
-                        document.getElementById("certificateStatus").textContent = "Certificate Not Uploaded";
-                    }
-                })
-                .catch(err => console.error("Error loading profile:", err));
+                alert("AI Performance Analysis Finished!");
+            } catch (err) { alert("AI Engine Not Reachable."); }
+            finally { aiBtn.innerHTML = originalHTML; aiBtn.disabled = false; }
         }
 
         function saveProfile() {
@@ -457,81 +564,16 @@
             formData.append("experience", document.getElementById("experience").value);
             formData.append("expertise", document.getElementById("expertise").value);
             formData.append("phone", document.getElementById("phone").value);
-
             const resumeFile = document.getElementById("resumeInput").files[0];
-            const certificateFile = document.getElementById("certificateInput").files[0];
-
             if (resumeFile) formData.append("resume", resumeFile);
-            if (certificateFile) formData.append("certificate", certificateFile);
 
-            fetch("http://localhost:5000/api/auth/profile", {
-                method: "POST",
-                body: formData
-            })
+            fetch("http://localhost:5000/api/auth/profile", { method: "POST", body: formData })
                 .then(res => res.json())
-                .then(result => {
-                    alert(result.message || "Profile saved successfully");
-                    toggleEditMode(); // Switch back to display mode
-                })
-                .catch(err => {
-                    alert("Error saving profile");
-                    console.error(err);
-                });
+                .then(() => { alert("Profile Successfully Updated!"); loadProfile(); })
+                .catch(() => alert("Profile Update Failed."));
         }
 
-        async function loadJobs() {
-            const grid = document.getElementById('jobs-grid');
-            try {
-                const res = await safeFetch('http://localhost:5000/api/jobs');
-                const jobs = await res.json();
-                if (jobs.length > 0) {
-                    grid.innerHTML = '';
-                    document.getElementById('stats-jobs').textContent = jobs.length;
-                    jobs.forEach(job => {
-                        const card = document.createElement('div');
-                        card.className = 'glass-card';
-                        card.style.padding = '1.5rem';
-                        card.innerHTML = `
-                            <h4 class="text-primary" style="margin-bottom: 0.5rem;">${job.title}</h4>
-                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem;">${job.description.substring(0, 80)}...</p>
-                            <button class="btn-outline btn-sm" style="width: 100%;" onclick="window.location.href='post-job.html'">Manage Mission</button>
-                        `;
-                        grid.appendChild(card);
-                    });
-                }
-            } catch (err) { console.error("Jobs load failed", err); }
-        }
-
-        async function loadCandidates() {
-            const list = document.getElementById('applicants-list');
-            try {
-                const res = await safeFetch('http://localhost:5001/api/submissions');
-                const submissions = await res.json();
-                if (submissions.length > 0) {
-                    list.innerHTML = '';
-                    document.getElementById('stats-candidates').textContent = submissions.length;
-                    document.getElementById('stats-score').textContent = '92%';
-                    submissions.forEach(sub => {
-                        const item = document.createElement('div');
-                        item.className = 'glass-card flex justify-between items-center';
-                        item.style.padding = '1rem';
-                        item.innerHTML = `
-                            <div>
-                                <strong style="font-size: 0.875rem;">AGENT_${sub._id.slice(-5).toUpperCase()}</strong>
-                                <span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 0.5rem;">Technical Proficiency</span>
-                            </div>
-                            <div style="color: var(--accent); font-weight: bold; font-size: 0.875rem;">${Math.floor(Math.random() * 10) + 88}% Match</div>
-                        `;
-                        list.appendChild(item);
-                    });
-                }
-            } catch (err) { console.error("Candidates load failed", err); }
-        }
-
-        function logout() {
-            localStorage.removeItem("hiredUpUser");
-            window.location.href = "index.html";
-        }
+        function logout() { localStorage.removeItem("hiredUpUser"); window.location.href = "index.html"; }
     </script>
 </body>
 
