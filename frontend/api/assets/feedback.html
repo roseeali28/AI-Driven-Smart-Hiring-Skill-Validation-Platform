@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidates | HiredUp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0B0E14;
+            --bg-card: rgba(11, 14, 20, 0.7);
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --primary: #6C63FF;
+            --primary-hover: #5a52d5;
+            --accent: #00F5D4;
+            --text-main: #FFFFFF;
+            --text-muted: #94A3B8;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --radius: 16px;
+            --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(108, 99, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 245, 212, 0.1) 0%, transparent 40%);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #FFFFFF, #e9d5ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .navbar-minimal {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Grid Layout */
+        .candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .candidates-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .candidates-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Candidate Card */
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #fff;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .primary-skill {
+            display: inline-block;
+            background: rgba(108, 99, 255, 0.15);
+            color: var(--primary);
+            padding: 0.35rem 1rem;
+            border-radius: 99px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(108, 99, 255, 0.2);
+        }
+
+        .experience {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            background: var(--primary);
+            color: #fff;
+            padding: 0.85rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 0 15px rgba(108, 99, 255, 0.4);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: #111827;
+            border: 1px solid var(--border-subtle);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 20px;
+            padding: 3rem;
+            position: relative;
+            transform: scale(0.9);
+            transition: var(--transition);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            color: var(--text-main);
+        }
+
+        .modal-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        /* Skills List */
+        .skills-list {
+            list-style: none;
+            margin-bottom: 2.5rem;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .skill-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            color: #f1f5f9;
+        }
+
+        .checkmark {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* Progress Bars */
+        .progress-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            width: 0;
+            transition: width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border-radius: 5px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <nav class="navbar-minimal">
+            <a href="index.html" class="logo">HiredUp</a>
+        </nav>
+
+        <header>
+            <h1>Verified Candidates</h1>
+            <p>Expert-level talent pre-vetted by our AI engine.</p>
+        </header>
+
+        <div class="candidates-grid" id="candidatesGrid">
+            <!-- Cards will be injected by JS -->
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <button class="close-btn" id="closeModal">&times;</button>
+            <h2 class="modal-title" id="modalName">Candidate Skills</h2>
+
+            <div
+                style="margin-bottom: 1rem; font-weight: 600; font-size: 0.875rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">
+                Core Competencies</div>
+            <ul class="skills-list" id="skillsList">
+                <!-- Skills injected by JS -->
+            </ul>
+
+            <div
+                style="margin-bottom: 1rem; font-weight: 600; font-size: 0.875rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">
+                Proficiency Levels</div>
+            <div class="progress-section" id="progressSection">
+                <!-- Progress bars injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let candidates = [];
+
+        const grid = document.getElementById('candidatesGrid');
+        const modal = document.getElementById('modalOverlay');
+        const closeModal = document.getElementById('closeModal');
+        const modalName = document.getElementById('modalName');
+        const skillsList = document.getElementById('skillsList');
+        const progressSection = document.getElementById('progressSection');
+
+        async function fetchCandidates() {
+            try {
+                // Try localhost first, then 127.0.0.1
+                let res;
+                try {
+                    res = await fetch('http://localhost:5000/api/auth/candidates');
+                } catch (e) {
+                    res = await fetch('http://127.0.0.1:5000/api/auth/candidates');
+                }
+
+                if (!res.ok) throw new Error('Failed to fetch');
+                candidates = await res.json();
+
+                // Map real data to UI format
+                candidates = candidates.map(c => ({
+                    name: c.fullname,
+                    skill: c.expertise || "Developer",
+                    experience: c.experience || "Entry Level",
+                    avatar: c.fullname.charAt(0).toUpperCase(),
+                    skills: c.expertise ? c.expertise.split(',').map(s => s.trim()) : ["JavaScript", "Logic"],
+                    scores: { "JavaScript": 85, "React": 75, "Node.js": 70, "Python": 65 } // Stats remain mocked for visual flair
+                }));
+
+                renderCandidates();
+            } catch (err) {
+                console.error('Error:', err);
+                grid.innerHTML = '<div class="card p-20 col-span-3 text-center opacity-50"><h3>CONNECTION_ERROR</h3><p>Ensure Backend Server (Port 5000) is running.</p></div>';
+            }
+        }
+
+        // Render Grid
+        function renderCandidates() {
+            if (candidates.length === 0) {
+                grid.innerHTML = '<div class="card p-20 col-span-3 text-center opacity-50"><h3>NO_DATA_FOUND</h3><p>Starting sector scan... Awaiting new registrations.</p></div>';
+                return;
+            }
+            grid.innerHTML = candidates.map((c, index) => `
+            <div class="card fade-in" style="animation-delay: ${index * 0.1}s">
+                <div class="avatar">${c.avatar}</div>
+                <h3 class="name">${c.name}</h3>
+                <span class="primary-skill">${c.skill}</span>
+                <span class="experience">${c.experience}</span>
+                <button class="btn" onclick="openSkillModal(${index})">View Skills</button>
+            </div>
+        `).join('');
+        }
+
+        // Modal Logic
+        window.openSkillModal = function (index) {
+            const c = candidates[index];
+            modalName.textContent = c.name + "'s Profile";
+
+            // Render Skills List
+            skillsList.innerHTML = c.skills.map(s => `
+            <li class="skill-item"><span class="checkmark">✔</span> ${s}</li>
+        `).join('');
+
+            // Render Progress Bars
+            progressSection.innerHTML = c.skills.map(s => `
+            <div class="progress-item">
+                <div class="progress-label">
+                    <span>${s}</span>
+                    <span>${c.scores[s] || 80}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-percent="${c.scores[s] || 80}"></div>
+                </div>
+            </div>
+        `).join('');
+
+            modal.classList.add('active');
+
+            setTimeout(() => {
+                const fills = document.querySelectorAll('.progress-fill');
+                fills.forEach(fill => {
+                    const percent = fill.getAttribute('data-percent');
+                    fill.style.width = percent + '%';
+                });
+            }, 100);
+        };
+
+        closeModal.onclick = () => {
+            modal.classList.remove('active');
+        };
+
+        // Close on overlay click
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', fetchCandidates);
+    </script>
+
+</body>
+
+</html>
