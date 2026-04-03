@@ -1,0 +1,47 @@
+=======================================================
+  AI RESUME ANALYZER ù VALIDATION RESULTS
+=======================================================
+  Candidate       : John Doe
+  Final Score     : 86.1/100  (Grade: A)
+  Recommendation  : Strong Yes
+  Technical Level : Advanced
+  Performance     : 81.7/100
+  Job Match       : 100.0%
+  Keyword Match   : 66.7%
+  Ideal Role      : Backend Engineer
+  Salary Estimate : $145,000 û $225,000 / yr (USD)
+  Years Exp       : 5.0
+-------------------------------------------------------
+  Top Keywords    : ['PostgreSQL / SQL', 'AWS / Cloud', 'Agile / Scrum', 'Docker / Containerization', 'Golang', 'MongoDB / NoSQL']
+  Matching Skills : ['Python', 'Docker / Containerization', 'Python / Backend', 'AWS / Cloud']
+  Missing Skills  : ['CI/CD / DevOps', 'Kubernetes / Orchestration']
+  Skills to Learn : ['Kubernetes / Orchestration', 'CI/CD / DevOps']
+-------------------------------------------------------
+  STRENGTHS:
+    + Demonstrates advanced technical depth across 2 complex domains
+    + 5+ years of industry experience ù proven track record
+    + Strong job fit (100.0% skill alignment with role)
+    + Demonstrates transferable concepts beyond listed keywords
+    + Evidence of test-driven development
+    + Participates in code reviews
+    + Applies design patterns / SOLID principles
+  WEAKNESSES:
+    - Missing key required skills: CI/CD / DevOps, Kubernetes / Orchestration
+    - Resume uses 3 passive/weak phrases ù reduces ATS impact
+  Risk Factors    : []
+-------------------------------------------------------
+  SCORE BREAKDOWN:
+    resume_quality             score= 76.0  weight=0.25  contrib=19.0
+    skill_match                score=100.0  weight=0.3  contrib=30.0
+    performance                score= 81.7  weight=0.3  contrib=24.5
+    experience_relevance       score= 84.0  weight=0.15  contrib=12.6
+-------------------------------------------------------
+  Summary: Exceptional candidate ù strong technical depth, high job alignment, and polished resume.
+-------------------------------------------------------
+  INTERVIEW FOCUS:
+    ò Assess depth on: CI/CD / DevOps, Kubernetes / Orchestration
+    ò System design & architectural decision-making
+    ò Trade-off analysis in distributed systems
+=======================================================
+  ALL SECTIONS PASSED ù module is fully functional.
+=======================================================
