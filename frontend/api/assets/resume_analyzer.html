@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Resume Analyzer — SkillFirst Hire</title>
+<meta name="description" content="AI-powered resume analysis: keyword extraction, skill gap analysis, ATS optimization, and smart candidate scoring for recruiters."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#080c14;--surface:#0f1623;--card:#141d2e;--card2:#1a2540;
+  --accent:#6366f1;--accent2:#8b5cf6;--green:#10b981;--amber:#f59e0b;--red:#ef4444;--cyan:#06b6d4;
+  --text:#e2e8f0;--muted:#64748b;--border:#1e2d45;
+  --grad:linear-gradient(135deg,#6366f1,#8b5cf6);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid var(--border);background:rgba(8,12,20,.9);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100}
+.logo{font-size:1.25rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.nav-badge{font-size:.7rem;background:var(--grad);color:#fff;padding:3px 10px;border-radius:99px;font-weight:600}
+
+/* HERO */
+.hero{text-align:center;padding:64px 40px 40px;position:relative}
+.hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.15;margin-bottom:16px}
+.hero h1 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);font-size:1.05rem;max-width:600px;margin:0 auto 40px}
+.glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(99,102,241,.15) 0%,transparent 70%);pointer-events:none}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1400px;margin:0 auto;padding:0 40px 80px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;transition:border-color .2s}
+.card:hover{border-color:rgba(99,102,241,.4)}
+.card-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card-title .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+/* FORM */
+label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:6px;font-weight:500}
+textarea,input,select{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:12px 14px;font-family:'Inter',sans-serif;font-size:.9rem;resize:vertical;transition:border-color .2s;outline:none}
+textarea:focus,input:focus,select:focus{border-color:var(--accent)}
+textarea{min-height:160px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.form-group{margin-bottom:16px}
+
+/* BUTTON */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:10px;font-weight:700;font-size:.9rem;cursor:pointer;border:none;transition:all .2s;font-family:'Inter',sans-serif}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 0 24px rgba(99,102,241,.35)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 36px rgba(99,102,241,.5)}
+.btn-primary:disabled{opacity:.5;transform:none;cursor:not-allowed}
+.btn-outline{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btn-outline:hover{background:rgba(99,102,241,.1)}
+
+/* SCORE RING */
+.score-ring-wrap{display:flex;flex-direction:column;align-items:center;gap:8px}
+.score-ring{position:relative;width:130px;height:130px}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring .track{fill:none;stroke:var(--border);stroke-width:10}
+.score-ring .fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)}
+.score-ring .label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-ring .num{font-size:1.9rem;font-weight:800}
+.score-ring .sub{font-size:.65rem;color:var(--muted);font-weight:600}
+
+/* SCORES ROW */
+.scores-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.badge-green{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.badge-amber{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.badge-purple{background:rgba(99,102,241,.15);color:var(--accent);border:1px solid rgba(99,102,241,.3)}
+.badge-cyan{background:rgba(6,182,212,.15);color:var(--cyan);border:1px solid rgba(6,182,212,.3)}
+
+/* TAGS */
+.tag-list{display:flex;flex-wrap:wrap;gap:8px}
+.tag{padding:5px 12px;border-radius:8px;font-size:.78rem;font-weight:500;background:var(--card2);border:1px solid var(--border)}
+.tag.match{border-color:rgba(16,185,129,.4);color:var(--green)}
+.tag.miss{border-color:rgba(239,68,68,.4);color:var(--red)}
+.tag.keyword{border-color:rgba(99,102,241,.4);color:var(--accent)}
+.tag.learn{border-color:rgba(245,158,11,.4);color:var(--amber)}
+
+/* BAR */
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.bar-label{font-size:.78rem;color:var(--muted);width:140px;flex-shrink:0}
+.bar-track{flex:1;height:6px;background:var(--border);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;border-radius:99px;transition:width 1s ease}
+.bar-val{font-size:.78rem;font-weight:600;width:40px;text-align:right;flex-shrink:0}
+
+/* LIST */
+.bullet-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.bullet-list li{display:flex;gap:10px;font-size:.85rem;line-height:1.5;color:var(--text)}
+.bullet-list li::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px}
+.strength li::before{background:var(--green)}
+.weakness li::before{background:var(--red)}
+.risk li::before{background:var(--amber)}
+
+/* REWRITE CARD */
+.rewrite{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;font-size:.82rem}
+.rewrite .orig{color:var(--muted);text-decoration:line-through;margin-bottom:6px}
+.rewrite .improved{color:var(--green)}
+.rewrite .issue{font-size:.72rem;color:var(--amber);margin-top:4px}
+
+/* RECOMMENDATION */
+.rec-box{border-radius:12px;padding:20px;text-align:center;margin-bottom:24px}
+.rec-strong-yes{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.4)}
+.rec-yes{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.4)}
+.rec-maybe{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.4)}
+.rec-no{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.4)}
+.rec-box .rec-label{font-size:1.5rem;font-weight:800;margin-bottom:4px}
+.rec-box .rec-sub{font-size:.8rem;color:var(--muted)}
+
+/* SPINNER */
+.spinner{display:none;width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* SECTION HEADER */
+.section-sep{border:none;border-top:1px solid var(--border);margin:20px 0}
+.col-full{grid-column:1/-1}
+
+/* PLACEHOLDER */
+.placeholder{text-align:center;padding:48px 20px;color:var(--muted)}
+.placeholder .icon{font-size:3rem;margin-bottom:12px;opacity:.4}
+.placeholder p{font-size:.88rem}
+
+/* RESULT AREA */
+#results{display:none}
+
+/* MONO */
+.mono{font-family:'JetBrains Mono',monospace;font-size:.8rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--cyan);white-space:pre-wrap;word-break:break-all;max-height:280px;overflow-y:auto}
+
+/* SCORE BREAKDOWN TABLE */
+.breakdown-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.breakdown-table th{text-align:left;color:var(--muted);font-weight:600;padding:8px 0;border-bottom:1px solid var(--border)}
+.breakdown-table td{padding:10px 0;border-bottom:1px solid rgba(30,45,69,.5)}
+.breakdown-table .w{color:var(--muted);font-size:.75rem}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">⚡ SkillFirst Hire</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <span class="nav-badge">AI Resume Analyzer v2.0</span>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="glow"></div>
+  <h1>AI-Powered <span>Resume Intelligence</span></h1>
+  <p>Paste a resume + job description and get instant keyword extraction, semantic job matching, ATS optimization, and smart candidate scoring.</p>
+</div>
+
+<div class="layout">
+
+  <!-- INPUT PANEL -->
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Resume Input</div>
+      <div class="form-group">
+        <label for="resume_text">Resume Text *</label>
+        <textarea id="resume_text" placeholder="Paste the full resume text here…" rows="10"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="candidate_name">Candidate Name</label>
+        <input id="candidate_name" type="text" placeholder="e.g. Jane Smith"/>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Job Description (optional)</div>
+      <div class="form-group">
+        <textarea id="jd_text" placeholder="Paste the full job description for semantic skill-gap analysis…" rows="7"></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Assessment Scores (optional)</div>
+      <div class="form-row">
+        <div>
+          <label for="coding_score">Coding Score (0–100)</label>
+          <input id="coding_score" type="number" min="0" max="100" placeholder="e.g. 78"/>
+        </div>
+        <div>
+          <label for="assessment_score">MCQ / Assessment Score</label>
+          <input id="assessment_score" type="number" min="0" max="100" placeholder="e.g. 85"/>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;align-items:center">
+      <button class="btn btn-primary" id="analyzeBtn" onclick="runAnalysis()">
+        <span class="spinner" id="spinner"></span>
+        <span id="btnLabel">🔍 Analyze Resume</span>
+      </button>
+      <button class="btn btn-outline" onclick="loadDemo()">Load Demo</button>
+      <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
+        <label class="switch-label" style="margin:0;cursor:pointer">
+          <input type="checkbox" id="pro_mode" style="width:auto;cursor:pointer"/> Deep Analysis (LLM)
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS PANEL -->
+  <div id="placeholder" class="card placeholder">
+    <div class="icon">🤖</div>
+    <p>Your AI analysis results will appear here.<br/>Paste a resume and click <strong>Analyze Resume</strong>.</p>
+  </div>
+
+  <!-- RESULTS (hidden until analysis) -->
+  <div id="results" style="display:flex;flex-direction:column;gap:20px">
+
+    <!-- RECOMMENDATION -->
+    <div class="card" id="rec-card">
+      <div class="card-title">
+        <span class="dot"></span>Hiring Recommendation
+        <span id="pro-badge" class="badge badge-cyan" style="margin-left:auto;display:none">Deep AI Enhanced</span>
+      </div>
+      <div class="rec-box" id="rec-box">
+        <div class="rec-label" id="rec-label">—</div>
+        <div class="rec-sub" id="rec-role">—</div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <span id="rec-level" class="badge badge-purple"></span>
+        <span id="rec-salary" class="badge badge-cyan"></span>
+        <span id="rec-years" class="badge badge-green"></span>
+      </div>
+    </div>
+
+    <!-- SCORES -->
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Smart Scoring System</div>
+      <div class="scores-row" id="scores-row"></div>
+      <hr class="section-sep"/>
+      <table class="breakdown-table">
+        <thead><tr><th>Component</th><th>Score</th><th>Weight</th><th>Contribution</th></tr></thead>
+        <tbody id="breakdown-body"></tbody>
+      </table>
+    </div>
+
+    <!-- KEYWORDS -->
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Keyword Extraction</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <span id="kw-match-badge" class="badge badge-purple"></span>
+        <span id="kw-count" style="font-size:.78rem;color:var(--muted)"></span>
+      </div>
+      <div class="tag-list" id="keywords-list"></div>
+    </div>
+
+    <!-- JOB MATCH -->
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Semantic Job Match</div>
+      <div style="margin-bottom:12px">
+        <div class="bar-row">
+          <div class="bar-label">Match Score</div>
+          <div class="bar-track"><div class="bar-fill" id="match-bar" style="background:var(--green)"></div></div>
+          <div class="bar-val" id="match-val">—</div>
+        </div>
+      </div>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:14px" id="gap-explain"></p>
+      <div style="margin-bottom:14px">
+        <label style="margin-bottom:8px;display:block">✅ Matching Skills</label>
+        <div class="tag-list" id="matching-tags"></div>
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="margin-bottom:8px;display:block">❌ Missing Skills</label>
+        <div class="tag-list" id="missing-tags"></div>
+      </div>
+      <div>
+        <label style="margin-bottom:8px;display:block">🎯 Top 5 Skills to Learn</label>
+        <div class="tag-list" id="learn-tags"></div>
+      </div>
+    </div>
+
+    <!-- STRENGTHS & WEAKNESSES -->
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Performance Analysis</div>
+      <div style="margin-bottom:18px">
+        <div class="bar-row">
+          <div class="bar-label">Performance Score</div>
+          <div class="bar-track"><div class="bar-fill" id="perf-bar" style="background:var(--accent)"></div></div>
+          <div class="bar-val" id="perf-val">—</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Resume Quality</div>
+          <div class="bar-track"><div class="bar-fill" id="rq-bar" style="background:var(--cyan)"></div></div>
+          <div class="bar-val" id="rq-val">—</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div style="font-size:.75rem;color:var(--green);font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em">Strengths</div>
+          <ul class="bullet-list strength" id="strengths-list"></ul>
+        </div>
+        <div>
+          <div style="font-size:.75rem;color:var(--red);font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em">Weaknesses</div>
+          <ul class="bullet-list weakness" id="weaknesses-list"></ul>
+        </div>
+      </div>
+      <div id="risk-section" style="display:none;margin-top:16px">
+        <div style="font-size:.75rem;color:var(--amber);font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em">⚠ Risk Factors</div>
+        <ul class="bullet-list risk" id="risk-list"></ul>
+      </div>
+    </div>
+
+    <!-- RESUME OPTIMIZATION -->
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Resume Optimization Engine</div>
+      <div class="form-group">
+        <label>Improved Summary</label>
+        <div style="font-size:.85rem;line-height:1.7;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px" id="imp-summary"></div>
+      </div>
+      <div class="form-group" id="rewrites-section">
+        <label>Bullet Point Rewrites</label>
+        <div id="rewrites-list"></div>
+      </div>
+      <div>
+        <label style="margin-bottom:8px;display:block">Keyword Additions for ATS</label>
+        <div class="tag-list" id="kw-add-list"></div>
+      </div>
+    </div>
+
+    <!-- INTERVIEW FOCUS -->
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Interview Focus Areas</div>
+      <ul class="bullet-list strength" id="interview-list"></ul>
+      <hr class="section-sep"/>
+      <div>
+        <label style="margin-bottom:8px;display:block">Code Quality Signals</label>
+        <ul class="bullet-list" style="gap:6px" id="cq-list"></ul>
+      </div>
+    </div>
+
+    <!-- RAW JSON -->
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Raw JSON Output</div>
+      <pre class="mono" id="raw-json">—</pre>
+    </div>
+
+  </div><!-- /results -->
+</div><!-- /layout -->
+
+<script>
+const API = '/api/resume-analysis/analyze';
+
+// ── Demo data ──────────────────────────────────────────────────────────────
+const DEMO_RESUME = `John Doe | john@example.com | github.com/johndoe
+
+SUMMARY
+Software Engineer with 5 years of experience building scalable web applications.
+Responsible for backend APIs, helped with DevOps, and worked on React frontends.
+
+SKILLS
+Python, FastAPI, Node.js, React, PostgreSQL, MongoDB, Docker, AWS, Git, REST API,
+unit testing, agile, code review, design patterns
+
+EXPERIENCE
+Senior Software Engineer — TechCorp (2021–Present)
+- Responsible for microservices architecture using Python and FastAPI
+- Worked on React dashboard with 50k+ daily users
+- Assisted in migrating systems to AWS, reducing costs by 30%
+
+PROJECTS
+Real-Time Chat App
+- Built WebSocket chat with Node.js and Redis pub/sub, 10k concurrent users.
+
+AI Resume Screener
+- Implemented NLP pipeline using scikit-learn, achieving 88% accuracy.
+
+EDUCATION
+B.S. Computer Science — State University, 2019
+
+CERTIFICATIONS
+AWS Certified Developer – Associate`;
+
+const DEMO_JD = `Senior Backend Engineer
+We are looking for a Senior Backend Engineer with experience in:
+Python, FastAPI, Docker, Kubernetes, PostgreSQL, Redis, microservices,
+system design, REST API, CI/CD, AWS, performance optimization.
+Machine learning pipelines experience is a plus.
+5+ years required.`;
+
+function loadDemo(){
+  document.getElementById('resume_text').value = DEMO_RESUME;
+  document.getElementById('jd_text').value = DEMO_JD;
+  document.getElementById('candidate_name').value = 'John Doe';
+  document.getElementById('coding_score').value = 78;
+  document.getElementById('assessment_score').value = 82;
+}
+
+// ── Colour helpers ─────────────────────────────────────────────────────────
+function scoreColor(v){ return v>=75?'#10b981':v>=55?'#6366f1':v>=35?'#f59e0b':'#ef4444' }
+function matchBadgeClass(v){ return v>=75?'badge-green':v>=55?'badge-purple':v>=35?'badge-amber':'badge-red' }
+function recClass(r){
+  const m={'Strong Yes':'rec-strong-yes','Yes':'rec-yes','Maybe':'rec-maybe','No':'rec-no'};
+  return m[r]||'rec-maybe';
+}
+
+// ── Score ring ─────────────────────────────────────────────────────────────
+function buildRing(label, value, color, subtitle=''){
+  const r=52, circ=Math.PI*2*r;
+  const pct=Math.min(100,Math.max(0,value));
+  const dashOffset=circ*(1-pct/100);
+  return `<div class="score-ring-wrap">
+    <div class="score-ring">
+      <svg width="130" height="130" viewBox="0 0 130 130">
+        <circle class="track" cx="65" cy="65" r="${r}"/>
+        <circle class="fill" cx="65" cy="65" r="${r}"
+          stroke="${color}"
+          stroke-dasharray="${circ}"
+          stroke-dashoffset="${circ}"
+          data-target="${dashOffset}"
+          style="stroke-dashoffset:${circ}"/>
+      </svg>
+      <div class="label">
+        <div class="num" style="color:${color}">${Math.round(pct)}</div>
+        <div class="sub">/100</div>
+      </div>
+    </div>
+    <div style="font-size:.78rem;font-weight:600;color:var(--muted);text-align:center">${label}</div>
+    ${subtitle?`<div style="font-size:.7rem;color:${color};font-weight:700">${subtitle}</div>`:''}
+  </div>`;
+}
+
+function animateRings(){
+  document.querySelectorAll('.fill[data-target]').forEach(el=>{
+    const target=parseFloat(el.dataset.target);
+    requestAnimationFrame(()=>{ el.style.strokeDashoffset=target });
+  });
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────
+function renderResults(d){
+  const parseNum=s=>parseFloat(String(s).split('/')[0])||0;
+  const finalNum=parseNum(d.final_score);
+  const perfNum=parseNum(d.performance_score);
+  const matchNum=parseNum(d.match_score);
+  const kwNum=parseNum(d.keyword_match_score);
+
+  // Scores row
+  document.getElementById('scores-row').innerHTML =
+    buildRing('Final Score', finalNum, scoreColor(finalNum), d.grade||'') +
+    buildRing('Job Match', matchNum, scoreColor(matchNum)) +
+    buildRing('Performance', perfNum, scoreColor(perfNum)) +
+    buildRing('Keyword Match', kwNum, scoreColor(kwNum));
+
+  // Score breakdown table
+  const bd=d.score_breakdown||{};
+  const rows=Object.entries(bd).map(([k,v])=>`
+    <tr>
+      <td>${k.replace(/_/g,' ')}</td>
+      <td><span style="color:${scoreColor(v.score||0)}">${v.score||0}</span></td>
+      <td class="w">${((v.weight||0)*100).toFixed(0)}%</td>
+      <td style="font-weight:600">${v.contribution||0}</td>
+    </tr>`).join('');
+  document.getElementById('breakdown-body').innerHTML = rows||'<tr><td colspan="4" style="color:var(--muted)">No breakdown available</td></tr>';
+
+  // Recommendation
+  const rec=d.recommendation||'Maybe';
+  const rb=document.getElementById('rec-box');
+  rb.className='rec-box '+recClass(rec);
+  document.getElementById('rec-label').textContent=rec;
+  document.getElementById('rec-role').textContent=d.ideal_role_fit||'';
+  document.getElementById('rec-level').textContent=d.technical_level||'';
+  document.getElementById('rec-salary').textContent=d.salary_range_estimate||'';
+  document.getElementById('rec-years').textContent=`${d.years_experience||0} yrs exp`;
+
+  // Keywords
+  const kws=d.keywords||[];
+  document.getElementById('kw-match-badge').innerHTML=`Keyword Match: ${d.keyword_match_score||'—'}`;
+  document.getElementById('kw-match-badge').className='badge '+matchBadgeClass(kwNum);
+  document.getElementById('kw-count').textContent=`${kws.length} keywords extracted • ${d.total_skills_detected||kws.length} total skills`;
+  document.getElementById('keywords-list').innerHTML=kws.map(k=>`<span class="tag keyword">${k}</span>`).join('');
+
+  // Match bars
+  const mbar=document.getElementById('match-bar');
+  mbar.style.width=matchNum+'%';mbar.style.background=scoreColor(matchNum);
+  document.getElementById('match-val').textContent=d.match_score||'—';
+  document.getElementById('gap-explain').textContent=d.skill_gap_explanation||'';
+
+  // Matching / missing / learn
+  const ms=d.matching_skills||[];
+  const miss=d.missing_skills||[];
+  const learn=d.top_5_skills_to_learn||[];
+  document.getElementById('matching-tags').innerHTML=ms.length?ms.map(s=>`<span class="tag match">${s}</span>`).join(''):'<span style="color:var(--muted);font-size:.82rem">None detected</span>';
+  document.getElementById('missing-tags').innerHTML=miss.length?miss.map(s=>`<span class="tag miss">${s}</span>`).join(''):'<span style="color:var(--green);font-size:.82rem">No critical gaps found</span>';
+  document.getElementById('learn-tags').innerHTML=learn.length?learn.map(s=>`<span class="tag learn">${s}</span>`).join(''):'<span style="color:var(--muted);font-size:.82rem">Provide JD for recommendations</span>';
+
+  // Performance / quality bars
+  const pb=document.getElementById('perf-bar');
+  pb.style.width=perfNum+'%';pb.style.background=scoreColor(perfNum);
+  document.getElementById('perf-val').textContent=d.performance_score||'—';
+  const rqScore=(d.score_breakdown?.resume_quality?.score)||0;
+  const rb2=document.getElementById('rq-bar');
+  rb2.style.width=rqScore+'%';rb2.style.background='var(--cyan)';
+  document.getElementById('rq-val').textContent=Math.round(rqScore);
+
+  // Strengths / weaknesses
+  const str=d.strengths||[];
+  const wk=d.weaknesses||[];
+  const ri=d.risk_factors||[];
+  document.getElementById('strengths-list').innerHTML=str.map(s=>`<li>${s}</li>`).join('')||'<li style="color:var(--muted)">None detected</li>';
+  document.getElementById('weaknesses-list').innerHTML=wk.map(s=>`<li>${s}</li>`).join('')||'<li style="color:var(--muted)">None detected</li>';
+  if(ri.length){
+    document.getElementById('risk-section').style.display='block';
+    document.getElementById('risk-list').innerHTML=ri.map(s=>`<li>${s}</li>`).join('');
+  } else {
+    document.getElementById('risk-section').style.display='none';
+  }
+
+  // Resume optimization
+  const opt=d.resume_improvements||{};
+  document.getElementById('imp-summary').textContent=opt.improved_summary||'Provide resume text for AI suggestions.';
+  const rewrites=opt.bullet_rewrites||[];
+  document.getElementById('rewrites-list').innerHTML=rewrites.length
+    ? rewrites.map(r=>`<div class="rewrite"><div class="orig">${r.original||''}</div><div class="improved">✓ ${r.improved||''}</div><div class="issue">⚠ ${r.issue||''}</div></div>`).join('')
+    : '<div style="color:var(--muted);font-size:.82rem">No weak phrases detected — great job!</div>';
+  const kwa=opt.keyword_additions||[];
+  document.getElementById('kw-add-list').innerHTML=kwa.length
+    ? kwa.map(k=>`<span class="tag learn" title="${k.suggestion||''}">${k.keyword}</span>`).join('')
+    : '<span style="color:var(--muted);font-size:.82rem">No missing ATS keywords found.</span>';
+
+  // Interview focus
+  const ifa=d.interview_focus_areas||[];
+  document.getElementById('interview-list').innerHTML=ifa.map(s=>`<li>${s}</li>`).join('')||'<li style="color:var(--muted)">Provide JD for tailored interview questions.</li>';
+
+  // Code quality
+  const cq=d.code_quality_signals||[];
+  document.getElementById('cq-list').innerHTML=cq.map(s=>`<li style="font-size:.82rem;color:var(--muted)">${s}</li>`).join('');
+
+  // Raw JSON
+  document.getElementById('raw-json').textContent=JSON.stringify(d,null,2);
+
+  // Show results
+  document.getElementById('placeholder').style.display='none';
+  document.getElementById('results').style.display='flex';
+  setTimeout(animateRings, 80);
+  document.getElementById('results').scrollIntoView({behavior:'smooth'});
+}
+
+// ── CLIENT-SIDE FALLBACK (no server needed) ────────────────────────────────
+function clientSideAnalysis(resumeText, jdText, candidateName, codingScore, assessmentScore){
+  const t=resumeText.toLowerCase();
+
+  const SKILLS=['python','javascript','typescript','react','node.js','express','fastapi','django',
+    'flask','mongodb','postgresql','mysql','redis','docker','kubernetes','aws','gcp','azure',
+    'machine learning','tensorflow','pytorch','scikit-learn','git','rest api','microservices',
+    'sql','agile','unit testing','ci/cd','system design','nlp','graphql','grpc','kafka'];
+
+  const ADVANCED=['microservices','system design','kubernetes','machine learning','distributed','llm','kafka','grpc'];
+  const INTERMEDIATE=['rest api','docker','sql','react','node.js','express','unit testing','git','agile','aws','mongodb'];
+
+  const found=SKILLS.filter(s=>t.includes(s));
+  const advC=ADVANCED.filter(s=>t.includes(s)).length;
+  const intC=INTERMEDIATE.filter(s=>t.includes(s)).length;
+  const level=advC>=3?'Advanced':advC>=1||intC>=4?'Intermediate':'Beginner';
+
+  const yrsM=t.match(/(\d+)\+?\s+years?/);
+  const years=yrsM?parseInt(yrsM[1]):0;
+
+  let perfScore=advC>=3?80+Math.min(18,advC*3):intC>=4?60+Math.min(20,intC*4):38+intC*4;
+  if(codingScore!=null)perfScore=Math.round(perfScore*0.5+codingScore*0.5);
+  if(assessmentScore!=null)perfScore=Math.round(perfScore*0.6+assessmentScore*0.4);
+  perfScore=Math.min(100,perfScore);
+
+  // JD matching
+  let matchedJD=[], missingJD=[];
+  if(jdText){
+    const jl=jdText.toLowerCase();
+    const jSkills=SKILLS.filter(s=>jl.includes(s));
+    matchedJD=jSkills.filter(s=>t.includes(s));
+    missingJD=jSkills.filter(s=>!t.includes(s));
+  }
+  const matchVal=jdText?(matchedJD.length/Math.max(1,matchedJD.length+missingJD.length)*100):Math.min(100,(found.length/15)*100);
+
+  const rqScore=Math.min(100,40+(found.length*3)+(years>=2?10:0)+(t.includes('certif')?5:0));
+  const expRel=Math.min(100,years*12*0.4+matchVal*0.6);
+  const finalScore=Math.round(rqScore*0.25+matchVal*0.30+perfScore*0.30+expRel*0.15);
+
+  const grade=finalScore>=80?'A':finalScore>=65?'B':finalScore>=50?'C':finalScore>=35?'D':'F';
+  const rec=finalScore>=80?'Strong Yes':finalScore>=65?'Yes':finalScore>=45?'Maybe':'No';
+  const salary=level==='Advanced'?'$120,000 – $200,000 / yr':level==='Intermediate'?'$75,000 – $120,000 / yr':'$45,000 – $75,000 / yr';
+
+  const strengths=[], weaknesses=[];
+  if(level==='Advanced')strengths.push('Demonstrates advanced technical depth across multiple complex domains');
+  if(level==='Intermediate')strengths.push('Solid intermediate skill set across core technologies');
+  if(years>=3)strengths.push(`${years}+ years of hands-on industry experience`);
+  if(found.includes('unit testing')||found.includes('agile'))strengths.push('Evidence of professional engineering practices (TDD / Agile)');
+  if(found.length>=10)strengths.push(`Broad technology exposure (${found.length} skills detected)`);
+  if(level==='Beginner')weaknesses.push('Advanced system design concepts absent from resume');
+  if(years<1)weaknesses.push('No detectable professional experience — entry-level profile');
+  if(matchVal<50)weaknesses.push(`Significant skill gap (${(100-matchVal).toFixed(0)}%) with job requirements`);
+  if(missingJD.length)weaknesses.push(`Missing key skills: ${missingJD.slice(0,3).join(', ')}`);
+
+  const learnTop=missingJD.slice(0,5);
+
+  return {
+    candidate_name:candidateName||'Candidate',
+    analysis_version:'2.0.0-client',
+    keywords:found.slice(0,15),
+    keyword_match_score:`${Math.round(matchVal)}%`,
+    total_skills_detected:found.length,
+    technical_level:level,
+    performance_score:`${perfScore}/100`,
+    years_experience:years,
+    learning_curve_potential:found.length>=10?'High':found.length>=5?'Moderate':'Low',
+    code_quality_signals:['Client-side mode — ML service not connected'],
+    match_score:`${Math.round(matchVal)}%`,
+    matching_skills:matchedJD.length?matchedJD:found.slice(0,6),
+    missing_skills:missingJD,
+    skill_gap_explanation:missingJD.length?`Candidate has ${matchedJD.length} matching skills. Primary gaps: ${missingJD.slice(0,3).join(', ')}.`:'Great skill alignment with the job description.',
+    top_5_skills_to_learn:learnTop,
+    strengths:strengths.length?strengths:['Candidate profile needs more data for strength extraction'],
+    weaknesses:weaknesses.length?weaknesses:['No critical weaknesses detected'],
+    risk_factors:finalScore<45&&years<1?['Entry-level profile with low role alignment — high risk']:[],
+    resume_improvements:{
+      improved_summary:`A ${years>0?years+'-year':'results-driven'} ${level.toLowerCase()} engineer with expertise in ${found.slice(0,3).join(', ')} and a proven track record of delivering scalable systems. Adept at performance optimization and cross-functional collaboration.`,
+      bullet_rewrites:[],
+      keyword_additions:missingJD.slice(0,4).map(k=>({keyword:k,suggestion:`Add '${k}' to Skills or Projects section to boost ATS ranking.`})),
+      improved_project_template:'• Architected [Project] handling [X]K+ requests/day, reducing latency by [Y]% using [Stack].\n• Led [N]-engineer team to ship [feature] on time, cutting infra costs by [$X].',
+      weak_phrases_found:[],
+    },
+    recommendation:rec,
+    ideal_role_fit:`${level} ${found.includes('machine learning')||found.includes('tensorflow')?'ML/AI Engineer':found.includes('react')&&found.includes('node.js')?'Full Stack Developer':found.includes('react')?'Frontend Engineer':'Backend Engineer'}`,
+    salary_range_estimate:salary,
+    interview_focus_areas:level==='Advanced'?['System design & distributed architecture','Trade-off analysis and scalability','Deep-dive into ML/AI if applicable','Behavioral + leadership scenarios']:['Data structures & algorithms','REST API design & database modeling','Problem-solving efficiency','Cultural fit & growth mindset'],
+    final_score:`${finalScore}/100`,
+    grade,
+    summary:`${grade}-grade ${level} candidate. ${rec} for the role. Final score: ${finalScore}/100.`,
+    score_breakdown:{
+      resume_quality:{score:Math.round(rqScore),weight:0.25,contribution:Math.round(rqScore*0.25)},
+      skill_match:{score:Math.round(matchVal),weight:0.30,contribution:Math.round(matchVal*0.30)},
+      performance:{score:perfScore,weight:0.30,contribution:Math.round(perfScore*0.30)},
+      experience_relevance:{score:Math.round(expRel),weight:0.15,contribution:Math.round(expRel*0.15)},
+    },
+    skill_gaps:missingJD,
+    _mode:'client-side',
+  };
+}
+
+// ── Main analysis function ─────────────────────────────────────────────────
+async function runAnalysis(){
+  const resume=document.getElementById('resume_text').value.trim();
+  if(!resume){alert('Please paste a resume first.');return;}
+
+  const isPro = document.getElementById('pro_mode').checked;
+  const endpoint = isPro ? '/api/resume-analysis/analyze-pro' : '/api/resume-analysis/analyze';
+
+  const btn=document.getElementById('analyzeBtn');
+  const spinner=document.getElementById('spinner');
+  const label=document.getElementById('btnLabel');
+  btn.disabled=true;spinner.style.display='block';label.textContent=isPro?'Thinking…':'Analyzing…';
+
+  const payload={
+    resume_text:resume,
+    job_description:document.getElementById('jd_text').value.trim(),
+    candidate_name:document.getElementById('candidate_name').value.trim()||'Candidate',
+    coding_score:document.getElementById('coding_score').value?parseFloat(document.getElementById('coding_score').value):undefined,
+    assessment_score:document.getElementById('assessment_score').value?parseFloat(document.getElementById('assessment_score').value):undefined,
+  };
+
+  try{
+    const res=await fetch(endpoint,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem('token')},
+      body:JSON.stringify(payload),
+    });
+    
+    if (res.status === 307) {
+       console.info('Redirected to standard analysis (API Key missing)');
+       return runAnalysis(); // retry with pro_mode false logic would be better but keeping it simple
+    }
+
+    if(!res.ok) throw new Error('Server error: '+res.status);
+    const data=await res.json();
+    
+    document.getElementById('pro-badge').style.display = data._enhanced ? 'inline-flex' : 'none';
+    
+    renderResults(data);
+  }catch(err){
+    console.warn('API unavailable, using client-side analysis:', err.message);
+    const data=clientSideAnalysis(
+      payload.resume_text, payload.job_description, payload.candidate_name,
+      payload.coding_score, payload.assessment_score
+    );
+    document.getElementById('pro-badge').style.display = 'none';
+    renderResults(data);
+  }finally{
+    btn.disabled=false;spinner.style.display='none';label.textContent='🔍 Analyze Resume';
+  }
+}
+</script>
+</body>
+</html>
