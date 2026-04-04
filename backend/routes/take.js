@@ -102,7 +102,8 @@ router.get('/assessment/:assessmentId', async (req, res) => {
 
     const questionsResult = await pool.query(
       `SELECT id, type, content, options, difficulty, points, order_index
-       FROM questions WHERE assessment_id = $1 ORDER BY order_index`
+       FROM questions WHERE assessment_id = $1 ORDER BY order_index`,
+      [assessmentId]
     );
 
     const questions = questionsResult.rows.map((q) => {

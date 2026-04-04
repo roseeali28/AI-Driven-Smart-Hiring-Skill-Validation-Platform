@@ -207,7 +207,7 @@ async function handleAuth(event) {
         if (!window.hiredUpApi) {
             // Fallback to fetch if utility not loaded
             const endpoint = isSignup ? "/api/auth/signup" : "/api/auth/login";
-            const res = await fetch(`http://localhost:5000${endpoint}`, {
+            const res = await fetch(`http://localhost:3000${endpoint}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)
@@ -280,9 +280,9 @@ async function fetchRecentTalent() {
     try {
         let res;
         try {
-            res = await fetch('http://localhost:5000/api/auth/candidates');
+            res = await fetch('http://localhost:3000/api/auth/candidates');
         } catch (e) {
-            res = await fetch('http://127.0.0.1:5000/api/auth/candidates');
+            res = await fetch('http://127.0.0.1:3000/api/auth/candidates');
         }
 
         if (!res.ok) throw new Error('Failed to fetch');
