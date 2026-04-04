@@ -82,7 +82,6 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/auth", authRoutes);
-app.use("/api/auth", authRoutes);
 // app.use("/api/jobs", jobRoutes); // File missing
 app.use("/uploads", express.static("uploads"));
 

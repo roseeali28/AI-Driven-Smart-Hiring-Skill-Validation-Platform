@@ -41,7 +41,7 @@ app.get('/api/health', (req, res) => {
 // Serve frontend static files (Docker: ./frontend, local: ../frontend)
 const frontendPath = require('fs').existsSync(path.join(__dirname, 'frontend'))
   ? path.join(__dirname, 'frontend')
-  : path.join(__dirname, '../frontend');
+  : path.join(__dirname, '../frontend/api/assets');
 app.use(express.static(frontendPath));
 
 app.get('*', (req, res) => {
