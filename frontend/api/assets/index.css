@@ -1,106 +1,67 @@
-/* Global Page Styling */
+:root {
+    --primary-color: #6366f1;
+    --primary-glow: rgba(99, 102, 241, 0.5);
+
+    --gradient-main: linear-gradient(
+        135deg,
+        #6366f1,
+        #8b5cf6
+    );
+
+    --bg-main: #0f172a;
+    --bg-card: #1e293b;
+    --bg-input: #020617;
+    --bg-navbar: #020617;
+
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+
+    --radius-lg: 16px;
+    --radius-md: 8px;
+    --radius-pill: 999px;
+
+    --shadow-soft: 0 10px 25px rgba(0,0,0,0.25);
+
+    --transition-fast: 0.2s ease;
+}
+
+:root[data-theme="light"] {
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-input: #ffffff;
+    --bg-navbar: #ffffff;
+
+    --text-main: #020617;
+    --text-muted: #475569;
+
+    --shadow-soft: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body {
-
-```
-margin: 0;
-padding: 0;
-font-family: Arial, Helvetica, sans-serif;
-background-color: #eef2f7;
-```
-
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg-main);
+    color: var(--text-main);
+    min-height: 100vh;
 }
 
-/* Navigation Buttons */
-
-.navbar {
-
-```
-display: flex;
-justify-content: center;
-gap: 15px;
-padding: 15px;
-background-color: #343a40;
-```
-
+a {
+    text-decoration: none;
 }
 
-.navbar button {
-
-```
-padding: 10px 18px;
-border: none;
-background-color: #007bff;
-color: white;
-border-radius: 5px;
-cursor: pointer;
-```
-
+button {
+    border: none;
 }
 
-.navbar button:hover {
-
-```
-background-color: #0056b3;
-```
-
+ul {
+    list-style: none;
 }
 
-/* Page Title */
-
-h1 {
-
-```
-text-align: center;
-margin-top: 30px;
-color: #333;
-```
-
-}
-
-/* Section Containers */
-
-.section {
-
-```
-width: 85%;
-margin: 30px auto;
-padding: 20px;
-background-color: white;
-border-radius: 10px;
-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-```
-
-}
-
-/* Table Styling */
-
-table {
-
-```
-width: 100%;
-border-collapse: collapse;
-margin-top: 20px;
-```
-
-}
-
-th,
-td {
-
-```
-padding: 12px;
-text-align: center;
-border: 1px solid #ddd;
-```
-
-}
-
-th {
-
-```
-background-color: #007bff;
-color: white;
-```
-
+html {
+    scroll-behavior: smooth;
 }
