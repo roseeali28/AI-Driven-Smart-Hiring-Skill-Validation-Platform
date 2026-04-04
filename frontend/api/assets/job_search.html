@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Search</title>
+
+```
+<link rel="stylesheet" href="style.css">
+```
+
+</head>
+
+<body>
+
+<div class="container">
+
+```
+<h1>Search Jobs</h1>
+
+<div id="jobsList">
+
+    <p>No jobs available.</p>
+
+</div>
+```
+
+</div>
+
+<script>
+
+async function loadJobs() {
+
+    try {
+
+        const response = await fetch("/api/jobs");
+
+        const jobs = await response.json();
+
+        const container =
+            document.getElementById("jobsList");
+
+        container.innerHTML = "";
+
+        jobs.forEach(job => {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "job-card";
+
+            div.innerHTML = `
+
+                <h3>${job.title}</h3>
+
+                <p>${job.description}</p>
+
+                <p>Qualifications: ${job.qualifications}</p>
+
+                <button onclick="applyJob('${job._id}')">
+                    Apply
+                </button>
+
+            `;
+
+            container.appendChild(div);
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+async function applyJob(jobId) {
+
+    alert("Application submitted successfully!");
+
+}
+
+loadJobs();
+
+</script>
+
+</body>
+</html>
