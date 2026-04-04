@@ -1,49 +1,404 @@
 <!DOCTYPE html>
-
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>AI Interview Preparation Platform</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HiredUp | The Future of Hiring</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-```
-<link rel="stylesheet" href="style.css">
-```
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="style.css">
 
+    <!-- Global Theme Automation -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('hiredUpTheme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
 </head>
 
-<body>
+<body class="landing-page">
 
-<div class="container">
+    <nav class="navbar">
+        <div class="nav-container w-full">
+            <a href="index.html" class="nav-logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#logo-grad)" stroke-width="2"
+                        stroke-linejoin="round" />
+                    <path d="M2 17L12 22L22 17" stroke="url(#logo-grad)" stroke-width="2" stroke-linejoin="round" />
+                    <path d="M2 12L12 17L22 12" stroke="url(#logo-grad)" stroke-width="2" stroke-linejoin="round" />
+                    <defs>
+                        <linearGradient id="logo-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#4f46e5" />
+                            <stop offset="1" stop-color="#06b6d4" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>HiredUp</span>
+            </a>
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#how-it-works" class="nav-link">How it works</a>
+                <a href="job_search.html" class="nav-link" style="color: var(--primary); font-weight: 700;">Jobs</a>
+                <a href="candidates.html" class="nav-link">Candidates</a>
+                <a href="pricing.html" class="nav-link">Pricing</a>
+            </div>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle theme">
+                    <span class="theme-toggle-track">
+                        <span class="theme-toggle-icon theme-toggle-sun">Light</span>
+                        <span class="theme-toggle-icon theme-toggle-moon">Dark</span>
+                    </span>
+                </button>
+                <a href="auth.html" class="btn btn-outline" style="margin-right: 1rem;">Log In</a>
+                <a href="auth.html" class="btn btn-primary btn-glow">Get Started</a>
+            </div>
+        </div>
+    </nav>
 
-```
-<h1>AI Interview Preparation Platform</h1>
+    <header class="hero-section">
+        <div
+            style="position: absolute; top: -20%; left: 50%; transform: translateX(-50%); width: 80%; height: 60%; background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%); filter: blur(80px); z-index: -1;">
+        </div>
 
-<div class="button-group">
+        <div class="container flex flex-col items-center text-center">
+            <div class="animate-fade-in hero-shell">
+                <span class="badge-v1">AI-Powered Recruitment V1.0</span>
+                <h1 class="hero-title">
+                    Hire Beyond the Resume.<br>
+                    <span class="text-gradient">Validate True Potential.</span>
+                </h1>
+                <p class="hero-subtitle">
+                    The first recruitment platform that focuses on skills, not keywords.
+                    Our AI evaluates coding capability, learning aptitude, and behavioral fit in real-time.
+                </p>
+                <div class="flex gap-2 justify-center">
+                    <a href="#how-it-works" class="btn btn-primary btn-glow">See How it Works</a>
+                    <a href="auth.html" class="btn btn-outline">Join the Platform</a>
+                </div>
+            </div>
 
-    <button onclick="window.location.href='recruiter.html'">
-        Recruiter Dashboard
-    </button>
+            <div class="hero-metrics animate-fade-in delay-100">
+                <div class="hero-metric">
+                    <span class="hero-metric-value">92%</span>
+                    <span class="hero-metric-label">screening time reduced</span>
+                </div>
+                <div class="hero-metric">
+                    <span class="hero-metric-value">3X</span>
+                    <span class="hero-metric-label">faster shortlist creation</span>
+                </div>
+                <div class="hero-metric">
+                    <span class="hero-metric-value">24/7</span>
+                    <span class="hero-metric-label">AI-assisted evaluation</span>
+                </div>
+            </div>
 
-    <button onclick="window.location.href='job_search.html'">
-        Search Jobs
-    </button>
+            <!-- Hero Image Mockup -->
+            <div class="glass-card hero-showcase animate-fade-in delay-200"
+                style="margin-top: 4rem; width: 100%; height: 400px; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+                <div
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(30,41,59,0.8) 0%, rgba(15,23,42,1) 100%); display: flex; flex-direction: column;">
+                    <!-- Fake UI Header -->
+                    <div
+                        style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 1rem; display: flex; gap: 0.5rem;">
+                        <div style="width: 12px; height: 12px; border-radius: 50%; background: #ef4444;"></div>
+                        <div style="width: 12px; height: 12px; border-radius: 50%; background: #f59e0b;"></div>
+                        <div style="width: 12px; height: 12px; border-radius: 50%; background: #10b981;"></div>
+                    </div>
+                    <!-- Fake Content -->
+                    <div style="flex: 1; padding: 2rem; display: flex; gap: 2rem;">
+                        <div style="flex: 1; background: rgba(255,255,255,0.02); border-radius: 8px; height: 100%;">
+                        </div>
+                        <div
+                            style="flex: 2; background: rgba(255,255,255,0.02); border-radius: 8px; height: 100%; position: relative;">
+                            <!-- Code Decoration -->
+                            <div
+                                style="position: absolute; top: 20px; left: 20px; color: #94a3b8; font-family: monospace; font-size: 0.9rem;">
+                                <span style="color: #c084fc">function</span> <span
+                                    style="color: #67e8f9">evaluateCandidate</span>(skills) {<br>
+                                &nbsp;&nbsp;<span style="color: #c084fc">return</span> skills.score > <span
+                                    style="color: #fca5a5">90</span> ? <span style="color: #86efac">'HIRE'</span> :
+                                <span style="color: #fca5a5">'REVIEW'</span>;<br>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <button onclick="window.location.href='resume_analyzer.html'">
-        Resume Analyzer
-    </button>
+            <div class="trust-strip animate-fade-in delay-300">
+                <span>Skill validation</span>
+                <span>Live coding environment</span>
+                <span>Recruiter analytics</span>
+                <span>Candidate feedback loops</span>
+            </div>
+        </div>
+    </header>
 
-    <button onclick="window.location.href='leaderboard.html'">
-        Leaderboard
-    </button>
+    <!-- How It Works (Flowchart) -->
+    <section id="how-it-works" class="section-shell" style="padding: 100px 0; background: rgba(0,0,0,0.2);">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <span class="section-kicker">Journey Mapping</span>
+                <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">How HiredUp <span class="text-gradient">Works</span>
+                </h2>
+                <p>Tailored workflows for both Hiring Teams and Top Talent.</p>
 
-    <button onclick="window.location.href='profile.html'">
-        Profile
-    </button>
+                <!-- Toggle Switch -->
+                <div class="glass"
+                    style="display: inline-flex; border-radius: var(--radius-pill); padding: 0.5rem; margin-top: 2rem;">
+                    <button class="btn btn-sm role-toggle active" data-flow="candidate"
+                        style="border-radius: var(--radius-pill); padding: 0.5rem 1.5rem; color: var(--text-main); background: var(--primary); transition: 0.3s;">Candidate</button>
+                    <button class="btn btn-sm role-toggle" data-flow="recruiter"
+                        style="border-radius: var(--radius-pill); padding: 0.5rem 1.5rem; color: var(--text-muted); background: transparent; transition: 0.3s;">Recruiter</button>
+                </div>
+            </div>
+        </div>
 
-</div>
-```
+        <!-- Flow Container (Candidate) -->
+        <div id="flow-candidate" class="flow-display"
+            style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; position: relative;">
+            <!-- Connection Line -->
+            <div class="connection-line"></div>
 
-</div>
+            <!-- Step 1 -->
+            <div class="step-card animate-fade-in" style="--card-color: var(--primary);">
+                <div class="step-number">1</div>
+                <h3 class="step-title">Create Profile</h3>
+                <p class="step-desc">Sign up and highlight your key skills.</p>
+            </div>
 
+            <!-- Step 2 -->
+            <div class="step-card animate-fade-in delay-100" style="--card-color: var(--accent);">
+                <div class="step-number">2</div>
+                <h3 class="step-title">Live Code</h3>
+                <p class="step-desc">Solve real-world challenges in our IDE.</p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card animate-fade-in delay-200" style="--card-color: #a855f7;">
+                <div class="step-number">3</div>
+                <h3 class="step-title">AI Analysis</h3>
+                <p class="step-desc">Get instant feedback on efficiency & style.</p>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step-card animate-fade-in delay-300" style="--card-color: #ec4899;">
+                <div class="step-number">4</div>
+                <h3 class="step-title">Earn Badges</h3>
+                <p class="step-desc">Unlock verified skill credentials for your profile.</p>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="step-card animate-fade-in delay-300" style="--card-color: #10b981;">
+                <div class="step-number">5</div>
+                <h3 class="step-title">Get Hired</h3>
+                <p class="step-desc">Direct interview invites from top tech companies.</p>
+            </div>
+        </div>
+
+        <!-- Flow Container (Recruiter) - Hidden by default -->
+        <div id="flow-recruiter" class="flow-display hidden"
+            style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; position: relative;">
+            <!-- Connection Line -->
+            <div class="connection-line"></div>
+
+            <!-- Step 1 -->
+            <div class="step-card animate-fade-in" style="--card-color: #f59e0b;">
+                <div class="step-number">1</div>
+                <h3 class="step-title">Post Job</h3>
+                <p class="step-desc">Define role requirements and required tech stack.</p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card animate-fade-in delay-100" style="--card-color: #ef4444;">
+                <div class="step-number">2</div>
+                <h3 class="step-title">Set Challenges</h3>
+                <p class="step-desc">Choose from our library of AI-graded coding tasks.</p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card animate-fade-in delay-200" style="--card-color: #3b82f6;">
+                <div class="step-number">3</div>
+                <h3 class="step-title">Smart Ranking</h3>
+                <p class="step-desc">See candidates sorted by skill, not keywords.</p>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step-card animate-fade-in delay-300" style="--card-color: #10b981;">
+                <div class="step-number">4</div>
+                <h3 class="step-title">Instant Hire</h3>
+                <p class="step-desc">Unlock contacting details for top performers.</p>
+            </div>
+        </div>
+
+        </div>
+
+        <!-- Recently Registered Talent -->
+        <div id="recent-talent-section" class="hidden" style="margin-top: 6rem;">
+            <div class="text-center mb-10">
+                <span class="badge"
+                    style="background: rgba(0, 245, 212, 0.1); color: var(--accent); border: 1px solid rgba(0, 245, 212, 0.2); padding: 0.25rem 1rem; border-radius: 100px; font-size: 0.7rem; font-weight: 800; letter-spacing: 2px;">LIVE_INFILTRATION_FEED</span>
+                <h2 style="font-size: 2.25rem; font-weight: 800; margin-top: 1rem;">Recent <span
+                        class="text-gradient">Talent</span></h2>
+                <p style="opacity: 0.5; margin-top: 0.5rem;">Elite developers recently integrated into the HiredUp
+                    network.</p>
+            </div>
+            <div id="talent-ticker"
+                style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; transition: 0.5s;">
+                <!-- Talent mini-cards injected by JS -->
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="section-shell" style="padding: 100px 0;">
+        <div class="container">
+            <div class="flex justify-between items-center" style="margin-bottom: 3rem;">
+                <div>
+                    <span class="section-kicker">Platform Capabilities</span>
+                    <h2 style="font-size: 2.5rem;">Engineered for <span class="text-gradient">Precision</span></h2>
+                </div>
+                <p style="max-width: 400px; text-align: right;">Forget manual screening. Let our engine handle the
+                    noise.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+
+                <div class="glass-card animate-fade-in delay-100">
+                    <div
+                        style="width: 48px; height: 48px; background: rgba(124, 58, 237, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: var(--primary);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Bias-Free Scoring</h3>
+                    <p style="margin-top: 0.5rem;">Objective evaluation based on code quality, efficiency, and problem
+                        solving—not gender or university.</p>
+                </div>
+
+                <div class="glass-card animate-fade-in delay-200">
+                    <div
+                        style="width: 48px; height: 48px; background: rgba(6, 182, 212, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: var(--accent);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="16 18 22 12 16 6"></polyline>
+                            <polyline points="8 6 2 12 8 18"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Real-World Code</h3>
+                    <p style="margin-top: 0.5rem; margin-bottom: 1.5rem;">Candidates solve actual problems in a
+                        browser-based IDE. No more
+                        whiteboard inversions of binary trees.</p>
+                    <button class="btn btn-sm btn-primary" onclick="window.location.href='http://localhost:5173'"
+                        style="width: 100%; background: var(--accent); border-color: var(--accent);">Launch IDE</button>
+                </div>
+
+                <div class="glass-card animate-fade-in delay-300" id="aptitude-feature-card">
+                    <div
+                        style="width: 48px; height: 48px; background: rgba(16, 185, 129, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: #10b981;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                    </div>
+                    <h3>Learning Aptitude</h3>
+                    <p style="margin-top: 0.5rem; margin-bottom: 1.5rem;">We track how candidates research and adapt
+                        during the test to measure
+                        future potential.</p>
+                    <div class="flex flex-col gap-2">
+                        <button class="btn btn-sm btn-primary"
+                            onclick="window.location.href='http://localhost:5173/aptitude-selection'"
+                            style="width: 100%;">Take Aptitude Test</button>
+                        <button class="btn btn-sm btn-outline" onclick="runAptitudeDemo()"
+                            style="width: 100%; border-color: #10b981; color: #10b981;">Run Engine Demo</button>
+                    </div>
+
+                    <!-- Demo Overlay (Hidden) -->
+                    <div id="aptitude-demo-ui" class="hidden"
+                        style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px dashed #10b981; text-align: left;">
+                        <div
+                            style="font-size: 0.75rem; color: #10b981; font-family: monospace; display: flex; justify-content: space-between;">
+                            <span>ENGINE: ACTIVE</span>
+                            <span class="blink">●</span>
+                        </div>
+                        <div id="demo-logs"
+                            style="font-size: 0.7rem; font-family: monospace; color: #86efac; margin-top: 0.5rem; height: 60px; overflow: hidden;">
+                            > Initializing tracking...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card animate-fade-in delay-100">
+                    <div
+                        style="width: 48px; height: 48px; background: rgba(124, 58, 237, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: var(--primary);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                            <line x1="9" y1="21" x2="9" y2="9"></line>
+                        </svg>
+                    </div>
+                    <h3>Recruiter Dashboard</h3>
+                    <p style="margin-top: 0.5rem; margin-bottom: 1.5rem;">Comprehensive analytics and export tools for
+                        faster, informed
+                        shortlisting.</p>
+                    <button class="btn btn-sm btn-primary" onclick="linkPage('recruiter.html')"
+                        style="width: 100%;">View Dashboard</button>
+                </div>
+
+                <div class="glass-card animate-fade-in delay-200">
+                    <div
+                        style="width: 48px; height: 48px; background: rgba(6, 182, 212, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: var(--accent);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <h3>Candidate Feedback</h3>
+                    <p style="margin-top: 0.5rem; margin-bottom: 1.5rem;">Transparent performance insights and
+                        personalized upskilling
+                        recommendations.</p>
+                    <button class="btn btn-sm btn-primary" onclick="linkPage('feedback.html')"
+                        style="width: 100%; background: var(--accent); border-color: var(--accent);">View
+                        Insights</button>
+                </div>
+
+                <div class="glass-card animate-fade-in delay-300">
+                    <div
+                        style="width: 48px; height: 48px; background: rgba(16, 185, 129, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: #10b981;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
+                    <h3>Anti-Plagiarism</h3>
+                    <p style="margin-top: 0.5rem;">Advanced AI detection to ensure candidate work is original and
+                        honest.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer
+        style="border-top: 1px solid rgba(255,255,255,0.05); padding: 4rem 0; margin-top: 4rem; background: rgba(15, 23, 42, 0.5);">
+        <div class="container" style="text-align: center;">
+            <p style="opacity: 0.5;">&copy; 2026 HiredUp Inc. Designed for the Future.</p>
+        </div>
+    </footer>
+
+    <script src="api_utils.js"></script>
+    <script src="app.js"></script>
 </body>
+
 </html>
