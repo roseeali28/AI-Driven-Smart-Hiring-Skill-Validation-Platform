@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Applications Review</title>
+
+```
+<link rel="stylesheet" href="style.css">
+```
+
+</head>
+
+<body>
+
+<div class="container">
+
+```
+<h1>Review Applications</h1>
+
+<div id="applicationsList">
+
+    <p>No applications yet.</p>
+
+</div>
+```
+
+</div>
+
+<script>
+
+async function loadApplications() {
+
+    try {
+
+        const response = await fetch("/api/applications");
+
+        const applications = await response.json();
+
+        const container =
+            document.getElementById("applicationsList");
+
+        container.innerHTML = "";
+
+        applications.forEach(app => {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "application-card";
+
+            div.innerHTML = `
+
+                <h3>${app.name}</h3>
+
+                <p>Email: ${app.email}</p>
+
+                <p>Job: ${app.jobTitle}</p>
+
+                <button>
+                    View Resume
+                </button>
+
+            `;
+
+            container.appendChild(div);
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+loadApplications();
+
+</script>
+
+</body>
+</html>
