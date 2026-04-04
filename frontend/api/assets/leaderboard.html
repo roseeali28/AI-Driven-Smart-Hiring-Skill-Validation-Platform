@@ -1,401 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
 
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Leaderboard | HiredUp</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+```
+<link rel="stylesheet" href="style.css">
+```
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Outfit', sans-serif;
-            background: linear-gradient(135deg, #0b1120, #0a0f1f 60%, #052d2d);
-            color: white;
-            min-height: 100vh;
-        }
-
-        /* ================= NAVBAR ================= */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 70px;
-            background: #0b1120;
-            display: flex;
-            align-items: center;
-            padding: 0 40px;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, .08);
-        }
-
-        .logo {
-            font-weight: 700;
-            font-size: 20px;
-        }
-
-        .nav-right {
-            margin-left: auto;
-            display: flex;
-            gap: 12px;
-        }
-
-        .nav-btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .btn-outline {
-            border: 1px solid rgba(255, 255, 255, .3);
-            color: white;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #7c3aed, #a855f7);
-            color: white;
-        }
-
-        /* ================= CONTENT ================= */
-        .container {
-            padding-top: 120px;
-            width: 100%;
-            max-width: 1200px;
-            margin: auto;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 48px;
-            color: #8b5cf6;
-            margin-bottom: 10px;
-        }
-
-        .sub {
-            color: #94a3b8;
-            margin-bottom: 30px;
-        }
-
-        /* ================= FILTERS ================= */
-        .filters {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 60px;
-            flex-wrap: wrap;
-        }
-
-        .filters input,
-        .filters select {
-            background: #0f172a;
-            border: 1px solid rgba(255, 255, 255, .2);
-            color: white;
-            padding: 10px 14px;
-            border-radius: 10px;
-            min-width: 180px;
-            outline: none;
-        }
-
-        /* Fix invisible dropdown bug */
-        .filters select option {
-            background: #0f172a;
-            color: white;
-        }
-
-        .filters input::placeholder {
-            color: #94a3b8;
-        }
-
-        /* ================= PODIUM ================= */
-        .podium {
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            gap: 60px;
-            margin-bottom: 80px;
-        }
-
-        .podium-card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
-        .rank-box {
-            width: 130px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 50px;
-            font-weight: 700;
-            background: #0f172a;
-        }
-
-        .rank-1 {
-            height: 230px;
-        }
-
-        .rank-2 {
-            height: 180px;
-        }
-
-        .rank-3 {
-            height: 150px;
-        }
-
-        .rank-1 span {
-            color: #facc15;
-        }
-
-        .rank-2 span {
-            color: #cbd5e1;
-        }
-
-        .rank-3 span {
-            color: #fb923c;
-        }
-
-        .progress {
-            width: 140px;
-            height: 6px;
-            background: rgba(255, 255, 255, .15);
-            border-radius: 10px;
-            margin-top: 15px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #6366f1, #06b6d4);
-        }
-
-        .name {
-            margin-top: 10px;
-        }
-
-        .score {
-            color: #10b981;
-            font-size: 14px;
-        }
-
-        /* ================= LIST ================= */
-        .section-title {
-            text-align: left;
-            margin-bottom: 20px;
-            font-size: 28px;
-        }
-
-        .list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .list-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px 25px;
-            background: rgba(255, 255, 255, .05);
-            border-radius: 15px;
-        }
-
-        .list-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .small-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: #6366f1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-        }
-
-        .view-btn {
-            padding: 6px 14px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, .3);
-            background: transparent;
-            color: white;
-            cursor: pointer;
-        }
-
-        /* ================= MODAL ================= */
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .6);
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: #0f172a;
-            padding: 30px;
-            border-radius: 15px;
-            width: 300px;
-            text-align: center;
-        }
-
-        .close {
-            margin-top: 20px;
-            cursor: pointer;
-            color: #8b5cf6;
-        }
-    </style>
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
-    <div class="navbar">
-        <div class="logo">HiredUp</div>
-        <div class="nav-right">
-            <a href="candidates.html" class="nav-btn btn-outline">Candidates</a>
-            <a href="profile.html" class="nav-btn btn-outline">Dashboard</a>
-            <a href="index.html" class="nav-btn btn-primary">Home</a>
-        </div>
-    </div>
+<div class="container">
 
-    <div class="container">
+```
+<h1>Leaderboard</h1>
 
-        <h1>Top Candidates</h1>
-        <p class="sub">Real-time AI skill ranking</p>
+<table border="1" width="100%" cellspacing="0" cellpadding="10">
 
-        <!-- FILTERS -->
-        <div class="filters">
-            <input type="text" placeholder="Search candidate...">
-            <select>
-                <option>All Skills</option>
-                <option>Frontend</option>
-                <option>Backend</option>
-                <option>AI</option>
-            </select>
-            <select>
-                <option>All Scores</option>
-                <option>90%+</option>
-                <option>80%+</option>
-                <option>70%+</option>
-            </select>
-        </div>
+    <thead>
 
-        <!-- PODIUM -->
-        <div class="podium">
+        <tr>
 
-            <div class="podium-card">
-                <div class="avatar">P</div>
-                <div class="rank-box rank-2"><span>2</span></div>
-                <div class="progress">
-                    <div class="progress-fill" style="width:88%"></div>
-                </div>
-                <div class="score">88% AI Match</div>
-                <div class="name">Priya Sharma</div>
-            </div>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Score</th>
 
-            <div class="podium-card">
-                <div class="avatar">R</div>
-                <div class="rank-box rank-1"><span>1</span></div>
-                <div class="progress">
-                    <div class="progress-fill" style="width:92%"></div>
-                </div>
-                <div class="score">92% AI Match</div>
-                <div class="name">Rahul Verma</div>
-            </div>
+        </tr>
 
-            <div class="podium-card">
-                <div class="avatar">A</div>
-                <div class="rank-box rank-3"><span>3</span></div>
-                <div class="progress">
-                    <div class="progress-fill" style="width:84%"></div>
-                </div>
-                <div class="score">84% AI Match</div>
-                <div class="name">Aman Gupta</div>
-            </div>
+    </thead>
 
-        </div>
+    <tbody id="leaderboardTable">
 
-        <h2 class="section-title">Honorable Mentions</h2>
+        <tr>
+            <td>1</td>
+            <td>John Doe</td>
+            <td>95</td>
+        </tr>
 
-        <div class="list">
+        <tr>
+            <td>2</td>
+            <td>Jane Smith</td>
+            <td>90</td>
+        </tr>
 
-            <div class="list-item">
-                <div class="list-left">
-                    <div class="small-avatar">S</div>
-                    <div>Sarah Lee – 81%</div>
-                </div>
-                <button class="view-btn" onclick="openModal('Sarah Lee','React, Node.js, MongoDB')">View Skills</button>
-            </div>
+        <tr>
+            <td>3</td>
+            <td>Alex Kumar</td>
+            <td>85</td>
+        </tr>
 
-            <div class="list-item">
-                <div class="list-left">
-                    <div class="small-avatar">K</div>
-                    <div>Kevin Wu – 79%</div>
-                </div>
-                <button class="view-btn" onclick="openModal('Kevin Wu','Python, Django, AWS')">View Skills</button>
-            </div>
+    </tbody>
 
-            <div class="list-item">
-                <div class="list-left">
-                    <div class="small-avatar">M</div>
-                    <div>Maria Gomez – 76%</div>
-                </div>
-                <button class="view-btn" onclick="openModal('Maria Gomez','AI, ML, TensorFlow')">View Skills</button>
-            </div>
+</table>
+```
 
-        </div>
-
-    </div>
-
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <h3 id="modalName"></h3>
-            <p id="modalSkills"></p>
-            <div class="close" onclick="closeModal()">Close</div>
-        </div>
-    </div>
-
-    <script src="api_utils.js"></script>
-    <script>
-        function openModal(name, skills) {
-            document.getElementById("modalName").innerText = name;
-            document.getElementById("modalSkills").innerText = skills;
-            document.getElementById("modal").style.display = "flex";
-        }
-        function closeModal() {
-            document.getElementById("modal").style.display = "none";
-        }
-    </script>
+</div>
 
 </body>
-
 </html>
