@@ -1,77 +1,571 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Feedback</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Performance Insights | HiredUp</title>
+  <meta name="description" content="Deep-dive into your code execution metrics, skill radar, and personalized AI upskilling recommendations.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    body { }
+    .page { max-width: 1000px; margin: 0 auto; padding: 100px 1.5rem 5rem; }
 
-```
-<link rel="stylesheet" href="style.css">
-```
+    /* NAV */
+    .fb-nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      background: var(--bg-glass, rgba(15,23,42,0.92)); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 2rem; display: flex; justify-content: space-between; align-items: center;
+    }
 
+    /* CARDS */
+    .g-card {
+      background: var(--bg-card, rgba(15,23,42,0.8)); backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle); border-radius: 22px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    /* SCORE OVERVIEW GRID */
+    .ov-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
+    @media(max-width:768px){ .ov-grid { grid-template-columns: repeat(2,1fr); } }
+    .ov-card {
+      background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px; padding: 1.4rem; text-align: center; transition: all 0.25s;
+    }
+    .ov-card:hover { transform: translateY(-3px); border-color: rgba(79,70,229,0.3); }
+    .ov-val { font-size: 2.2rem; font-weight: 900; letter-spacing: -1.5px; margin: 0.4rem 0; }
+    .ov-lbl { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: #64748b; font-weight: 800; }
+
+    /* INSIGHT CARDS */
+    .insight-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+    @media(max-width:700px){ .insight-3 { grid-template-columns: 1fr; } }
+    .ic {
+      background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px; padding: 1.25rem; transition: all 0.25s;
+    }
+    .ic:hover { border-color: rgba(79,70,229,0.3); transform: translateY(-4px); background: rgba(79,70,229,0.04); }
+
+    /* SUBMISSION ROW */
+    .sub-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.25rem; border-radius: 12px;
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 0.65rem; transition: all 0.2s;
+    }
+    .sub-row:hover { border-color: rgba(79,70,229,0.25); background: rgba(79,70,229,0.03); }
+
+    /* TROPHY BANNER */
+    .trophy-banner {
+      background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(234,179,8,0.06));
+      border: 1px solid rgba(245,158,11,0.25); border-radius: 16px;
+      padding: 1.25rem 1.75rem; display: flex; align-items: center; gap: 1rem;
+    }
+
+    /* REC ITEM */
+    .rec-item {
+      display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 1.25rem;
+      background: rgba(16,185,129,0.05); border-left: 3px solid #10b981;
+      border-radius: 0 10px 10px 0; margin-bottom: 0.75rem;
+    }
+
+    .section-head { font-size: 1.1rem; font-weight: 800; margin: 0 0 4px; }
+    .section-sub  { font-size: 0.82rem; color: #64748b; }
+
+    .hidden { display: none !important; }
+    .loading-ring { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.08); border-top-color: #4f46e5; border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    .ani { animation: fadeUp 0.5s ease forwards; }
+    .delay-1 { animation-delay: 0.1s; opacity: 0; }
+    .delay-2 { animation-delay: 0.2s; opacity: 0; }
+    .delay-3 { animation-delay: 0.3s; opacity: 0; }
+  </style>
 </head>
-
 <body>
 
-<div class="container">
+  <!-- NAV -->
+  <nav class="fb-nav">
+    <a href="index.html" style="text-decoration:none;color:#fff;font-weight:900;display:flex;align-items:center;gap:8px;font-size:1.05rem;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#fn1)" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M2 17L12 22L22 17" stroke="url(#fn1)" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M2 12L12 17L22 12" stroke="url(#fn1)" stroke-width="2" stroke-linejoin="round"/>
+        <defs><linearGradient id="fn1" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#4f46e5"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs>
+      </svg>
+      HiredUp
+    </a>
+    <div style="display:flex;gap:1.5rem;align-items:center;">
+      <button id="nav-theme-toggle" style="background:none;border:none;color:var(--text-main);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:5px;">
+        🌙
+      </button>
+      <a href="profile.html"  style="color:var(--text-muted);text-decoration:none;font-size:0.88rem;font-weight:600;">Dashboard</a>
+      <a href="skillgap.html" style="color:var(--text-muted);text-decoration:none;font-size:0.88rem;font-weight:600;">Skill Gap</a>
+      <a href="interview.html" style="color:var(--text-muted);text-decoration:none;font-size:0.88rem;font-weight:600;">Interview</a>
+      <a href="feedback.html"  style="color:var(--text-main);text-decoration:none;font-size:0.88rem;font-weight:700;">AI Insights</a>
+      <button onclick="window.logout()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--text-main);padding:7px 16px;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:700;">Logout</button>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeBtn = document.getElementById('nav-theme-toggle');
+            if(themeBtn) {
+                const updateBtn = (t) => themeBtn.innerHTML = t === 'light' ? '🌙' : '☀️';
+                const savedTheme = localStorage.getItem('hiredUpTheme') || 'dark';
+                updateBtn(savedTheme);
+                
+                themeBtn.addEventListener('click', () => {
+                    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('hiredUpTheme', newTheme);
+                    updateBtn(newTheme);
+                    
+                    // Sync with floating button if exists
+                    const floatingBtns = document.querySelectorAll('.theme-toggle-btn');
+                    floatingBtns.forEach(btn => btn.innerHTML = newTheme === 'light' ? '🌙' : '☀️');
+                    
+                    // Specific fix for feedback.html charts if needed
+                    if (typeof radarChartInst !== 'undefined' && radarChartInst) {
+                         // Charts usually look okay but let's encourage a redraw if colors change
+                    }
+                });
+            }
+        });
+    </script>
+  </nav>
 
-```
-<h1>Feedback</h1>
+  <div class="page">
 
-<form id="feedbackForm">
+    <!-- HEADER -->
+    <div style="text-align:center;margin-bottom:3rem;">
+      <span style="background:rgba(6,182,212,0.1);color:#22d3ee;border:1px solid rgba(6,182,212,0.25);padding:4px 14px;border-radius:99px;font-size:0.72rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;">AI Performance Report</span>
+      <h1 style="font-size:2.8rem;font-weight:900;letter-spacing:-1.5px;margin:1rem 0 0.5rem;">
+        Performance <span style="background:linear-gradient(90deg,#4f46e5,#06b6d4);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">Insights</span>
+      </h1>
+      <p style="color:#64748b;max-width:560px;margin:0 auto;font-size:1rem;">Deep-dive into your code execution metrics, aptitude results, skill coverage, and personalized upskilling plan.</p>
+    </div>
 
-    <label>
-        Your Name
-    </label>
+    <!-- LOADING -->
+    <div id="loading-state" class="g-card" style="padding:3.5rem;text-align:center;margin-bottom:2rem;">
+      <div class="loading-ring" style="margin:0 auto 1.25rem;"></div>
+      <h3 style="font-weight:800;margin:0 0 0.5rem;opacity:0.7;">Fetching Your Data...</h3>
+      <p style="color:#475569;font-size:0.88rem;">Pulling results from live-code engine and aptitude system</p>
+    </div>
 
-    <input
-        type="text"
-        id="name"
-        placeholder="Enter your name"
-        required
-    >
+    <!-- NO DATA -->
+    <div id="no-data-state" class="g-card hidden" style="padding:4rem;text-align:center;margin-bottom:2rem;">
+      <div style="font-size:4rem;margin-bottom:1rem;opacity:0.2;">🛸</div>
+      <h2 style="margin:0 0 0.75rem;opacity:0.5;">No Activity Yet</h2>
+      <p style="opacity:0.4;font-size:0.9rem;margin-bottom:2rem;">Complete coding challenges and aptitude tests to see your AI performance report.</p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+        <a href="http://localhost:5173" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.85rem 2rem;border-radius:12px;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;font-weight:800;text-decoration:none;">💻 Start Coding</a>
+        <a href="interview.html" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.85rem 2rem;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);color:#fff;font-weight:700;text-decoration:none;">🎤 Practice Interview</a>
+      </div>
+    </div>
 
-    <label>
-        Your Feedback
-    </label>
+    <!-- MAIN CONTENT -->
+    <div id="feedback-content" class="hidden">
 
-    <textarea
-        id="feedback"
-        placeholder="Write your feedback here"
-        required
-    ></textarea>
+      <!-- OVERVIEW SCORES -->
+      <div class="ov-grid ani" style="margin-bottom:2rem;">
+        <div class="ov-card" style="border-color:rgba(79,70,229,0.2);">
+          <div class="ov-lbl">Aggregate Score</div>
+          <div class="ov-val" id="agg-score" style="background:linear-gradient(135deg,#4f46e5,#06b6d4);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">0%</div>
+          <div class="ov-lbl">OVERALL</div>
+        </div>
+        <div class="ov-card" style="border-color:rgba(16,185,129,0.2);">
+          <div class="ov-lbl">Logic Accuracy</div>
+          <div class="ov-val" id="logic-score" style="color:#34d399;">0%</div>
+          <div class="ov-lbl">PASS RATE</div>
+        </div>
+        <div class="ov-card" style="border-color:rgba(6,182,212,0.2);">
+          <div class="ov-lbl">Avg Runtime</div>
+          <div class="ov-val" id="speed-score" style="color:#22d3ee;">0s</div>
+          <div class="ov-lbl">EXEC SPEED</div>
+        </div>
+        <div class="ov-card" style="border-color:rgba(168,85,247,0.2);">
+          <div class="ov-lbl">Submissions</div>
+          <div class="ov-val" id="total-subs" style="color:#c084fc;">0</div>
+          <div class="ov-lbl">CHALLENGES</div>
+        </div>
+      </div>
 
-    <button type="submit">
-        Submit Feedback
-    </button>
+      <!-- RADAR + APTITUDE SIDE BY SIDE -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem;" class="ani delay-1">
 
-</form>
+        <!-- SKILL RADAR -->
+        <div class="g-card" style="padding:2rem;">
+          <div class="section-head">📡 Skill Radar</div>
+          <div class="section-sub" style="margin-bottom:1.25rem;">Multi-dimensional performance profile</div>
+          <div style="position:relative;height:240px;">
+            <canvas id="radarChart"></canvas>
+          </div>
+        </div>
 
-<p id="message"></p>
-```
+        <!-- APTITUDE RESULTS -->
+        <div class="g-card" style="padding:2rem;">
+          <div class="section-head">🧠 Aptitude Results</div>
+          <div class="section-sub" style="margin-bottom:1.25rem;">Your best score per category</div>
+          <div id="aptitude-list" style="display:flex;flex-direction:column;gap:0.65rem;">
+            <div style="color:#475569;font-size:0.88rem;">Loading…</div>
+          </div>
+        </div>
+      </div>
 
-</div>
+      <!-- SCORE BREAKDOWN BARS -->
+      <div class="g-card ani delay-2" style="padding:2rem;margin-bottom:2rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.75rem;">
+          <div>
+            <div class="section-head">📊 Dimension Breakdown</div>
+            <div class="section-sub">How you score across each evaluation axis</div>
+          </div>
+          <a href="skillgap.html" style="font-size:0.82rem;font-weight:700;color:#06b6d4;text-decoration:none;">View Skill Gap →</a>
+        </div>
+        <div class="score-breakdown" id="breakdown-bars"></div>
+      </div>
 
-<script>
+      <!-- LINE CHART (Submission trend) -->
+      <div class="g-card ani delay-2" style="padding:2rem;margin-bottom:2rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+          <div>
+            <div class="section-head">📈 Submission History</div>
+            <div class="section-sub">Your progress over time</div>
+          </div>
+          <a href="http://localhost:5173" style="font-size:0.82rem;font-weight:700;color:#4f46e5;text-decoration:none;">New Challenge →</a>
+        </div>
+        <div style="height:180px;position:relative;">
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
 
-document
-.getElementById("feedbackForm")
-.addEventListener("submit", function(e) {
+      <!-- METRIC CARDS -->
+      <div class="insight-3 ani delay-2" style="margin-bottom:2rem;">
+        <div class="ic">
+          <div style="color:#4f46e5;margin-bottom:0.75rem;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:1.5px;color:#64748b;margin-bottom:0.35rem;">Logic Precision</div>
+          <div id="logic-pct" style="font-size:1.75rem;font-weight:900;">0%</div>
+          <div style="font-size:0.78rem;color:#64748b;margin-top:0.25rem;">Accuracy & edge-case handling</div>
+        </div>
+        <div class="ic">
+          <div style="color:#06b6d4;margin-bottom:0.75rem;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:1.5px;color:#64748b;margin-bottom:0.35rem;">Execution Speed</div>
+          <div id="speed-pct" style="font-size:1.75rem;font-weight:900;">0s</div>
+          <div style="font-size:0.78rem;color:#64748b;margin-top:0.25rem;">Average runtime across problems</div>
+        </div>
+        <div class="ic">
+          <div style="color:#10b981;margin-bottom:0.75rem;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:1.5px;color:#64748b;margin-bottom:0.35rem;">Code Quality</div>
+          <div id="quality-pct" style="font-size:1.75rem;font-weight:900;">—</div>
+          <div style="font-size:0.78rem;color:#64748b;margin-top:0.25rem;">Readability and structure</div>
+        </div>
+      </div>
 
-    e.preventDefault();
+      <!-- TROPHY / ACHIEVEMENT -->
+      <div id="trophy-banner" class="hidden ani delay-2" style="margin-bottom:2rem;">
+        <div class="trophy-banner">
+          <span style="font-size:2.5rem;">🏆</span>
+          <div>
+            <div style="font-weight:800;font-size:1.05rem;" id="trophy-title">Achievement Unlocked</div>
+            <div style="color:#fbbf24;font-size:0.88rem;margin-top:2px;" id="trophy-desc">You're in the top performers!</div>
+          </div>
+        </div>
+      </div>
 
-    document
-    .getElementById("message")
-    .innerText =
-        "Thank you for your feedback!";
+      <!-- RECOMMENDATIONS -->
+      <div class="g-card ani delay-3" style="padding:2rem;margin-bottom:2rem;">
+        <div class="section-head">💡 Personalized Upskilling Path</div>
+        <div class="section-sub" style="margin-bottom:1.5rem;">Focus areas based on your weak spots and missing skills</div>
+        <div id="recommendations-list"></div>
+      </div>
 
-    document
-    .getElementById("feedbackForm")
-    .reset();
+      <!-- RECENT SUBMISSIONS -->
+      <div class="g-card ani delay-3" style="padding:2rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+          <div>
+            <div class="section-head">🚀 Recent Submissions</div>
+            <div class="section-sub">Your last 6 code deployments</div>
+          </div>
+          <div id="accepted-chip" style="font-size:0.78rem;font-weight:800;color:#34d399;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);padding:0.3rem 0.75rem;border-radius:99px;"></div>
+        </div>
+        <div id="submissions-list"></div>
+      </div>
 
-});
+    </div>
+  </div>
 
-</script>
+  <script src="app.js"></script>
+  <script>
+    const LC_API = 'http://127.0.0.1:5001';
+    const MAIN_API = 'http://127.0.0.1:5000';
+    const user = JSON.parse(localStorage.getItem('hiredUpUser') || 'null');
+    if (!user) window.location.href = 'auth.html';
 
+    let radarChartInst = null;
+    let lineChartInst  = null;
+
+    document.addEventListener('DOMContentLoaded', loadAll);
+
+    async function safeFetch(url, opts = {}) {
+      const token = localStorage.getItem('hiredUpToken') || '';
+      const headers = { 
+        'Content-Type': 'application/json', 
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...opts.headers 
+      };
+      try { return await fetch(url, { ...opts, headers }); }
+      catch { return await fetch(url.replace('127.0.0.1','localhost'), { ...opts, headers }); }
+    }
+
+    /* ========================= LOAD ALL ========================= */
+    async function loadAll() {
+      const loading = document.getElementById('loading-state');
+      const noData  = document.getElementById('no-data-state');
+      const content = document.getElementById('feedback-content');
+
+      try {
+        const [subsRes, aptRes] = await Promise.allSettled([
+          safeFetch(`${LC_API}/api/submissions`),
+          safeFetch(`${LC_API}/api/aptitude/results`),
+        ]);
+
+        const submissions = subsRes.status === 'fulfilled' && subsRes.value.ok
+          ? await subsRes.value.json() : [];
+        const aptResults  = aptRes.status === 'fulfilled' && aptRes.value.ok
+          ? await aptRes.value.json() : [];
+
+        if (!submissions.length && !aptResults.length) {
+          loading.classList.add('hidden');
+          noData.classList.remove('hidden');
+          return;
+        }
+
+        loading.classList.add('hidden');
+        content.classList.remove('hidden');
+        populateDashboard(submissions, aptResults);
+
+      } catch (err) {
+        loading.innerHTML = `<p style="color:#f87171;font-weight:700;">⚠ Could not reach live-code service. Ensure it is running on port 5001.</p>`;
+        console.error(err);
+      }
+    }
+
+    /* ========================= POPULATE ========================= */
+    function populateDashboard(submissions, aptResults) {
+      /* ---- CORE METRICS ---- */
+      const total    = submissions.length;
+      const accepted = submissions.filter(s => s.status === 'Accepted').length;
+      const logicPct = total ? Math.round((accepted / total) * 100) : 0;
+      const avgSpeed = total
+        ? (submissions.reduce((a,s) => a + (parseFloat(s.executionTime)||0), 0) / total).toFixed(3)
+        : '0.000';
+      const aggScore = Math.max(logicPct, aptResults.length
+        ? Math.round(aptResults.reduce((a,r) => a + r.score, 0) / aptResults.length) : 0);
+
+      document.getElementById('agg-score').textContent  = aggScore + '%';
+      document.getElementById('logic-score').textContent = logicPct + '%';
+      document.getElementById('speed-score').textContent = avgSpeed + 's';
+      document.getElementById('total-subs').textContent  = total;
+      document.getElementById('logic-pct').textContent   = logicPct + '%';
+      document.getElementById('speed-pct').textContent   = avgSpeed + 's';
+      document.getElementById('quality-pct').textContent = aggScore >= 85 ? 'Cyber' : aggScore >= 70 ? 'Elite' : 'Solid';
+      document.getElementById('accepted-chip').textContent = `${accepted}/${total} Accepted`;
+
+      /* ---- TROPHY ---- */
+      if (aggScore >= 85 || logicPct >= 90) {
+        document.getElementById('trophy-banner').classList.remove('hidden');
+        document.getElementById('trophy-title').textContent = aggScore >= 90 ? '🌟 Expert Developer!' : '🏆 High Performer!';
+        document.getElementById('trophy-desc').textContent  = `You outperform ${aggScore >= 90 ? '95' : '80'}% of candidates on our platform.`;
+      }
+
+      /* ---- APTITUDE LIST ---- */
+      const aptContainer = document.getElementById('aptitude-list');
+      if (aptResults.length) {
+        // Group by topic, take best
+        const byTopic = {};
+        aptResults.forEach(r => {
+          if (!byTopic[r.topic] || r.score > byTopic[r.topic]) byTopic[r.topic] = r.score;
+        });
+        aptContainer.innerHTML = Object.entries(byTopic).slice(0,6).map(([topic, score]) => {
+          const color = score >= 80 ? '#34d399' : score >= 60 ? '#fbbf24' : '#f87171';
+          return `
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <div style="font-size:0.85rem;font-weight:700;flex:1;color:#f8fafc;">${topic}</div>
+              <div class="score-bar-track" style="width:100px;"><div class="score-bar-fill" style="width:${score}%;background:${color};box-shadow:0 0 8px ${color}40;"></div></div>
+              <div style="font-size:0.85rem;font-weight:800;color:${color};width:36px;text-align:right;">${score}%</div>
+            </div>`;
+        }).join('');
+      } else {
+        aptContainer.innerHTML = '<div style="color:#475569;font-size:0.88rem;">No aptitude tests completed yet.</div>';
+      }
+
+      /* ---- RADAR CHART ---- */
+      const aptAvg = aptResults.length
+        ? Math.round(aptResults.reduce((a,r) => a+r.score,0) / aptResults.length) : 50;
+      const skills = JSON.parse(localStorage.getItem('userSkills') || '[]').length;
+      const skillScore = Math.min(skills * 8, 100);
+      buildRadar({ logic: logicPct, speed: Math.min(100 - parseFloat(avgSpeed)*50, 100) || 60, aptitude: aptAvg, skills: skillScore, consistency: total >= 5 ? 85 : total * 15 });
+
+      /* ---- BREAKDOWN BARS ---- */
+      const bars = [
+        { label:'Logic Accuracy',  val: logicPct, cls:'green' },
+        { label:'Aptitude Score',  val: aptAvg,   cls: aptAvg >= 70 ? 'green' : aptAvg >= 45 ? 'amber' : 'red' },
+        { label:'Skill Coverage',  val: skillScore,cls: skillScore >= 60 ? 'green' : 'amber' },
+        { label:'Consistency',     val: total >= 5 ? 85 : total * 15, cls:'green' },
+        { label:'Execution Speed', val: Math.max(0, 100 - parseFloat(avgSpeed)*50), cls:'amber' },
+      ];
+      document.getElementById('breakdown-bars').innerHTML = bars.map(b => `
+        <div class="score-row">
+          <div class="score-row-label">${b.label}</div>
+          <div class="score-bar-track"><div class="score-bar-fill ${b.cls}" style="width:${b.val}%;"></div></div>
+          <div class="score-row-val">${b.val.toFixed(0)}</div>
+        </div>`).join('');
+
+      /* ---- LINE CHART ---- */
+      buildLineChart(submissions.slice(-10));
+
+      /* ---- RECOMMENDATIONS ---- */
+      buildRecommendations(submissions, logicPct, aptAvg);
+
+      /* ---- SUBMISSIONS LIST ---- */
+      document.getElementById('submissions-list').innerHTML = submissions.slice(0,6).map((s, i) => `
+        <div class="sub-row" style="animation-delay:${i*0.05}s;">
+          <div style="display:flex;align-items:center;gap:0.85rem;">
+            <div style="width:38px;height:38px;background:rgba(79,70,229,0.1);border:1px solid rgba(79,70,229,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#818cf8;font-size:0.82rem;font-family:monospace;">
+              #${(s._id||'00').slice(-2).toUpperCase()}
+            </div>
+            <div>
+              <div style="font-weight:700;font-size:0.92rem;">${s.problemTitle || 'Coding Challenge'}</div>
+              <div style="font-size:0.7rem;color:#475569;font-family:monospace;margin-top:2px;">
+                ${s.language || 'Python'} · ${new Date(s.createdAt||Date.now()).toLocaleDateString()}
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:1.5rem;text-align:right;">
+            <div>
+              <div style="font-size:0.6rem;font-weight:800;letter-spacing:1px;color:#475569;">RUNTIME</div>
+              <div style="font-weight:700;color:#22d3ee;font-size:0.9rem;">${parseFloat(s.executionTime||0).toFixed(3)}s</div>
+            </div>
+            <div>
+              <div style="font-size:0.6rem;font-weight:800;letter-spacing:1px;color:#475569;">STATUS</div>
+              <div style="font-weight:800;font-size:0.9rem;color:${s.status==='Accepted'?'#34d399':'#f87171'};">${s.status==='Accepted'?'✅ PASS':'❌ FAIL'}</div>
+            </div>
+          </div>
+        </div>`).join('') || '<div style="color:#475569;font-size:0.88rem;padding:1rem;">No submissions yet.</div>';
+    }
+
+    /* ========================= RADAR ========================= */
+    function buildRadar({ logic, speed, aptitude, skills, consistency }) {
+      const ctx = document.getElementById('radarChart').getContext('2d');
+      if (radarChartInst) radarChartInst.destroy();
+      radarChartInst = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['Logic', 'Speed', 'Aptitude', 'Skills', 'Consistency'],
+          datasets: [{
+            label: 'Your Profile',
+            data: [logic, speed, aptitude, skills, consistency],
+            borderColor: '#4f46e5', backgroundColor: 'rgba(79,70,229,0.15)',
+            pointBackgroundColor: '#06b6d4', pointBorderWidth: 0, borderWidth: 2,
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: { r: { grid:{color:'rgba(255,255,255,0.06)'}, ticks:{display:false,stepSize:25}, pointLabels:{color:'#64748b',font:{size:10,weight:'700'}}, min:0, max:100 } },
+          plugins: { legend:{display:false} }
+        }
+      });
+    }
+
+    /* ========================= LINE CHART ========================= */
+    function buildLineChart(submissions) {
+      const ctx = document.getElementById('lineChart').getContext('2d');
+      if (lineChartInst) lineChartInst.destroy();
+      const labels = submissions.map((_, i) => `#${i+1}`);
+      const data   = submissions.map(s => s.status === 'Accepted' ? 1 : 0);
+      const times  = submissions.map(s => parseFloat(s.executionTime || 0).toFixed(3));
+      lineChartInst = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Pass (1) / Fail (0)',
+              data, borderColor: '#4f46e5', backgroundColor: 'rgba(79,70,229,0.1)',
+              tension: 0.4, fill: true, pointBackgroundColor: '#06b6d4', pointRadius: 4,
+            },
+            {
+              label: 'Runtime (s)',
+              data: times, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.05)',
+              tension: 0.4, fill: false, yAxisID: 'y2', pointRadius: 3,
+            }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: {
+            x:  { grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#475569',font:{size:9}} },
+            y:  { grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#475569',font:{size:9}}, min:0, max:1, stepSize:1 },
+            y2: { position:'right', grid:{display:false}, ticks:{color:'#34d399',font:{size:9}} },
+          },
+          plugins: { legend:{labels:{color:'#64748b',font:{size:10}}} }
+        }
+      });
+    }
+
+    /* ========================= RECS ========================= */
+    function buildRecommendations(submissions, logicPct, aptAvg) {
+      const accepted = submissions.filter(s => s.status === 'Accepted').length;
+      const ratio = submissions.length ? accepted / submissions.length : 0;
+      const recs = [];
+
+      if (ratio < 0.5) recs.push({
+        icon:'📐', title:'Core Algorithm Foundations',
+        desc:'Your pass rate suggests gaps in fundamental algorithms. Review sorting, searching, and recursion.',
+        tags:['Sorting','Binary Search','Recursion'], link:'https://neetcode.io'
+      });
+      recs.push({
+        icon:'🗂', title:'Data Structures: Maps & Sets',
+        desc:'Using Hash Maps for O(1) lookups can dramatically improve your solution efficiency.',
+        tags:['HashMap','Set','Priority Queue'], link:'https://visualgo.net'
+      });
+      if (aptAvg < 70) recs.push({
+        icon:'🧠', title:'Aptitude: Quantitative Reasoning',
+        desc:'Improve logical reasoning and quantitative aptitude to score higher in placement tests.',
+        tags:['Logical Reasoning','Quant Aptitude','Verbal'], link:'https://www.indiabix.com'
+      });
+      if (ratio >= 0.7) recs.push({
+        icon:'🏗', title:'System Design',
+        desc:'Excellent accuracy! Level up with distributed systems and architecture concepts.',
+        tags:['Microservices','Caching','Load Balancing'], link:'https://systemdesign.one'
+      });
+      recs.push({
+        icon:'🎤', title:'Interview Practice',
+        desc:'Technical skills alone are not enough. Practice behavioral questions with the STAR method.',
+        tags:['STAR Method','Communication','Problem Solving'], link:'interview.html'
+      });
+
+      document.getElementById('recommendations-list').innerHTML = recs.slice(0,4).map(r => `
+        <div class="rec-item">
+          <span style="font-size:1.5rem;">${r.icon}</span>
+          <div style="flex:1;">
+            <div style="font-weight:800;font-size:0.95rem;color:#f8fafc;margin-bottom:3px;">${r.title}</div>
+            <div style="font-size:0.82rem;color:#94a3b8;line-height:1.6;margin-bottom:0.65rem;">${r.desc}</div>
+            <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+              ${r.tags.map(t => `<span class="skill-tag" style="font-size:0.72rem;">${t}</span>`).join('')}
+            </div>
+          </div>
+          <a href="${r.link}" target="_blank" rel="noopener" style="color:#06b6d4;font-size:1.2rem;text-decoration:none;flex-shrink:0;">→</a>
+        </div>`).join('');
+    }
+  </script>
 </body>
 </html>
