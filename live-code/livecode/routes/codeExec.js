@@ -4,12 +4,15 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
+const { authenticate } = require('../middleware/auth');
+
+// PUBLIC ACCESS (Matching project1): No authentication required for code execution.休憩
 
 const JUDGE0_API_URL = 'https://judge0-ce.p.rapidapi.com/submissions';
-const API_KEY = process.env.RAPIDAPI_KEY;
+const API_KEY = process.env.RAPIDAPI_KEY || process.env.JUDGE0_API_KEY;
 
 router.post('/run', async (req, res) => {
-    console.log("Incoming /run request body:", req.body);
+    console.log("🚀 Incoming /run request:", req.body.language_id);
     const { language_id, source_code, stdin, problemId } = req.body;
 
     // Validate that source_code is not empty or just comments
@@ -79,12 +82,15 @@ router.post('/run', async (req, res) => {
                                 `;
                                 const scriptToRun = `${source_code}\n\n// Run test\n${argsScript}`;
                                 const result = vm.run(scriptToRun);
-                                
-                                // Clean the result if it came back as undefined
-                                const actualOutput = (result === undefined || result === null) ? String(result) : result;
-                                // We also captured console logs
-                                const lastLog = logOutput[logOutput.length - 1];
-                                const finalOutput = actualOutput !== undefined ? String(actualOutput) : (lastLog || "No output");
+
+                                // STRICT: If solution() returns undefined/null (missing return statement or empty body),
+                                // we must treat it as a failure — NOT convert to a string that could accidentally match.
+                                let finalOutput;
+                                if (result === undefined || result === null) {
+                                    finalOutput = "No Return Value (undefined)";
+                                } else {
+                                    finalOutput = String(result);
+                                }
 
                                 const status = finalOutput.trim() === testCase.output.trim() ? "Accepted" : "Wrong Answer";
 
@@ -96,11 +102,15 @@ router.post('/run', async (req, res) => {
                                     status: status
                                 };
                             } catch (err) {
+                                const errMsg = err.message || String(err);
+                                const friendlyMsg = errMsg.includes('solution is not defined')
+                                    ? "Error: 'solution' function not found. Make sure your function is named 'solution'."
+                                    : "Runtime Error: " + errMsg;
                                 return {
                                     testCaseId: index + 1,
                                     input: testCase.input,
                                     expectedOutput: testCase.output,
-                                    actualOutput: "Runtime Error: " + err.message,
+                                    actualOutput: friendlyMsg,
                                     status: "Runtime Error"
                                 };
                             }
@@ -143,9 +153,10 @@ router.post('/run', async (req, res) => {
                         memory: 'Local'
                     });
                 } catch (err) {
+                    console.error("VM2 Logic Error:", err);
                     return res.json({
                         stdout: "",
-                        stderr: err.toString(),
+                        stderr: "Execution Error: " + err.message,
                         status: { id: 11, description: 'Runtime Error' },
                         time: '0.01',
                         memory: 'Local'
@@ -155,6 +166,14 @@ router.post('/run', async (req, res) => {
 
             // 2. Local Python Execution (71)
             if (langId === 71) {
+                // Check if python is available
+                const pyCheck = await new Promise(r => exec('python --version', err => r(!err)));
+                if (!pyCheck) {
+                    return res.status(500).json({ 
+                        error: "Python Environment Not Found", 
+                        details: "The server does not have Python installed or in its PATH. Please contact the administrator." 
+                    });
+                }
                 if (problem && problem.testCases && problem.testCases.length > 0) {
                     const results = [];
                     for (let i = 0; i < problem.testCases.length; i++) {
@@ -268,6 +287,15 @@ if __name__ == "__main__":
 
             // 3. Local C++ Execution (54)
             if (langId === 54) {
+                // Check if g++ is available
+                const gppCheck = await new Promise(r => exec('g++ --version', err => r(!err)));
+                if (!gppCheck) {
+                    return res.status(500).json({ 
+                        error: "C++ Compiler Not Found", 
+                        details: "The server does not have g++ installed. Please install MinGW or similar." 
+                    });
+                }
+
                 if (problem && problem.testCases && problem.testCases.length > 0) {
                     const baseName = `solution_${Date.now()}`;
                     const cppFile = path.join(tempDir, `${baseName}.cpp`);
@@ -377,7 +405,7 @@ if __name__ == "__main__":
 
             // Fallback
             return res.json({
-                stdout: `[Simulation Only]\nCannot execute language ID ${langId} locally without API Key.\n\nCode received:\n${source_code}`,
+                stdout: `[Local Execution Mode]\nLanguage ID ${langId} is not supported for local execution.\nTo enable more languages, please add a 'RAPIDAPI_KEY' or 'JUDGE0_API_KEY' from Judge0 to your .env file.\n\nCode received:\n${source_code}`,
                 stderr: null,
                 status: { id: 3, description: 'Accepted (Simulated)' }
             });
