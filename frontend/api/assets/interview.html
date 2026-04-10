@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Interview Practice | HiredUp</title>
+  <meta name="description" content="Practice behavioral and technical interview questions evaluated in real-time by AI using the STAR method.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body { }
+    .page { max-width: 860px; margin: 0 auto; padding: 100px 2rem 5rem; }
+
+    /* NAV */
+    .iv-nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      background: var(--bg-glass, rgba(11,14,20,0.9)); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 2rem; display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .g-card { background: var(--bg-card, rgba(15,23,42,0.75)); backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle); border-radius: 20px; }
+
+    /* SETUP PANEL */
+    .setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
+    @media(max-width:640px){ .setup-grid { grid-template-columns: 1fr; } }
+
+    select.iv-sel {
+      width: 100%; background: var(--bg-card, rgba(10,15,44,0.7)); border: 1px solid var(--border-subtle);
+      color: var(--text-main); padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.9rem;
+      font-weight: 600; font-family: inherit; cursor: pointer; outline: none;
+      transition: border-color 0.2s;
+    }
+    .iv-sel:focus { border-color: #6d5cff; }
+
+    /* READINESS BANNER */
+    .readiness-bar {
+      height: 10px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; margin: 0.5rem 0;
+    }
+    .readiness-fill { height: 100%; border-radius: 99px; transition: width 1.2s cubic-bezier(0.22,1,0.36,1); }
+
+    /* QUESTION COUNTER */
+    .progress-dots { display: flex; gap: 0.5rem; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.1); transition: all 0.3s; }
+    .dot.done { background: #34d399; }
+    .dot.active { background: #6d5cff; box-shadow: 0 0 8px #6d5cff; }
+
+    /* SCORE BREAKDOWN */
+    .star-row { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .star-row:last-child { border-bottom: none; }
+    .star-key { font-size: 0.82rem; font-weight: 700; color: #94a3b8; }
+    .star-val { font-size: 0.82rem; font-weight: 800; }
+
+    /* FINAL RESULTS */
+    .result-meter { height: 14px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; margin-top: 0.5rem; }
+    .result-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg,#6d5cff,#06b6d4); transition: width 1s; }
+
+    /* STATE HELPERS */
+    .hidden { display: none !important; }
+    .loading-ring { width: 32px; height: 32px; border: 3px solid rgba(255,255,255,0.08); border-top-color: #a855f7; border-radius: 50%; animation: spin 0.9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    .ani { animation: fadeUp 0.5s ease forwards; }
+
+    .btn-primary { background: linear-gradient(135deg,#6d5cff,#a855f7); color: #fff; font-weight: 800; padding: 0.9rem 2.5rem; border-radius: 12px; border: none; cursor: pointer; font-size: 0.95rem; transition: all 0.3s; font-family: inherit; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(109,92,255,0.4); }
+    .btn-outline { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-weight: 700; padding: 0.75rem 1.75rem; border-radius: 12px; cursor: pointer; font-size: 0.88rem; transition: all 0.3s; font-family: inherit; }
+    .btn-outline:hover { border-color: #6d5cff; background: rgba(109,92,255,0.08); }
+
+    label.field-label { display: block; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #64748b; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="iv-nav">
+    <a href="index.html" style="text-decoration:none;color:#fff;font-weight:900;display:flex;align-items:center;gap:8px;font-size:1.1rem;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#ivn1)" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M2 17L12 22L22 17" stroke="url(#ivn1)" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M2 12L12 17L22 12" stroke="url(#ivn1)" stroke-width="2" stroke-linejoin="round"/>
+        <defs><linearGradient id="ivn1" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#6d5cff"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs>
+      </svg>
+      HiredUp
+    </a>
+    <div style="display:flex;gap:1.5rem;align-items:center;">
+      <button id="nav-theme-toggle" style="background:none;border:none;color:var(--text-main);font-size:1.15rem;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:5px;">
+        🌙
+      </button>
+      <a href="profile.html"  style="color:var(--text-muted);text-decoration:none;font-size:0.88rem;font-weight:600;">Dashboard</a>
+      <a href="skillgap.html" style="color:var(--text-muted);text-decoration:none;font-size:0.88rem;font-weight:600;">Skill Gap</a>
+      <a href="interview.html" style="color:var(--text-main);text-decoration:none;font-size:0.88rem;font-weight:700;">Interview Prep</a>
+      <button onclick="window.logout()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--text-main);padding:7px 16px;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:700;">Logout</button>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeBtn = document.getElementById('nav-theme-toggle');
+            if(themeBtn) {
+                const updateBtn = (t) => themeBtn.innerHTML = t === 'light' ? '🌙' : '☀️';
+                const savedTheme = localStorage.getItem('hiredUpTheme') || 'dark';
+                updateBtn(savedTheme);
+                
+                themeBtn.addEventListener('click', () => {
+                    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('hiredUpTheme', newTheme);
+                    updateBtn(newTheme);
+                    
+                    const floatingBtns = document.querySelectorAll('.theme-toggle-btn');
+                    floatingBtns.forEach(btn => btn.innerHTML = newTheme === 'light' ? '🌙' : '☀️');
+                });
+            }
+        });
+    </script>
+  </nav>
+
+  <div class="page">
+
+    <!-- HEADER -->
+    <div style="text-align:center;margin-bottom:3rem;">
+      <span style="background:rgba(168,85,247,0.12);color:#c084fc;border:1px solid rgba(168,85,247,0.25);padding:4px 14px;border-radius:99px;font-size:0.72rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;">Gemini AI Evaluator</span>
+      <h1 style="font-size:2.8rem;font-weight:900;letter-spacing:-1.5px;margin:1rem 0 0.5rem;">
+        AI Interview <span style="background:linear-gradient(90deg,#6d5cff,#a855f7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">Practice</span>
+      </h1>
+      <p style="color:#64748b;max-width:520px;margin:0 auto;">Answer 5 AI-generated questions. Each response is scored in real-time using the STAR method (Situation, Task, Action, Result).</p>
+    </div>
+
+    <!-- SETUP PANEL -->
+    <div id="setup-panel" class="g-card" style="padding:2rem;margin-bottom:2rem;">
+      <h2 style="font-size:1.2rem;font-weight:800;margin:0 0 1.5rem;">Configure Your Session</h2>
+
+      <div class="setup-grid">
+        <div>
+          <label class="field-label">Job Role</label>
+          <select id="job-role" class="iv-sel">
+            <option value="">Select a role…</option>
+            <option>Software Engineer</option>
+            <option>Frontend Developer</option>
+            <option>Backend Developer</option>
+            <option>Full-Stack Developer</option>
+            <option>Data Scientist</option>
+            <option>Machine Learning Engineer</option>
+            <option>DevOps Engineer</option>
+            <option>Product Manager</option>
+            <option>QA Engineer</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Interview Type</label>
+          <select id="interview-type" class="iv-sel">
+            <option value="behavioral">Behavioral (STAR Method)</option>
+            <option value="technical">Technical Concepts</option>
+            <option value="situational">Situational Judgment</option>
+            <option value="mixed">Mixed (Recommended)</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Difficulty Level</label>
+          <select id="difficulty" class="iv-sel">
+            <option value="junior">Junior (0–2 yrs)</option>
+            <option value="mid" selected>Mid-Level (2–5 yrs)</option>
+            <option value="senior">Senior (5+ yrs)</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Number of Questions</label>
+          <select id="q-count" class="iv-sel">
+            <option value="3">3 Questions (Quick)</option>
+            <option value="5" selected>5 Questions (Standard)</option>
+            <option value="8">8 Questions (Full)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:0.5rem;">
+        <button class="btn-primary" onclick="startSession()">🎤 Generate Interview Questions</button>
+      </div>
+    </div>
+
+    <!-- GENERATING STATE -->
+    <div id="generating-state" class="hidden g-card" style="padding:3rem;text-align:center;margin-bottom:2rem;">
+      <div class="loading-ring" style="margin:0 auto 1.25rem;"></div>
+      <h3 style="font-weight:800;margin:0 0 0.5rem;font-size:1.1rem;">Generating Questions...</h3>
+      <p style="color:#64748b;font-size:0.88rem;">Gemini AI is crafting personalized questions for your role.</p>
+    </div>
+
+    <!-- INTERVIEW SESSION -->
+    <div id="session-panel" class="hidden">
+
+      <!-- PROGRESS HEADER -->
+      <div class="g-card ani" style="padding:1.25rem 1.75rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:2px;color:#64748b;margin-bottom:0.35rem;">Progress</div>
+          <div class="progress-dots" id="progress-dots"></div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:2px;color:#64748b;margin-bottom:0.25rem;">Session Score</div>
+          <div id="running-score" style="font-size:1.6rem;font-weight:900;background:linear-gradient(90deg,#6d5cff,#a855f7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">—</div>
+        </div>
+        <button class="btn-outline" style="padding:0.55rem 1.2rem;font-size:0.82rem;" onclick="resetSession()">↩ Restart</button>
+      </div>
+
+      <!-- ACTIVE QUESTION CARD -->
+      <div id="current-question" class="g-card ani" style="padding:2rem;margin-bottom:1.5rem;">
+        <div class="q-number" id="q-label">Question 1 of 5</div>
+        <div class="q-text" id="q-text">Loading question...</div>
+
+        <textarea id="q-answer" class="interview-card" style="width:100%;min-height:140px;padding:1rem;border-radius:10px;resize:vertical;font-family:inherit;font-size:0.92rem;display:block;" placeholder="Write your answer here… Be specific. Use the STAR method: Situation → Task → Action → Result."></textarea>
+
+        <div id="word-count" style="font-size:0.72rem;color:#475569;text-align:right;margin-top:0.35rem;">0 words</div>
+
+        <div style="display:flex;justify-content:flex-end;gap:1rem;margin-top:1rem;">
+          <button id="skip-btn" class="btn-outline" style="padding:0.65rem 1.5rem;font-size:0.85rem;" onclick="skipQuestion()">Skip</button>
+          <button id="submit-btn" class="btn-primary" style="padding:0.65rem 2rem;font-size:0.88rem;" onclick="submitAnswer()">Submit Answer →</button>
+        </div>
+      </div>
+
+      <!-- EVALUATING -->
+      <div id="eval-state" class="hidden g-card" style="padding:2rem;text-align:center;margin-bottom:1.5rem;">
+        <div class="loading-ring" style="margin:0 auto 1rem;border-top-color:#a855f7;"></div>
+        <p style="color:#94a3b8;font-weight:700;">Evaluating with Gemini AI...</p>
+      </div>
+
+      <!-- FEEDBACK CARD (shows after submit) -->
+      <div id="feedback-card" class="hidden g-card ani" style="padding:2rem;margin-bottom:1.5rem;border-color:rgba(109,92,255,0.3);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.75rem;">
+          <h3 style="margin:0;font-size:1.05rem;font-weight:800;">AI Evaluation</h3>
+          <div id="q-overall-score" style="font-size:2rem;font-weight:900;background:linear-gradient(90deg,#6d5cff,#06b6d4);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">8/10</div>
+        </div>
+
+        <!-- STAR BREAKDOWN -->
+        <div style="margin-bottom:1.25rem;">
+          <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:2px;color:#64748b;margin-bottom:0.75rem;">STAR Framework Score</div>
+          <div id="star-breakdown">
+            <div class="star-row"><span class="star-key">🎬 Situation</span><span class="star-val" id="s-situation">—</span></div>
+            <div class="star-row"><span class="star-key">📋 Task</span><span class="star-val" id="s-task">—</span></div>
+            <div class="star-row"><span class="star-key">⚡ Action</span><span class="star-val" id="s-action">—</span></div>
+            <div class="star-row"><span class="star-key">🎯 Result</span><span class="star-val" id="s-result">—</span></div>
+          </div>
+        </div>
+
+        <!-- FEEDBACK TEXT -->
+        <div id="eval-feedback-text" style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1.25rem;font-size:0.88rem;line-height:1.75;color:#94a3b8;margin-bottom:1rem;"></div>
+
+        <!-- STRENGTHS & IMPROVEMENTS -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem;">
+          <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);border-radius:12px;padding:1rem;">
+            <div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#34d399;margin-bottom:0.5rem;">✅ Strengths</div>
+            <div id="eval-strengths" style="font-size:0.85rem;line-height:1.6;color:#94a3b8;"></div>
+          </div>
+          <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:12px;padding:1rem;">
+            <div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#fbbf24;margin-bottom:0.5rem;">💡 Improve</div>
+            <div id="eval-improvements" style="font-size:0.85rem;line-height:1.6;color:#94a3b8;"></div>
+          </div>
+        </div>
+
+        <button class="btn-primary" style="width:100%;padding:0.85rem;" onclick="nextQuestion()">Next Question →</button>
+      </div>
+
+    </div>
+
+    <!-- FINAL RESULTS PANEL -->
+    <div id="results-panel" class="hidden">
+      <div class="g-card ani" style="padding:2.5rem;text-align:center;margin-bottom:2rem;">
+        <div style="font-size:4rem;margin-bottom:1rem;" id="result-emoji">🎉</div>
+        <h2 style="font-size:2rem;font-weight:900;letter-spacing:-1px;margin:0 0 0.5rem;">Interview Complete!</h2>
+        <p style="color:#64748b;margin-bottom:2rem;" id="result-tagline">Here's your overall readiness report.</p>
+        <div style="font-size:4rem;font-weight:900;background:linear-gradient(135deg,#6d5cff,#a855f7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-2px;" id="final-score-display">0/10</div>
+        <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;color:#64748b;margin-top:0.5rem;" id="final-label">Overall Score</div>
+
+        <div class="readiness-bar" style="margin:1.5rem auto;max-width:300px;">
+          <div class="readiness-fill" id="readiness-fill" style="width:0%;background:linear-gradient(90deg,#6d5cff,#a855f7);"></div>
+        </div>
+      </div>
+
+      <!-- PER QUESTION SUMMARY -->
+      <div class="g-card ani" style="padding:2rem;margin-bottom:2rem;animation-delay:0.1s;">
+        <h3 style="font-size:1.1rem;font-weight:800;margin:0 0 1.25rem;">Question-by-Question Results</h3>
+        <div id="q-summary"></div>
+      </div>
+
+      <!-- RECOMMENDATIONS -->
+      <div class="g-card ani" style="padding:2rem;margin-bottom:2rem;animation-delay:0.15s;">
+        <h3 style="font-size:1.1rem;font-weight:800;margin:0 0 1.25rem;">📋 Improvement Tips</h3>
+        <div id="final-tips" style="display:flex;flex-direction:column;gap:0.75rem;"></div>
+      </div>
+
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+        <button class="btn-primary" onclick="resetSession()">🔄 Practice Again</button>
+        <a href="skillgap.html" class="btn-outline" style="display:inline-flex;align-items:center;gap:0.5rem;text-decoration:none;">📊 View Skill Gap</a>
+        <a href="profile.html" class="btn-outline" style="display:inline-flex;align-items:center;gap:0.5rem;text-decoration:none;">👤 Update Profile</a>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    const GEMINI_API = 'http://127.0.0.1:5000';
+    const user = JSON.parse(localStorage.getItem('hiredUpUser') || 'null');
+    if (!user) window.location.href = 'auth.html';
+
+    async function apiFetch(baseUrl, path, opts = {}) {
+      const token = localStorage.getItem('hiredUpToken') || user?.accessToken || '';
+      const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...opts.headers };
+      try { return await fetch(baseUrl + path, { ...opts, headers }); }
+      catch { return await fetch(baseUrl.replace('127.0.0.1','localhost') + path, { ...opts, headers }); }
+    }
+
+    let questions = [];
+    let currentQ = 0;
+    let sessionScores = [];
+    let sessionResults = [];
+    let totalQCount = 5;
+
+    /* -------- START SESSION -------- */
+    async function startSession() {
+      const role = document.getElementById('job-role').value || 'Software Engineer';
+      const type = document.getElementById('interview-type').value;
+      const level = document.getElementById('difficulty').value;
+      totalQCount = parseInt(document.getElementById('q-count').value);
+
+      document.getElementById('setup-panel').classList.add('hidden');
+      document.getElementById('generating-state').classList.remove('hidden');
+
+      // Try AI generation
+      try {
+        const res = await fetch(`${GEMINI_API}/api/interview/questions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ role, type, level, count: totalQCount })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          questions = data.questions;
+        } else throw new Error();
+      } catch {
+        // Fallback question bank
+        questions = getFallbackQuestions(role, type, level, totalQCount);
+      }
+
+      document.getElementById('generating-state').classList.add('hidden');
+      document.getElementById('session-panel').classList.remove('hidden');
+
+      currentQ = 0;
+      sessionScores = [];
+      sessionResults = [];
+      initProgress();
+      renderQuestion();
+
+      // Word count watcher
+      document.getElementById('q-answer').addEventListener('input', function() {
+        const words = this.value.trim().split(/\s+/).filter(Boolean).length;
+        document.getElementById('word-count').textContent = `${words} word${words!==1?'s':''}`;
+      });
+    }
+
+    /* -------- FALLBACK QUESTIONS -------- */
+    function getFallbackQuestions(role, type, level, count) {
+      const behavioral = [
+        `Tell me about a time you had to work with a difficult team member. How did you handle it?`,
+        `Describe a situation where you had to meet a tight deadline. What was your approach?`,
+        `Give an example of when you identified and solved a critical problem before it escalated.`,
+        `Tell me about a project you're most proud of. What was your specific contribution?`,
+        `Describe a time you received critical feedback. How did you respond and what changed?`,
+        `Tell me about a time you had to learn a new technology quickly. What was your process?`,
+        `Give an example of when you had to make a decision with incomplete information.`,
+        `Describe a situation where you went above and beyond what was expected.`,
+      ];
+      const technical = [
+        `Explain the difference between synchronous and asynchronous programming. Give a real-world example.`,
+        `How would you design a scalable URL shortening service like bit.ly?`,
+        `What is the difference between REST and GraphQL? When would you choose one over the other?`,
+        `Explain SQL vs NoSQL databases. When would you use each in a production system?`,
+        `What is a race condition? How do you prevent it in concurrent code?`,
+        `How does JWT authentication work? What are its security considerations?`,
+        `Explain the concept of database indexing and when it helps and hurts performance.`,
+        `What is Docker and how does containerization improve the development workflow?`,
+      ];
+      const pool = type === 'technical' ? technical : type === 'behavioral' ? behavioral : [...behavioral.slice(0,4), ...technical.slice(0,4)];
+      return pool.sort(() => Math.random() - 0.5).slice(0, count).map((q, i) => ({ id: i+1, text: q, type: i % 2 === 0 ? 'behavioral' : 'technical', hint: 'Use STAR: Situation → Task → Action → Result' }));
+    }
+
+    /* -------- PROGRESS -------- */
+    function initProgress() {
+      const dots = document.getElementById('progress-dots');
+      dots.innerHTML = Array.from({length: questions.length}, (_, i) =>
+        `<div class="dot" id="dot-${i}"></div>`
+      ).join('');
+    }
+
+    function updateProgress() {
+      document.querySelectorAll('.dot').forEach((d, i) => {
+        d.className = 'dot' + (i < currentQ ? ' done' : i === currentQ ? ' active' : '');
+      });
+    }
+
+    /* -------- RENDER QUESTION -------- */
+    function renderQuestion() {
+      updateProgress();
+      document.getElementById('feedback-card').classList.add('hidden');
+      const q = questions[currentQ];
+      document.getElementById('q-label').textContent = `Question ${currentQ + 1} of ${questions.length}`;
+      document.getElementById('q-text').textContent = q.text;
+      document.getElementById('q-answer').value = '';
+      document.getElementById('word-count').textContent = '0 words';
+      document.getElementById('current-question').classList.remove('hidden');
+    }
+
+    /* -------- SUBMIT ANSWER -------- */
+    async function submitAnswer() {
+      const answer = document.getElementById('q-answer').value.trim();
+      if (!answer || answer.split(/\s+/).length < 10) {
+        showToast('Please write a more detailed answer (at least 10 words)', 'error');
+        return;
+      }
+
+      document.getElementById('current-question').classList.add('hidden');
+      document.getElementById('eval-state').classList.remove('hidden');
+      document.getElementById('feedback-card').classList.add('hidden');
+
+      const q = questions[currentQ];
+      let evaluation;
+
+      try {
+        const res = await fetch(`${GEMINI_API}/api/interview/evaluate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: q.text, answer, role: document.getElementById('job-role').value || 'Software Engineer' })
+        });
+        if (res.ok) { evaluation = await res.json(); }
+        else throw new Error();
+      } catch {
+        evaluation = localEvaluate(answer);
+      }
+
+      sessionScores.push(evaluation.overallScore || evaluation.overall_score || 7);
+      sessionResults.push({ question: q.text, answer, evaluation });
+
+      document.getElementById('eval-state').classList.add('hidden');
+      showFeedback(evaluation);
+      updateRunningScore();
+    }
+
+    /* -------- LOCAL EVALUATION FALLBACK -------- */
+    function localEvaluate(answer) {
+      const words = answer.trim().split(/\s+/).length;
+      const hasSituation = /situation|context|when|project|team|scenario/i.test(answer);
+      const hasTask      = /task|goal|responsib|objective|need to|had to/i.test(answer);
+      const hasAction    = /action|did|implemented|built|created|resolved|decided|approached/i.test(answer);
+      const hasResult    = /result|outcome|achieved|improved|reduced|increased|final|learned|delivered/i.test(answer);
+
+      const starScores = {
+        situation: hasSituation ? (words > 50 ? '8/10' : '6/10') : '3/10',
+        task:      hasTask      ? '8/10' : '4/10',
+        action:    hasAction    ? '8/10' : '4/10',
+        result:    hasResult    ? '9/10' : '3/10',
+      };
+      const overall = Math.round(([hasSituation,hasTask,hasAction,hasResult].filter(Boolean).length / 4) * 10);
+
+      return {
+        overallScore: Math.max(overall, 4),
+        star: starScores,
+        feedback: words < 50 ? 'Your answer is quite brief. Try to expand with specific examples and metrics.' :
+          'Good structured answer! Consider adding quantifiable results (e.g., reduced load time by 40%) to make your impact more concrete.',
+        strengths: hasAction && hasResult ? 'Clear action steps and tangible results mentioned.' : 'You addressed the core question.',
+        improvements: !hasResult ? 'Add a measurable result or outcome to complete the STAR framework.' : 'Quantify your results with specific metrics for stronger impact.',
+      };
+    }
+
+    /* -------- SHOW FEEDBACK -------- */
+    function showFeedback(evaluation) {
+      const score = evaluation.overallScore || evaluation.overall_score || 7;
+      const star = evaluation.star || {};
+
+      document.getElementById('q-overall-score').textContent = `${score}/10`;
+      document.getElementById('s-situation').textContent = star.situation || `${Math.floor(score*0.9)}/10`;
+      document.getElementById('s-task').textContent      = star.task      || `${Math.floor(score*0.85)}/10`;
+      document.getElementById('s-action').textContent   = star.action    || `${Math.floor(score*1.0)}/10`;
+      document.getElementById('s-result').textContent   = star.result    || `${Math.floor(score*0.95)}/10`;
+
+      document.getElementById('eval-feedback-text').textContent  = evaluation.feedback    || evaluation.overall_feedback || '';
+      document.getElementById('eval-strengths').textContent      = evaluation.strengths   || '—';
+      document.getElementById('eval-improvements').textContent   = evaluation.improvements || evaluation.improvement || '—';
+
+      document.getElementById('feedback-card').classList.remove('hidden');
+    }
+
+    function updateRunningScore() {
+      if (!sessionScores.length) return;
+      const avg = (sessionScores.reduce((a,b) => a+b, 0) / sessionScores.length).toFixed(1);
+      document.getElementById('running-score').textContent = `${avg}/10`;
+    }
+
+    /* -------- NEXT / SKIP -------- */
+    function nextQuestion() {
+      currentQ++;
+      if (currentQ >= questions.length) { showFinalResults(); return; }
+      document.getElementById('feedback-card').classList.add('hidden');
+      renderQuestion();
+    }
+
+    function skipQuestion() {
+      sessionScores.push(0);
+      sessionResults.push({ question: questions[currentQ].text, answer: '[Skipped]', evaluation: { overallScore:0, feedback:'Skipped', strengths:'—', improvements:'Practice this topic.' } });
+      nextQuestion();
+    }
+
+    /* -------- FINAL RESULTS -------- */
+    async function showFinalResults() {
+      document.getElementById('session-panel').classList.add('hidden');
+      document.getElementById('results-panel').classList.remove('hidden');
+
+      const avg = sessionScores.reduce((a,b) => a+b, 0) / Math.max(sessionScores.length,1);
+      const pct = Math.round((avg / 10) * 100);
+
+      document.getElementById('final-score-display').textContent = `${avg.toFixed(1)}/10`;
+      document.getElementById('result-emoji').textContent = avg >= 8 ? '🏆' : avg >= 6 ? '🎯' : avg >= 4 ? '💪' : '📚';
+      document.getElementById('final-label').textContent = avg >= 8 ? 'Excellent Readiness' : avg >= 6 ? 'Good Performance' : avg >= 4 ? 'Needs Practice' : 'Keep Practicing';
+      document.getElementById('result-tagline').textContent = avg >= 7
+        ? 'You performed well. Focus on quantifying results for an even stronger impression.'
+        : 'Keep practicing! Review the STAR method and come back for another round.';
+
+      setTimeout(() => { document.getElementById('readiness-fill').style.width = pct + '%'; }, 200);
+      
+      // Save results to backend
+      try {
+        const payload = {
+            role: document.getElementById('job-role').value || 'Software Engineer',
+            questionType: document.getElementById('interview-type').value || 'mixed',
+            level: document.getElementById('difficulty').value || 'mid',
+            avgScore: avg,
+            questions: sessionResults.map(r => ({
+                question: r.question,
+                answer: r.answer,
+                score: r.evaluation.overallScore || r.evaluation.overall_score || 0,
+                feedback: r.evaluation.feedback || '',
+                strengths: r.evaluation.strengths || '',
+                improvements: r.evaluation.improvements || ''
+            }))
+        };
+        await apiFetch('http://localhost:5000', '/api/interview/results', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        showToast('Interview results saved successfully!', 'success');
+      } catch (e) {
+        console.error('Failed to save interview results:', e);
+      }
+
+      // Q summary
+      document.getElementById('q-summary').innerHTML = sessionResults.map((r, i) => `
+        <div style="padding:0.75rem 1rem;border-radius:10px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);margin-bottom:0.65rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+          <div style="flex:1;">
+            <div style="font-size:0.78rem;font-weight:700;color:#94a3b8;margin-bottom:2px;">Q${i+1}</div>
+            <div style="font-size:0.88rem;font-weight:600;line-height:1.4;">${r.question.substring(0,80)}…</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-size:1.3rem;font-weight:900;color:${(r.evaluation.overallScore||0)>=7?'#34d399':(r.evaluation.overallScore||0)>=5?'#fbbf24':'#f87171'};">${r.evaluation.overallScore||0}/10</div>
+          </div>
+        </div>
+      `).join('');
+
+      // Tips
+      const tips = [];
+      const avg_rounded = Math.floor(avg);
+      if (avg_rounded < 6)  tips.push({ icon:'📖', text:'Review the STAR method template and practice structuring answers before your next session.' });
+      if (avg_rounded < 8)  tips.push({ icon:'📏', text:'Add specific metrics and numbers to your results — "Reduced load time by 45%" is far more impactful.' });
+      if (avg_rounded >= 8) tips.push({ icon:'🎯', text:'Great performance! Try the "Senior" difficulty level and practice with more complex scenarios.' });
+      tips.push({ icon:'🔄', text:'Practice consistently — aim for 3 interview sessions per week for rapid improvement.' });
+      tips.push({ icon:'📊', text:'Check your Skill Gap to align your technical knowledge with the job requirements.' });
+
+      document.getElementById('final-tips').innerHTML = tips.map(t => `
+        <div style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.85rem 1rem;border-radius:10px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);">
+          <span style="font-size:1.1rem;">${t.icon}</span>
+          <span style="font-size:0.88rem;color:#94a3b8;line-height:1.6;">${t.text}</span>
+        </div>
+      `).join('');
+    }
+
+    /* -------- RESET -------- */
+    function resetSession() {
+      currentQ = 0; questions = []; sessionScores = []; sessionResults = [];
+      document.getElementById('session-panel').classList.add('hidden');
+      document.getElementById('results-panel').classList.add('hidden');
+      document.getElementById('generating-state').classList.add('hidden');
+      document.getElementById('setup-panel').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
