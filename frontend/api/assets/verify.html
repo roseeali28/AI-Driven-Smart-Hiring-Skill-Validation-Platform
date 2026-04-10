@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HiredUp | Official Certificate Verification</title>
+  <link rel="stylesheet" href="index.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: radial-gradient(circle at top right, #1a1b26 0%, #0f1016 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: 20px;
+    }
+
+    .v-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 500px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .v-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #6d5cff, #38e6c5);
+    }
+
+    .status-icon {
+      width: 80px;
+      height: 80px;
+      background: rgba(56, 230, 197, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 32px;
+      color: #38e6c5;
+    }
+
+    .status-icon.invalid {
+      background: rgba(255, 82, 82, 0.1);
+      color: #ff5252;
+    }
+
+    .status-icon.expired {
+      background: rgba(255, 171, 0, 0.1);
+      color: #ffab00;
+    }
+
+    .v-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 8px;
+    }
+
+    .v-subtitle {
+      font-size: 0.9rem;
+      color: #a2a7c7;
+      margin-bottom: 32px;
+    }
+
+    .data-grid {
+      text-align: left;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 32px;
+    }
+
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+    }
+
+    .data-label {
+      color: #64748b;
+    }
+
+    .data-value {
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    .v-footer {
+      font-size: 0.75rem;
+      color: #64748b;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 20px;
+    }
+
+    .btn {
+      background: #6d5cff;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s;
+    }
+
+    .loading-spinner {
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid #6d5cff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="v-card" id="main-card">
+    <div id="loader">
+      <div class="loading-spinner"></div>
+      <p style="color: #64748b; font-size: 0.9rem;">Verifying Credential ID...</p>
+    </div>
+
+    <div id="content" style="display: none;">
+      <div class="status-icon" id="status-icon">✔</div>
+      <h1 class="v-title" id="v-status">Verified Certificate</h1>
+      <p class="v-subtitle">This digital credential is authentic and issued by HiredUp.</p>
+
+      <div class="data-grid">
+        <div class="data-row">
+          <span class="data-label">Issued To:</span>
+          <span class="data-value" id="d-name">--</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">Course/Skill:</span>
+          <span class="data-value" id="d-course">--</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">Issue Date:</span>
+          <span class="data-value" id="d-date">--</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">Credential ID:</span>
+          <span class="data-value" id="d-id">--</span>
+        </div>
+        <div class="data-row" id="expiry-row" style="display:none;">
+          <span class="data-label">Expiry Date:</span>
+          <span class="data-value" id="d-expiry">--</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 24px;">
+        <a href="index.html" class="btn">Explore Platform</a>
+      </div>
+
+      <div class="v-footer">
+        Digital Verification Service provided by HiredUp Authority.<br>
+        © 2024 HiredUp Hire Platforms.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const certId = urlParams.get('id');
+
+      if (!certId) {
+        showError('No Credential ID provided.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:5000/api/certificates/verify/${certId}`);
+        const data = await response.json();
+
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+
+        if (data.status === 'VALID' || data.status === 'VERIFIED') {
+          renderSuccess(data);
+        } else if (data.status === 'EXPIRED') {
+          renderExpired(data);
+        } else {
+          showError(data.message || 'Invalid or Tampered Credential.');
+        }
+
+      } catch (err) {
+        console.error(err);
+        showError('Verification service is temporarily unavailable.');
+      }
+    });
+
+    function renderSuccess(data) {
+      const details = data.details;
+      document.getElementById('d-name').textContent = details.issued_to;
+      document.getElementById('d-course').textContent = details.course;
+      document.getElementById('d-date').textContent = new Date(details.issue_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById('d-id').textContent = details.id.substring(0, 18) + '...';
+      
+      if (details.expiry_date) {
+        document.getElementById('expiry-row').style.display = 'flex';
+        document.getElementById('d-expiry').textContent = new Date(details.expiry_date).toLocaleDateString();
+      }
+    }
+
+    function renderExpired(data) {
+      renderSuccess(data);
+      const icon = document.getElementById('status-icon');
+      icon.textContent = '⚠';
+      icon.className = 'status-icon expired';
+      document.getElementById('v-status').textContent = 'Expired Credential';
+      document.getElementById('v-status').style.color = '#ffab00';
+    }
+
+    function showError(msg) {
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+      const icon = document.getElementById('status-icon');
+      icon.textContent = '✖';
+      icon.className = 'status-icon invalid';
+      document.getElementById('v-status').textContent = 'Verification Failed';
+      document.getElementById('v-status').style.color = '#ff5252';
+      document.querySelector('.v-subtitle').textContent = msg;
+      document.querySelector('.data-grid').style.display = 'none';
+    }
+  </script>
+</body>
+</html>休憩
