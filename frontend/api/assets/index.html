@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+                                                                                                                                                                                                                                   <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -11,20 +11,12 @@
 
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="style.css">
-
-    <!-- Global Theme Automation -->
-    <script>
-        (function() {
-            const savedTheme = localStorage.getItem('hiredUpTheme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-        })();
-    </script>
 </head>
 
-<body class="landing-page">
+<body>
 
     <nav class="navbar">
-        <div class="nav-container w-full">
+        <div class="container nav-container">
             <a href="index.html" class="nav-logo">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#logo-grad)" stroke-width="2"
@@ -43,62 +35,72 @@
             <div class="nav-links">
                 <a href="#features" class="nav-link">Features</a>
                 <a href="#how-it-works" class="nav-link">How it works</a>
-                <a href="job_search.html" class="nav-link" style="color: var(--primary); font-weight: 700;">Jobs</a>
                 <a href="candidates.html" class="nav-link">Candidates</a>
-                <a href="pricing.html" class="nav-link">Pricing</a>
+                <a href="skillgap.html" class="nav-link">Skill Gap</a>
+                <a href="interview.html" class="nav-link">Interview Prep</a>
             </div>
             <div class="nav-actions">
-                <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle theme">
-                    <span class="theme-toggle-track">
-                        <span class="theme-toggle-icon theme-toggle-sun">Light</span>
-                        <span class="theme-toggle-icon theme-toggle-moon">Dark</span>
-                    </span>
+                <button id="nav-theme-toggle" class="btn btn-outline" style="margin-right: 1rem; border-radius: 50%; width: 40px; height: 40px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer;">
+                    🌙
                 </button>
                 <a href="auth.html" class="btn btn-outline" style="margin-right: 1rem;">Log In</a>
                 <a href="auth.html" class="btn btn-primary btn-glow">Get Started</a>
             </div>
+            
+            <script>
+                // Inline script to bind the navbar theme toggle explicitly for this page
+                document.addEventListener('DOMContentLoaded', () => {
+                    const themeBtn = document.getElementById('nav-theme-toggle');
+                    if(themeBtn) {
+                        const savedTheme = localStorage.getItem('hiredUpTheme') || 'dark';
+                        themeBtn.innerHTML = savedTheme === 'light' ? '🌙' : '☀️';
+                        
+                        themeBtn.addEventListener('click', () => {
+                            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+                            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                            document.documentElement.setAttribute('data-theme', newTheme);
+                            localStorage.setItem('hiredUpTheme', newTheme);
+                            themeBtn.innerHTML = newTheme === 'light' ? '🌙' : '☀️';
+                            
+                            // Let the floating button (from app.js) know about the change if it exists
+                            const floatingBtns = document.querySelectorAll('.theme-toggle-btn');
+                            floatingBtns.forEach(btn => btn.innerHTML = newTheme === 'light' ? '🌙' : '☀️');
+                        });
+                    }
+                });
+            </script>
         </div>
     </nav>
 
-    <header class="hero-section">
+    <header style="padding-top: 160px; padding-bottom: 100px; position: relative;">
         <div
             style="position: absolute; top: -20%; left: 50%; transform: translateX(-50%); width: 80%; height: 60%; background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%); filter: blur(80px); z-index: -1;">
         </div>
 
         <div class="container flex flex-col items-center text-center">
-            <div class="animate-fade-in hero-shell">
-                <span class="badge-v1">AI-Powered Recruitment V1.0</span>
+            <div class="animate-fade-in">
+                <span class="badge-v1">🚀 AI-Powered Recruitment — Now with Skill Gap + Interview AI</span>
                 <h1 class="hero-title">
                     Hire Beyond the Resume.<br>
                     <span class="text-gradient">Validate True Potential.</span>
                 </h1>
                 <p class="hero-subtitle">
                     The first recruitment platform that focuses on skills, not keywords.
-                    Our AI evaluates coding capability, learning aptitude, and behavioral fit in real-time.
+                    AI evaluates coding, aptitude, skill gaps, and behavioral fit in real-time.
                 </p>
                 <div class="flex gap-2 justify-center">
-                    <a href="#how-it-works" class="btn btn-primary btn-glow">See How it Works</a>
-                    <a href="auth.html" class="btn btn-outline">Join the Platform</a>
+                    <a href="auth.html" class="btn btn-primary btn-glow">Get Started Free</a>
+                    <a href="skillgap.html" class="btn btn-outline">Try Skill Gap →</a>
                 </div>
-            </div>
-
-            <div class="hero-metrics animate-fade-in delay-100">
-                <div class="hero-metric">
-                    <span class="hero-metric-value">92%</span>
-                    <span class="hero-metric-label">screening time reduced</span>
-                </div>
-                <div class="hero-metric">
-                    <span class="hero-metric-value">3X</span>
-                    <span class="hero-metric-label">faster shortlist creation</span>
-                </div>
-                <div class="hero-metric">
-                    <span class="hero-metric-value">24/7</span>
-                    <span class="hero-metric-label">AI-assisted evaluation</span>
+                <div style="margin-top:1.5rem;display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;">
+                    <span style="font-size:0.8rem;color:var(--text-muted);">✅ Free to use</span>
+                    <span style="font-size:0.8rem;color:var(--text-muted);">✅ No credit card</span>
+                    <span style="font-size:0.8rem;color:var(--text-muted);">✅ Gemini AI powered</span>
                 </div>
             </div>
 
             <!-- Hero Image Mockup -->
-            <div class="glass-card hero-showcase animate-fade-in delay-200"
+            <div class="glass-card animate-fade-in delay-200"
                 style="margin-top: 4rem; width: 100%; height: 400px; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
                 <div
                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(30,41,59,0.8) 0%, rgba(15,23,42,1) 100%); display: flex; flex-direction: column;">
@@ -129,21 +131,13 @@
                     </div>
                 </div>
             </div>
-
-            <div class="trust-strip animate-fade-in delay-300">
-                <span>Skill validation</span>
-                <span>Live coding environment</span>
-                <span>Recruiter analytics</span>
-                <span>Candidate feedback loops</span>
-            </div>
         </div>
     </header>
 
     <!-- How It Works (Flowchart) -->
-    <section id="how-it-works" class="section-shell" style="padding: 100px 0; background: rgba(0,0,0,0.2);">
+    <section id="how-it-works" style="padding: 100px 0; background: rgba(0,0,0,0.2);">
         <div class="container">
             <div style="text-align: center; margin-bottom: 3rem;">
-                <span class="section-kicker">Journey Mapping</span>
                 <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">How HiredUp <span class="text-gradient">Works</span>
                 </h2>
                 <p>Tailored workflows for both Hiring Teams and Top Talent.</p>
@@ -163,41 +157,60 @@
         <div id="flow-candidate" class="flow-display"
             style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; position: relative;">
             <!-- Connection Line -->
-            <div class="connection-line"></div>
+            <div
+                style="position: absolute; top: 50%; left: 10%; right: 10%; height: 2px; background: rgba(255,255,255,0.1); z-index: 0; transform: translateY(-50%); display: var(--desktop-line, block);">
+            </div>
 
             <!-- Step 1 -->
-            <div class="step-card animate-fade-in" style="--card-color: var(--primary);">
-                <div class="step-number">1</div>
-                <h3 class="step-title">Create Profile</h3>
-                <p class="step-desc">Sign up and highlight your key skills.</p>
+            <div class="glass-card animate-fade-in"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--primary); font-weight: bold;">
+                    1</div>
+                <h3 style="font-size: 1.25rem;">Create Profile</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">Sign up and highlight your key skills.</p>
             </div>
 
             <!-- Step 2 -->
-            <div class="step-card animate-fade-in delay-100" style="--card-color: var(--accent);">
-                <div class="step-number">2</div>
-                <h3 class="step-title">Live Code</h3>
-                <p class="step-desc">Solve real-world challenges in our IDE.</p>
+            <div class="glass-card animate-fade-in delay-100"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--accent); font-weight: bold;">
+                    2</div>
+                <h3 style="font-size: 1.25rem;">Live Code</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">Solve real-world challenges in our IDE.</p>
             </div>
 
             <!-- Step 3 -->
-            <div class="step-card animate-fade-in delay-200" style="--card-color: #a855f7;">
-                <div class="step-number">3</div>
-                <h3 class="step-title">AI Analysis</h3>
-                <p class="step-desc">Get instant feedback on efficiency & style.</p>
+            <div class="glass-card animate-fade-in delay-200"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #a855f7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #a855f7; font-weight: bold;">
+                    3</div>
+                <h3 style="font-size: 1.25rem;">AI Analysis</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">Get instant feedback on efficiency & style.</p>
             </div>
 
             <!-- Step 4 -->
-            <div class="step-card animate-fade-in delay-300" style="--card-color: #ec4899;">
-                <div class="step-number">4</div>
-                <h3 class="step-title">Earn Badges</h3>
-                <p class="step-desc">Unlock verified skill credentials for your profile.</p>
+            <div class="glass-card animate-fade-in delay-300"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #ec4899; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #ec4899; font-weight: bold;">
+                    4</div>
+                <h3 style="font-size: 1.25rem;">Earn Badges</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">Unlock verified skill credentials for your
+                    profile.</p>
             </div>
 
             <!-- Step 5 -->
-            <div class="step-card animate-fade-in delay-300" style="--card-color: #10b981;">
-                <div class="step-number">5</div>
-                <h3 class="step-title">Get Hired</h3>
-                <p class="step-desc">Direct interview invites from top tech companies.</p>
+            <div class="glass-card animate-fade-in delay-300"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #10b981; font-weight: bold;">
+                    5</div>
+                <h3 style="font-size: 1.25rem;">Get Hired</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">Direct interview invites from top tech companies.
+                </p>
             </div>
         </div>
 
@@ -205,34 +218,50 @@
         <div id="flow-recruiter" class="flow-display hidden"
             style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; position: relative;">
             <!-- Connection Line -->
-            <div class="connection-line"></div>
+            <div
+                style="position: absolute; top: 50%; left: 10%; right: 10%; height: 2px; background: rgba(255,255,255,0.1); z-index: 0; transform: translateY(-50%); display: var(--desktop-line, block);">
+            </div>
 
             <!-- Step 1 -->
-            <div class="step-card animate-fade-in" style="--card-color: #f59e0b;">
-                <div class="step-number">1</div>
-                <h3 class="step-title">Post Job</h3>
-                <p class="step-desc">Define role requirements and required tech stack.</p>
+            <div class="glass-card animate-fade-in"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #f59e0b; font-weight: bold;">
+                    1</div>
+                <h3 style="font-size: 1.25rem;">Post Job</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">Define role requirements and required tech stack.
+                </p>
             </div>
 
             <!-- Step 2 -->
-            <div class="step-card animate-fade-in delay-100" style="--card-color: #ef4444;">
-                <div class="step-number">2</div>
-                <h3 class="step-title">Set Challenges</h3>
-                <p class="step-desc">Choose from our library of AI-graded coding tasks.</p>
+            <div class="glass-card animate-fade-in delay-100"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #ef4444; font-weight: bold;">
+                    2</div>
+                <h3 style="font-size: 1.25rem;">Set Challenges</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">Choose from our library of AI-graded coding tasks.
+                </p>
             </div>
 
             <!-- Step 3 -->
-            <div class="step-card animate-fade-in delay-200" style="--card-color: #3b82f6;">
-                <div class="step-number">3</div>
-                <h3 class="step-title">Smart Ranking</h3>
-                <p class="step-desc">See candidates sorted by skill, not keywords.</p>
+            <div class="glass-card animate-fade-in delay-200"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #3b82f6; font-weight: bold;">
+                    3</div>
+                <h3 style="font-size: 1.25rem;">Smart Ranking</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">See candidates sorted by skill, not keywords.</p>
             </div>
 
             <!-- Step 4 -->
-            <div class="step-card animate-fade-in delay-300" style="--card-color: #10b981;">
-                <div class="step-number">4</div>
-                <h3 class="step-title">Instant Hire</h3>
-                <p class="step-desc">Unlock contacting details for top performers.</p>
+            <div class="glass-card animate-fade-in delay-300"
+                style="width: 250px; z-index: 1; text-align: center; padding: 2rem 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: var(--bg-dark); border: 2px solid #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #10b981; font-weight: bold;">
+                    4</div>
+                <h3 style="font-size: 1.25rem;">Instant Hire</h3>
+                <p style="font-size: 0.9rem; margin-top:0.5rem;">Unlock contacting details for top performers.</p>
             </div>
         </div>
 
@@ -255,13 +284,10 @@
         </div>
     </section>
 
-    <section id="features" class="section-shell" style="padding: 100px 0;">
+    <section id="features" style="padding: 100px 0;">
         <div class="container">
             <div class="flex justify-between items-center" style="margin-bottom: 3rem;">
-                <div>
-                    <span class="section-kicker">Platform Capabilities</span>
-                    <h2 style="font-size: 2.5rem;">Engineered for <span class="text-gradient">Precision</span></h2>
-                </div>
+                <h2 style="font-size: 2.5rem;">Engineered for <span class="text-gradient">Precision</span></h2>
                 <p style="max-width: 400px; text-align: right;">Forget manual screening. Let our engine handle the
                     noise.</p>
             </div>
@@ -384,6 +410,26 @@
                     <h3>Anti-Plagiarism</h3>
                     <p style="margin-top: 0.5rem;">Advanced AI detection to ensure candidate work is original and
                         honest.</p>
+                </div>
+
+                <!-- NEW: Skill Gap Analyzer -->
+                <div class="glass-card animate-fade-in delay-100">
+                    <div style="width:48px;height:48px;background:rgba(6,182,212,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;color:#06b6d4;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg>
+                    </div>
+                    <h3>Skill Gap Analyzer</h3>
+                    <p style="margin-top:0.5rem;margin-bottom:1.5rem;">Instantly see which skills you have, what you're missing, and get a curated learning plan for any job.</p>
+                    <button class="btn btn-sm btn-primary" onclick="linkPage('skillgap.html')" style="width:100%;background:var(--accent);border-color:var(--accent);">Analyze My Skills</button>
+                </div>
+
+                <!-- NEW: AI Interview Practice -->
+                <div class="glass-card animate-fade-in delay-200">
+                    <div style="width:48px;height:48px;background:rgba(168,85,247,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;color:#a855f7;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <h3>AI Interview Prep</h3>
+                    <p style="margin-top:0.5rem;margin-bottom:1.5rem;">Practice behavioral and technical questions. Get STAR-method scoring from Gemini AI after each answer.</p>
+                    <button class="btn btn-sm btn-primary" onclick="linkPage('interview.html')" style="width:100%;background:#a855f7;border-color:#a855f7;">Start Practice</button>
                 </div>
 
             </div>
