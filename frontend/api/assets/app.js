@@ -3,41 +3,19 @@
  * Handles Navigation, Auth State Simulation, and Global Interactions
  */
 
+// Apply saved theme IMMEDIATELY to prevent flash of wrong colours
+(function() {
+    const t = localStorage.getItem('hiredUpTheme') || 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log('HiredUp: System Online');
-    initTheme();
     initScrollEffects();
     initRoleToggle(); // For index.html
     initAuthToggle(); // For auth.html
+    initThemeToggle(); // Global Theme Switcher
 });
-
-function initTheme() {
-    const root = document.documentElement;
-    const themeToggle = document.getElementById('theme-toggle');
-    const savedTheme = localStorage.getItem('hiredUpTheme');
-    const preferredTheme = savedTheme || 'dark';
-
-    setTheme(preferredTheme);
-
-    if (!themeToggle) return;
-
-    themeToggle.addEventListener('click', () => {
-        const nextTheme = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-        setTheme(nextTheme);
-    });
-}
-
-function setTheme(theme) {
-    const root = document.documentElement;
-    const themeToggle = document.getElementById('theme-toggle');
-    root.setAttribute('data-theme', theme);
-    localStorage.setItem('hiredUpTheme', theme);
-
-    if (themeToggle) {
-        themeToggle.setAttribute('aria-pressed', theme === 'light' ? 'true' : 'false');
-        themeToggle.setAttribute('title', `Switch to ${theme === 'light' ? 'dark' : 'light'} mode`);
-    }
-}
 
 // --- Animation Effects ---
 function initScrollEffects() {
@@ -104,9 +82,13 @@ function initAuthToggle() {
     const signupFields = document.getElementById('signup-fields');
     const recruiterFields = document.getElementById('recruiter-fields');
     const roleSelector = document.getElementById('role-selector-container');
-    const authForm = document.getElementById('auth-form');
 
     if (!tabs.length) return;
+
+    // Default state: login tab is active — hide role selector and signup fields
+    roleSelector?.classList.add('hidden');
+    signupFields?.classList.add('hidden');
+    recruiterFields?.classList.add('hidden');
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -118,18 +100,22 @@ function initAuthToggle() {
                 authTitle.textContent = 'Welcome Back';
                 authDesc.textContent = 'Enter your credentials to access the platform.';
                 submitBtn.textContent = 'Log In';
+                roleSelector?.classList.add('hidden');
                 signupFields?.classList.add('hidden');
                 recruiterFields?.classList.add('hidden');
             } else {
                 authTitle.textContent = 'Create Account';
                 authDesc.textContent = 'Join the future of hiring today.';
                 submitBtn.textContent = 'Sign Up';
+                roleSelector?.classList.remove('hidden');
                 signupFields?.classList.remove('hidden');
 
-                // Show recruiter fields if recruiter is selected
-                const selectedRole = document.querySelector(".role-option.selected")?.getAttribute('data-role');
+                // Show recruiter fields only if recruiter is selected
+                const selectedRole = document.querySelector('.role-option.selected')?.getAttribute('data-role');
                 if (selectedRole === 'recruiter') {
                     recruiterFields?.classList.remove('hidden');
+                } else {
+                    recruiterFields?.classList.add('hidden');
                 }
             }
         });
@@ -144,7 +130,7 @@ function initAuthToggle() {
                 opt.classList.add('selected');
 
                 const role = opt.getAttribute('data-role');
-                if (role === 'recruiter' && submitBtn.textContent === 'Sign Up') {
+                if (role === 'recruiter' && submitBtn?.textContent === 'Sign Up') {
                     recruiterFields?.classList.remove('hidden');
                 } else {
                     recruiterFields?.classList.add('hidden');
@@ -213,6 +199,7 @@ async function handleAuth(event) {
     const submitBtn = document.getElementById("submit-btn");
     const isSignup = submitBtn.textContent === "Sign Up";
 
+    // Backend expects UPPERCASE roles: RECRUITER / CANDIDATE
     let role = "CANDIDATE";
     const selectedRole = document.querySelector(".role-option.selected");
     if (selectedRole) {
@@ -230,35 +217,35 @@ async function handleAuth(event) {
 
     try {
         const body = isSignup
-            ? { fullName: fullname, email, password, role, companyName, designation }
+            ? { fullname, email, password, role, companyName, designation }
             : { email, password };
 
-        if (!window.hiredUpApi) {
-            // Fallback to fetch if utility not loaded
-            const endpoint = isSignup ? "/api/auth/register" : "/api/auth/login";
-            const res = await fetch(`http://localhost:5000${endpoint}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(body)
-            });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || data.message || "Server error");
+        const endpoint = isSignup ? "/auth/register" : "/auth/login";
+        const res = await fetch(`http://localhost:5000/api${endpoint}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
 
-            showToast(isSignup ? "Account created successfully!" : "Welcome back!", "success");
-            localStorage.setItem("hiredUpUser", JSON.stringify(data.user));
-            if (data.accessToken) localStorage.setItem("hiredUpToken", data.accessToken);
-            setTimeout(() => { window.location.href = data.user.role === "Recruiter" ? "profile.html" : "profile.html"; }, 1000);
-        } else {
-            const endpoint = isSignup ? "/auth/register" : "/auth/login";
-            const data = await window.hiredUpApi.post(endpoint, body);
-            showToast(isSignup ? "Account created successfully!" : "Welcome back!", "success");
-            localStorage.setItem("hiredUpUser", JSON.stringify(data.user));
-            if (data.accessToken) localStorage.setItem("hiredUpToken", data.accessToken);
-            setTimeout(() => { window.location.href = "profile.html"; }, 1000);
-        }
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || data.message || "Auth Failed");
+
+        showToast(isSignup ? "Account created successfully!" : "Welcome back!", "success");
+        
+        // Persist session
+        localStorage.setItem("hiredUpUser", JSON.stringify(data.user));
+        if (data.accessToken)  localStorage.setItem("hiredUpToken", data.accessToken);
+        if (data.refreshToken) localStorage.setItem("hiredUpRefreshToken", data.refreshToken);
+        localStorage.setItem("userSkills", JSON.stringify(data.user.skills || []));
+
+        // Role-based redirection (Case-insensitive)
+        const userRole = String(data.user.role).toUpperCase();
+        const redirectUrl = (userRole === "RECRUITER") ? "recruiter.html" : "profile.html";
+        
+        setTimeout(() => { window.location.href = redirectUrl; }, 1000);
 
     } catch (err) {
-        showToast(err.message || "Server error", "error");
+        showToast(err.message || "Server connection failed", "error");
     } finally {
         hideLoader();
     }
@@ -267,7 +254,9 @@ async function handleAuth(event) {
 // --- Navigation Guards ---
 function checkAuth(target) {
     if (target && target.includes(':5173')) {
-        window.location.href = target;
+        const token = localStorage.getItem('hiredUpToken');
+        const separator = target.includes('?') ? '&' : '?';
+        window.location.href = token ? `${target}${separator}token=${token}` : target;
         return;
     }
     const user = JSON.parse(localStorage.getItem('hiredUpUser'));
@@ -313,7 +302,7 @@ async function fetchRecentTalent() {
         try {
             res = await fetch('http://localhost:5000/api/auth/candidates');
         } catch (e) {
-            res = await fetch('http://127.0.0.1:5000/api/auth/candidates');
+            res = await fetch('http://localhost:5000/api/auth/candidates');
         }
 
         if (!res.ok) throw new Error('Failed to fetch');
@@ -321,20 +310,24 @@ async function fetchRecentTalent() {
 
         if (candidates.length > 0) {
             section.classList.remove('hidden');
-            // Show last 4 candidates
-            ticker.innerHTML = candidates.reverse().slice(0, 4).map((c, idx) => `
-                <div class="glass-card" style="padding: 1.5rem; width: 220px; transition: 0.3s; border-color: rgba(0, 245, 212, 0.1);">
-                    <div style="width: 40px; height: 40px; background: rgba(0, 245, 212, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent); margin-bottom: 1rem;">
+            // Show last 4 candidates with diverse expertise
+            ticker.innerHTML = candidates.reverse().slice(0, 4).map((c, idx) => {
+                const expertise = (c.expertise || 'Full Stack, AI, Dev').split(',')[0].toUpperCase();
+                const color = idx % 2 === 0 ? 'var(--accent)' : '#a855f7';
+                return `
+                <div class="glass-card" style="padding: 1.5rem; width: 220px; transition: 0.3s; border-color: ${color}33;">
+                    <div style="width: 40px; height: 40px; background: ${color}1a; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: ${color}; margin-bottom: 1rem;">
                         ${c.fullname.charAt(0).toUpperCase()}
                     </div>
-                    <div style="font-weight: 800; font-size: 0.9rem;">${c.fullname.split(' ')[0].toUpperCase()}</div>
-                    <div style="font-size: 0.7rem; opacity: 0.4; font-family: monospace; margin-top: 0.25rem;">${c.expertise || 'DEVELOPER'}</div>
+                    <div style="font-weight: 800; font-size: 0.9rem; color: var(--text-main);">${c.fullname.split(' ')[0].toUpperCase()}</div>
+                    <div style="font-size: 0.65rem; opacity: 0.5; font-family: 'JetBrains Mono', monospace; margin-top: 0.25rem; color: ${color};">${expertise}</div>
                     <div class="flex items-center gap-2 mt-4">
-                        <div style="width: 6px; height: 6px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent);"></div>
-                        <span style="font-size: 0.6rem; font-weight: 800; letter-spacing: 1px; color: var(--accent);">NEW_INFILTRATION</span>
+                        <div style="width: 6px; height: 6px; background: ${color}; border-radius: 50%; box-shadow: 0 0 10px ${color};"></div>
+                        <span style="font-size: 0.6rem; font-weight: 800; letter-spacing: 1px; color: ${color}; opacity: 0.8;">VERIFIED_TALENT</span>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
     } catch (err) {
         console.error('Error fetching recent talent:', err);
@@ -390,7 +383,82 @@ window.linkPage = linkPage;
 window.logout = () => {
     localStorage.removeItem("hiredUpUser");
     localStorage.removeItem("hiredUpToken");
+    localStorage.removeItem("hiredUpRefreshToken");
+    localStorage.removeItem("userSkills");
     window.location.href = "index.html";
 };
+
+// --- Theme Toggle ---
+function initThemeToggle() {
+    const savedTheme = localStorage.getItem('hiredUpTheme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    const btn = document.createElement('button');
+    btn.className = 'theme-toggle-btn';
+    btn.innerHTML = savedTheme === 'light' ? '🌙' : '☀️';
+    btn.title = 'Toggle Theme (Dark/Light)';
+    document.body.appendChild(btn);
+
+    const updateThemeIcon = (theme) => {
+        btn.innerHTML = theme === 'light' ? '🌙' : '☀️';
+    };
+
+    btn.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('hiredUpTheme', newTheme);
+        updateThemeIcon(newTheme);
+        
+        // Sync with navbar toggles if they exist
+        const navBtns = document.querySelectorAll('#nav-theme-toggle');
+        navBtns.forEach(nb => nb.innerHTML = newTheme === 'light' ? '🌙' : '☀️');
+    });
+
+    // Handle external sync (like from navbar)
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'hiredUpTheme') {
+            updateThemeIcon(e.newValue);
+        }
+    });
+}
+
+// --- Fullscreen Toggle ---
+function initFullscreenToggle() {
+    const btn = document.createElement('button');
+    btn.className = 'fullscreen-toggle-btn';
+    btn.innerHTML = '🔲';
+    btn.title = 'Toggle Fullscreen';
+    document.body.appendChild(btn);
+
+    const updateIcon = () => {
+        if (document.fullscreenElement) {
+            btn.innerHTML = '内'; // Exit icon
+            btn.title = 'Exit Fullscreen';
+        } else {
+            btn.innerHTML = '🔲'; // Enter icon
+            btn.title = 'Enter Fullscreen';
+        }
+    };
+
+    btn.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                showToast(`Error attempting to enable fullscreen: ${err.message}`, 'error');
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    });
+
+    document.addEventListener('fullscreenchange', updateIcon);
+}
+
+// Call toggle initializations directly (after DOM is ready)
+document.addEventListener('DOMContentLoaded', () => {
+    initFullscreenToggle();
+});
 
 document.addEventListener('DOMContentLoaded', fetchRecentTalent);
