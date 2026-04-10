@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillFirst Hire - Session Reset</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background: #1e293b;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 1px solid #334155;
+            max-width: 500px;
+        }
+        h1 { color: #38bdf8; margin-bottom: 0.5rem; }
+        p { color: #94a3b8; line-height: 1.5; }
+        .btn {
+            background: #0284c7;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        .btn:hover { background: #0369a1; transform: translateY(-2px); }
+        .success-msg {
+            color: #4ade80;
+            margin-top: 1.5rem;
+            display: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 Session Reset Utility</h1>
+        <p>This will clear all security tokens from your browser. Use this to fix <b>"Invalid token security signature"</b> errors caused by security key updates.</p>
+        
+        <button class="btn" onclick="clearSession()">Wipe All Security Tokens</button>
+        
+        <div id="success" class="success-msg">
+            ✅ All tokens cleared! <br>
+            Please close this tab and Log In again.
+        </div>
+    </div>
+
+    <script>
+        function clearSession() {
+            // Clear current origin
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Clear cookies
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+
+            console.log("Session cleared for origin: " + window.location.origin);
+            
+            document.getElementById('success').style.display = 'block';
+            
+            // Alert user
+            alert("Security tokens have been wiped.\n\nNext steps:\n1. Restart your backend servers.\n2. Log in fresh at http://localhost:5000/auth.html");
+        }
+    </script>
+</body>
+</html>
