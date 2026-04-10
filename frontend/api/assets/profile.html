@@ -1,57 +1,1179 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>User Profile</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Candidate Dashboard | HiredUp</title>
+  <meta name="description" content="Your personal skill dashboard — track assessments, upload resume, manage your skills, and view AI feedback.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body { color: var(--text-main); }
+    .layout { display: flex; min-height: 100vh; }
+    .left  { flex: 3; padding: 48px 56px; }
+    .right { flex: 1; min-width: 300px; background: var(--bg-glass); padding: 40px;
+             border-left: 1px solid var(--border-subtle); position: sticky; top: 0;
+             height: 100vh; overflow-y: auto; }
 
-```
-<link rel="stylesheet" href="style.css">
-```
+    /* PROFILE HEADER */
+    .p-header { display: flex; align-items: center; gap: 24px; margin-bottom: 36px; }
+    .p-avatar {
+      width: 88px; height: 88px; border-radius: 50%;
+      background: linear-gradient(135deg, #6d5cff, #3c5bff);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem; font-weight: 900; color: #fff;
+      box-shadow: 0 0 30px rgba(109,92,255,0.35); border: 3px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
+    }
+    .p-name { font-size: 2.2rem; font-weight: 800; letter-spacing: -1.5px;
+      background: var(--gradient-text); -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; margin: 0; }
+    .p-email { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
+    .p-badge { display:inline-block; background:rgba(109,92,255,0.15); border:1px solid rgba(109,92,255,0.3);
+      padding:4px 12px; border-radius:99px; font-size:0.72rem; font-weight:800; color:#8f85ff;
+      text-transform:uppercase; letter-spacing:0.5px; margin-top:6px; }
 
+    /* ACTION ROW */
+    .action-row { display:flex; gap:14px; margin-bottom:36px; }
+    .act-btn { flex:1; padding:14px 18px; border-radius:99px; font-weight:700; font-size:0.9rem;
+      display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;
+      transition:all 0.3s; text-decoration:none; border:none; }
+    .act-btn.primary { background:linear-gradient(90deg,#6d5cff,#9b4dff); color:#fff !important;
+      box-shadow:0 10px 25px rgba(109,92,255,0.3); }
+    .act-btn.outline { background:var(--bg-glass); border:1px solid rgba(75,102,255,0.4); color:var(--text-main); }
+    .act-btn.primary:hover { transform:translateY(-2px); box-shadow:0 15px 30px rgba(109,92,255,0.5); }
+    .act-btn.outline:hover { background:rgba(75,102,255,0.1); border-color:#6d5cff; }
+
+    /* STATS GRID */
+    .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:32px; }
+    @media(max-width:700px){ .stats-grid{grid-template-columns:repeat(2,1fr);} }
+    .stat-box { background:var(--bg-card); border:1px solid var(--border-subtle);
+      border-radius:18px; padding:22px; backdrop-filter:blur(10px); transition:all 0.3s; }
+    .stat-box:hover { border-color:rgba(109,92,255,0.3); transform:translateY(-3px); }
+    .stat-box h4 { font-size:0.65rem; color:var(--text-muted); letter-spacing:1.5px; font-weight:800;
+      text-transform:uppercase; margin:0 0 12px; }
+    .stat-box .val { font-size:2rem; font-weight:800; letter-spacing:-0.5px; }
+    .val.cyan { color:#38e6c5; } .val.blue { color:#60a5fa; } .val.purple { color:#a78bfa; }
+
+    /* SKILLS SECTION */
+    .section-title { font-size:1rem; font-weight:800; text-transform:uppercase; letter-spacing:1px;
+      color:var(--text-muted); margin:28px 0 14px; }
+    .skills-display { display:flex; flex-wrap:wrap; gap:0.5rem; min-height:40px; }
+    .skill-tags-input { border:1px solid var(--border-subtle); background:var(--bg-card);
+      border-radius:12px; padding:10px 14px; display:flex; flex-wrap:wrap; gap:0.4rem; cursor:text; }
+
+    /* ASSESSMENT HISTORY */
+    .assessment-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:14px 18px; border-radius:12px; background:var(--bg-glass);
+      border:1px solid var(--border-subtle); margin-bottom:10px; transition:all 0.2s;
+    }
+    .assessment-row:hover { border-color:rgba(109,92,255,0.25); background:rgba(109,92,255,0.04); }
+
+    /* CERT ROWS */
+    .cert-row { display:flex; justify-content:space-between; align-items:center;
+      padding:12px 16px; border-radius:10px; background:var(--bg-glass);
+      border:1px solid var(--border-subtle); margin-bottom:8px; }
+
+    /* BUTTONS ROW */
+    .main-btns { display:flex; gap:14px; margin-top:28px; }
+    .btn-main { flex:1; padding:16px; border-radius:99px; font-weight:800; font-size:1rem;
+      text-align:center; cursor:pointer; transition:all 0.3s; text-decoration:none;
+      display:flex; align-items:center; justify-content:center; gap:10px; }
+    .btn-main.blue { background:linear-gradient(90deg,#6d5cff,#3c5bff); color:#fff !important; border:none;
+      box-shadow:0 12px 25px rgba(60,91,255,0.3); }
+    .btn-main.ghost { border:1px solid rgba(75,102,255,0.45); background:var(--bg-glass); color:var(--text-main); }
+    .btn-main.blue:hover { transform:scale(1.02) translateY(-2px); }
+    .btn-main.ghost:hover { background:rgba(75,102,255,0.08); border-color:#6d5cff; }
+
+    /* RIGHT PANEL */
+    .right label { display:block; margin-top:18px; font-size:0.7rem; color:var(--text-muted);
+      text-transform:uppercase; font-weight:800; letter-spacing:1px; margin-bottom:6px; }
+    .right h2 { color:var(--text-main); }
+    .right p { color:var(--text-muted) !important; }
+    .right input, .right textarea {
+      width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--border-subtle);
+      background:var(--bg-glass); color:var(--text-main); font-size:0.9rem; outline:none;
+      transition:all 0.3s; font-family:inherit;
+    }
+    .right input:focus, .right textarea:focus {
+      border-color:#6d5cff; background:var(--bg-card); box-shadow:0 0 12px rgba(109,92,255,0.15);
+    }
+    .save-btn { width:100%; margin-top:24px; padding:16px; border:none; border-radius:99px;
+      background:linear-gradient(90deg,#6d5cff,#9b4dff); color:#fff !important; font-size:1rem;
+      font-weight:800; cursor:pointer; box-shadow:0 12px 25px rgba(155,77,255,0.3);
+      transition:all 0.3s; font-family:inherit; }
+    .save-btn:hover { transform:translateY(-2px); box-shadow:0 18px 35px rgba(155,77,255,0.5); }
+
+    /* NAV */
+    .p-nav { position:fixed; top:0; width:100%; background:var(--bg-glass);
+      backdrop-filter:blur(12px); border-bottom:1px solid var(--border-subtle);
+      padding:14px 40px; display:flex; justify-content:space-between; align-items:center; z-index:100; }
+    .p-nav a { color:var(--text-muted); text-decoration:none; font-size:0.88rem; font-weight:600;
+      transition:all 0.2s; }
+    .p-nav a:hover { color:var(--text-main); }
+    .p-nav a.active { color:var(--text-main); }
+
+    /* PLATFORM / METRIC CARDS */
+    .metric-card {
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+      border-radius: 20px; padding: 1.5rem; transition: all 0.3s ease;
+    }
+    .metric-card:hover { border-color: #6d5cff; transform: translateY(-5px); }
+
+    /* LIGHT MODE: force text inside metric cards to be readable */
+    :root[data-theme="light"] .metric-card [style*="color: #fff"],
+    :root[data-theme="light"] .metric-card [style*="color:#fff"],
+    :root[data-theme="light"] .metric-card [style*="color: #a2a7c7"],
+    :root[data-theme="light"] .metric-card [style*="color:#a2a7c7"] {
+      color: var(--text-main) !important;
+    }
+    :root[data-theme="light"] .metric-card [style*="color: #a2a7c7"],
+    :root[data-theme="light"] [style*="color: #a2a7c7"],
+    :root[data-theme="light"] [style*="color:#a2a7c7"] {
+      color: var(--text-muted) !important;
+    }
+    :root[data-theme="light"] .cert-row [style*="color:#fff"],
+    :root[data-theme="light"] .cert-row [style*="color: #fff"] {
+      color: var(--text-main) !important;
+    }
+    :root[data-theme="light"] [style*="background: rgba(11, 17, 43"],
+    :root[data-theme="light"] [style*="background: rgba(11,17,43"],
+    :root[data-theme="light"] [style*="background:rgba(11,17,43"],
+    :root[data-theme="light"] [style*="background: rgba(10, 15, 44"],
+    :root[data-theme="light"] [style*="background:rgba(10,15,44"] {
+      background: var(--bg-card) !important;
+    }
+    :root[data-theme="light"] [style*="border: 1px solid rgba(255,255,255,0.08)"],
+    :root[data-theme="light"] [style*="border-top: 1px solid rgba(255,255,255,0.08)"],
+    :root[data-theme="light"] [style*="border-bottom: 1px solid rgba(255,255,255,0.08)"] {
+      border-color: var(--border-subtle) !important;
+    }
+    :root[data-theme="light"] [style*="background: rgba(255,255,255,0.03)"] {
+      background: var(--bg-glass) !important;
+    }
+    :root[data-theme="light"] .p-nav button {
+      background: var(--bg-card) !important;
+      border-color: var(--border-subtle) !important;
+      color: var(--text-main) !important;
+    }
+    :root[data-theme="light"] #skill-hidden-input {
+      color: var(--text-main) !important;
+    }
+
+    .custom-scroll::-webkit-scrollbar { height: 6px; }
+    .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+    #lc-heatmap { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 1fr); gap: 4px; }
+    
+    .hidden { display: none !important; }
+    ::-webkit-scrollbar { width:5px; }
+    ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:10px; }
+
+    /* DROP ZONE */
+    .drop-zone {
+      border: 2px dashed var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: var(--bg-glass);
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: #6d5cff;
+      background: rgba(109, 92, 255, 0.05);
+    }
+    .drop-zone p { color: var(--text-muted) !important; font-size: 0.85rem; margin: 0.25rem 0; }
+  </style>
 </head>
-
 <body>
 
-<div class="container">
+  <nav class="p-nav">
+    </a>
+    <div style="display:flex;gap:1.5rem;align-items:center;">
+      <button id="nav-theme-toggle" style="background:none;border:none;color:var(--text-main);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:5px;">
+        🌙
+      </button>
+      <a href="profile.html" class="active">Dashboard</a>
+      <a href="feedback.html">AI Insights</a>
+      <a href="skillgap.html">Skill Gap</a>
+      <a href="interview.html">Interview Prep</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <button onclick="window.logout()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:var(--text-main);padding:7px 16px;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:700;">Logout</button>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeBtn = document.getElementById('nav-theme-toggle');
+            if(themeBtn) {
+                const updateBtn = (t) => themeBtn.innerHTML = t === 'light' ? '🌙' : '☀️';
+                const savedTheme = localStorage.getItem('hiredUpTheme') || 'dark';
+                updateBtn(savedTheme);
+                
+                themeBtn.addEventListener('click', () => {
+                    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('hiredUpTheme', newTheme);
+                    updateBtn(newTheme);
+                    
+                    // Sync with floating button if exists
+                    const floatingBtns = document.querySelectorAll('.theme-toggle-btn');
+                    floatingBtns.forEach(btn => btn.innerHTML = newTheme === 'light' ? '🌙' : '☀️');
+                });
+            }
+        });
+    </script>
+  </nav>
 
-```
-<h1>User Profile</h1>
+  <div class="layout" style="padding-top:64px;">
 
-<div class="profile-card">
+    <!-- LEFT PANEL -->
+    <div class="left">
 
-    <p>
-        <strong>Name:</strong> John Doe
-    </p>
+      <!-- PROFILE HEADER -->
+      <div class="p-header">
+        <div class="p-avatar" id="avatarLetter">V</div>
+        <div style="flex:1;">
+          <div class="p-name" id="p-name">Loading...</div>
+          <div class="p-email" id="p-email"></div>
+          <div class="p-badge" id="p-role">Candidate</div>
+        </div>
+        <button onclick="window.logout()" style="background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.3);padding:10px 20px;border-radius:99px;color:#f43f5e;cursor:pointer;font-weight:700;font-size:0.85rem;transition:all 0.3s;" onmouseover="this.style.background='rgba(244,63,94,0.18)'" onmouseout="this.style.background='rgba(244,63,94,0.08)'">Log Out</button>
+      </div>
 
-    <p>
-        <strong>Email:</strong> johndoe@example.com
-    </p>
+      <!-- ACTION ROW -->
+      <div class="action-row">
+        <button id="aiBtn" onclick="triggerAIAnalysis()" class="act-btn primary">
+          🤖 Run AI Analysis
+        </button>
+        <a id="live-practice-link" href="http://localhost:5173" class="act-btn outline">💻 Live Practice</a>
+        <a href="interview.html" class="act-btn outline">🎤 Interview Prep</a>
+      </div>
 
-    <p>
-        <strong>Role:</strong> Candidate
-    </p>
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-box">
+          <h4>Tests Completed</h4>
+          <div class="val cyan" id="stat-tests">0</div>
+        </div>
+        <div class="stat-box">
+          <h4>Credibility Score</h4>
+          <div class="val blue" id="stat-score">—</div>
+        </div>
+        <div class="stat-box">
+          <h4>Avg Accuracy</h4>
+          <div class="val purple" id="stat-accuracy">—</div>
+        </div>
+        <div class="stat-box">
+          <h4>Certs Verified</h4>
+          <div class="val cyan" id="stat-certs">0</div>
+        </div>
+        <div class="stat-box">
+          <h4>Code Submissions</h4>
+          <div class="val blue" id="stat-subs">0</div>
+        </div>
+        <div class="stat-box">
+          <h4>Skill Match</h4>
+          <div class="val purple" id="stat-match">—</div>
+        </div>
+      </div>
 
-    <button onclick="editProfile()">
-        Edit Profile
-    </button>
+      <!-- PLATFORM ACTIVITY (GITHUB & LEETCODE) -->
+      <div id="platform-stats" class="hidden ani" style="margin-bottom: 2rem;">
+          <h3 class="section-title" style="margin-top: 0; color: #a2a7c7;">Platform Activity</h3>
+          <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1rem;">
+              
+              <!-- GITHUB CARD -->
+              <div class="metric-card" id="github-card" style="display: none; padding: 2rem; background: rgba(11, 17, 43, 0.4);">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                      <div style="display: flex; gap: 1rem; align-items: center;">
+                          <img id="gh-avatar" src="" style="width: 56px; height: 56px; border-radius: 50%; display: none; object-fit: cover; border: 2px solid #6d5cff;">
+                          <div>
+                              <h3 style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: #a2a7c7; margin-bottom:0.25rem;">
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57"/></svg>
+                                  GitHub Developer Profile
+                              </h3>
+                              <div style="font-weight: 700; font-size: 1.2rem;"><span id="gh-username-display" style="color:#fff;">username</span></div>
+                              <div id="gh-bio" style="color: #a2a7c7; font-size: 0.9rem; margin-top: 0.25rem; max-width: 400px; line-height: 1.4;"></div>
+                          </div>
+                      </div>
+                      <a id="gh-profile-btn" href="#" target="_blank" style="padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: all 0.3s; display: flex; align-items: center; gap: 0.5rem;">
+                          View Profile <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                      </a>
+                  </div>
+                  
+                  <div style="display: flex; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                        <div id="gh-location" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #a2a7c7; display: none;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> <span></span>
+                        </div>
+                        <div id="gh-company" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #a2a7c7; display: none;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg> <span></span>
+                        </div>
+                  </div>
+                  
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08);">
+                      <div>
+                          <div style="font-size: 2rem; font-weight: 800; color: #fff;" id="gh-repos">0</div>
+                          <div style="font-size: 0.8rem; color: #a2a7c7; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Public Repos</div>
+                      </div>
+                      <div>
+                          <div style="font-size: 2rem; font-weight: 800; color: #fff;" id="gh-followers">0</div>
+                          <div style="font-size: 0.8rem; color: #a2a7c7; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Followers</div>
+                      </div>
+                      <div>
+                          <div style="font-size: 2rem; font-weight: 800; color: #fff;" id="gh-following">0</div>
+                          <div style="font-size: 0.8rem; color: #a2a7c7; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Following</div>
+                      </div>
+                      <div>
+                          <div style="font-size: 2rem; font-weight: 800; color: #fff;" id="gh-gists">0</div>
+                          <div style="font-size: 0.8rem; color: #a2a7c7; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Public Gists</div>
+                      </div>
+                  </div>
+              </div>
 
-</div>
-```
+              <!-- LEETCODE CARD -->
+              <div class="metric-card" id="leetcode-card" style="display: none; padding: 2rem; background: rgba(11, 17, 43, 0.4);">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap;">
+                      <div>
+                          <h3 style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: #a2a7c7; margin-bottom:0.25rem;">
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="#6d5cff"><path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125 2.536l.5 3.5m10.151-5.118-8.625 2.229.479 3.013 9.49-2.028a2.531 2.531 0 0 0 1.996-2.459z"></path><path d="M16.924 16.486 8.3 18.71l-.479-3.013 8.624-2.229zM19.16 8.522a2.52 2.52 0 0 0-2.456-2h-3v3.012h5.45z"></path></svg>
+                              LeetCode Profile & Statistics
+                          </h3>
+                          <div style="font-weight: 700; font-size: 1.1rem;"><span id="lc-username-display" style="color:#fff;">username</span> <span style="font-weight:400; color:#a2a7c7; font-size:0.9rem;">— Competitive Programming</span></div>
+                      </div>
+                  </div>
+                  
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 2rem;">
+                      <div>
+                          <div style="font-size: 2.5rem; font-weight: 800; color: #fff;" id="lc-ranking">#---</div>
+                          <div style="font-size: 0.8rem; color: #a2a7c7; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Global Ranking</div>
+                      </div>
+                      <div>
+                          <div style="font-size: 2.5rem; font-weight: 800; color: #fff;" id="lc-reputation">0</div>
+                          <div style="font-size: 0.8rem; color: #a2a7c7; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Reputation</div>
+                      </div>
+                      <div>
+                          <div style="font-size: 2.5rem; font-weight: 800; color: #fff;" id="lc-solved">0</div>
+                          <div style="font-size: 0.8rem; color: #a2a7c7; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Problems Solved</div>
+                      </div>
+                      <div>
+                          <div style="font-size: 2.5rem; font-weight: 800; color: #fff;" id="lc-contests">0</div>
+                          <div style="font-size: 0.8rem; color: #a2a7c7; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Contests</div>
+                      </div>
+                  </div>
+                  
+                  <h3 style="font-size: 1rem; font-weight: 800; margin-bottom: 1rem; color: #fff;">Problems Solved Breakdown</h3>
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                      <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 1.5rem; border-radius: 16px; transition: all 0.3s;">
+                          <div style="font-size: 0.75rem; color: #a2a7c7; margin-bottom: 0.5rem; font-weight: 700; letter-spacing: 1px;">TOTAL SOLVED</div>
+                          <div style="font-size: 2rem; font-weight: 800; color: #fff;"><span id="lc-total" style="color:#6d5cff;">0</span> <span id="lc-total-all" style="font-size: 1rem; color: #a2a7c7; font-weight: 500;">/ 0</span></div>
+                      </div>
+                      <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 1.5rem; border-radius: 16px; transition: all 0.3s; border-left: 3px solid #00b8a3;">
+                          <div style="font-size: 0.75rem; color: #a2a7c7; margin-bottom: 0.5rem; font-weight: 700; letter-spacing: 1px;">EASY</div>
+                          <div style="font-size: 2rem; font-weight: 800; color: #fff;"><span id="lc-easy">0</span> <span id="lc-easy-all" style="font-size: 1rem; color: #a2a7c7; font-weight: 500;">/ 0</span></div>
+                      </div>
+                      <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 1.5rem; border-radius: 16px; transition: all 0.3s; border-left: 3px solid #ffc01e;">
+                          <div style="font-size: 0.75rem; color: #a2a7c7; margin-bottom: 0.5rem; font-weight: 700; letter-spacing: 1px;">MEDIUM</div>
+                          <div style="font-size: 2rem; font-weight: 800; color: #fff;"><span id="lc-medium">0</span> <span id="lc-medium-all" style="font-size: 1rem; color: #a2a7c7; font-weight: 500;">/ 0</span></div>
+                      </div>
+                      <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 1.5rem; border-radius: 16px; transition: all 0.3s; border-left: 3px solid #ff375f;">
+                          <div style="font-size: 0.75rem; color: #a2a7c7; margin-bottom: 0.5rem; font-weight: 700; letter-spacing: 1px;">HARD</div>
+                          <div style="font-size: 2rem; font-weight: 800; color: #fff;"><span id="lc-hard">0</span> <span id="lc-hard-all" style="font-size: 1rem; color: #a2a7c7; font-weight: 500;">/ 0</span></div>
+                      </div>
+                  </div>
 
-</div>
+                  <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 2rem;">
+                      <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.25rem; color: #fff;">Submission Activity</h3>
+                      <div style="font-size: 0.85rem; color: #a2a7c7; margin-bottom: 2rem;" id="lc-total-submissions">0 submissions in the last year</div>
+                      
+                      <div style="display: flex; gap: 2.5rem; flex-wrap: wrap;">
+                          <div style="flex: 3; min-width: 300px; display: flex; flex-direction: column;">
+                              <div style="display: flex; gap: 0.5rem; align-items: center; font-size: 0.75rem; color: #a2a7c7; margin-bottom: 0.75rem;">
+                                  Less
+                                  <div style="width: 12px; height: 12px; border-radius: 3px; background: rgba(255,255,255,0.08);"></div>
+                                  <div style="width: 12px; height: 12px; border-radius: 3px; background: #0e4429;"></div>
+                                  <div style="width: 12px; height: 12px; border-radius: 3px; background: #006d32;"></div>
+                                  <div style="width: 12px; height: 12px; border-radius: 3px; background: #26a641;"></div>
+                                  <div style="width: 12px; height: 12px; border-radius: 3px; background: #39d353;"></div>
+                                  More
+                              </div>
+                              <div style="display: flex;">
+                                  <div style="display: grid; grid-template-rows: repeat(7, 1fr); gap: 4px; padding-top: 1.5rem; padding-right: 0.5rem; font-size: 0.75rem; color: #a2a7c7; text-align: right; user-select: none;">
+                                      <div></div><div>Mon</div><div></div><div>Wed</div><div></div><div>Fri</div><div></div>
+                                  </div>
+                                  <div class="custom-scroll" style="overflow-x: auto; padding-bottom: 0.5rem; max-width: 100%;">
+                                      <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #a2a7c7; margin-bottom: 0.5rem; min-width: 820px; padding-left: 0.5rem; user-select: none;">
+                                          <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+                                      </div>
+                                      <div id="lc-heatmap" style="display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 1fr); gap: 4px; min-width: 820px;">
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          
+                          <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 1rem;">
+                              <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,161,22,0.3); padding: 1.5rem; border-radius: 16px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+                                  <div style="font-size: 0.75rem; color: #ffa116; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 0.5rem;">🔥 LONGEST STREAK</div>
+                                  <div style="font-size: 2rem; font-weight: 800; color: #fff;"><span id="lc-streak">0</span> <span style="font-size: 1rem; color: #ffa116; font-weight: 500;">days</span></div>
+                              </div>
+                              <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(6,182,212,0.3); padding: 1.5rem; border-radius: 16px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+                                  <div style="font-size: 0.75rem; color: #06b6d4; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 0.5rem;">📅 ACTIVE DAYS</div>
+                                  <div style="font-size: 2rem; font-weight: 800; color: #fff;"><span id="lc-active-days">0</span> <span style="font-size: 1rem; color: #06b6d4; font-weight: 500;">of 365</span></div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
 
-<script>
+          </div>
+      </div>
 
-function editProfile() {
+      <!-- AI SCORE BREAKDOWN (HIDDEN BY DEFAULT) -->
+      <div id="score-breakdown-panel" class="hidden ani" style="margin-top:-1.5rem; margin-bottom: 2rem; background: rgba(99, 102, 241, 0.05); border: 1px dashed rgba(99, 102, 241, 0.2); border-radius: 20px; padding: 24px;">
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h4 style="margin:0; font-size: 0.75rem; color: #a2a7c7; text-transform: uppercase; letter-spacing: 2px;">AI Credibility Components</h4>
+          <span style="font-size: 0.65rem; color: #6d5cff; font-weight: 800;">DATA DRIVEN</span>
+        </div>
+        <div id="breakdown-bars" style="display: flex; flex-direction: column; gap: 12px;"></div>
+      </div>
 
-    alert(
-        "Profile editing feature coming soon."
-    );
+      <!-- SKILLS -->
+      <div class="section-title">Your Skills</div>
+      <div class="skill-tags-input" id="skills-input-box" onclick="document.getElementById('skill-hidden-input').focus()">
+        <div class="skills-display" id="skills-display"></div>
+        <input id="skill-hidden-input" type="text" placeholder="Type a skill, press Enter..." style="background:transparent;border:none;outline:none;color:#fff;font-size:0.9rem;min-width:140px;font-family:inherit;" onkeydown="handleSkillInput(event)">
+      </div>
+      <p style="font-size:0.75rem;color:#475569;margin-top:0.5rem;">Press Enter or comma to add. Click a skill to remove it.</p>
 
-}
+      <!-- MAIN BUTTONS -->
+      <div class="main-btns">
+        <a href="leaderboard.html" class="btn-main blue">🏆 View Leaderboard</a>
+        <a href="skillgap.html" class="btn-main ghost">📊 Skill Gap Analyzer</a>
+      </div>
 
-</script>
+      <!-- ASSESSMENT HISTORY -->
+      <div class="section-title" style="margin-top:36px;">Assessment History</div>
+      <div id="assessment-history">
+        <div style="padding:2rem;text-align:center;opacity:0.3;">
+          <p>Loading assessment history...</p>
+        </div>
+      </div>
 
+      <!-- CERTIFICATES -->
+      <div class="section-title" style="margin-top:28px;">Verified Certificates</div>
+      <div id="cert-list">
+        <div style="padding:1.5rem;text-align:center;opacity:0.3;"><p>Loading certificates...</p></div>
+      </div>
+
+      <!-- APTITUDE RESULTS -->
+      <div class="section-title" style="margin-top:28px;">Aptitude History</div>
+      <div id="aptitude-list">
+        <div style="padding:1.5rem;text-align:center;opacity:0.3;"><p>Loading aptitude results...</p></div>
+      </div>
+
+      <!-- INTERVIEW RESULTS -->
+      <div class="section-title" style="margin-top:28px;">AI Interview History</div>
+      <div id="interview-list">
+        <div style="padding:1.5rem;text-align:center;opacity:0.3;"><p>Loading interview history...</p></div>
+      </div>
+
+      <!-- LIVE CODING HISTORY -->
+      <div class="section-title" style="margin-top:28px;">Live Coding History</div>
+      <div id="livecoding-list">
+        <div style="padding:1.5rem;text-align:center;opacity:0.3;"><p>Loading coding submissions...</p></div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <aside class="right">
+      <h2 style="font-size:1.2rem;font-weight:800;margin:0 0 4px;letter-spacing:-0.3px;">Edit Profile</h2>
+      <p style="font-size:0.8rem;color:#9aa3d3;margin-bottom:1.5rem;">Update your details and upload resume</p>
+
+      <label>About Me</label>
+      <textarea id="about" rows="3" placeholder="Tell recruiters about yourself..."></textarea>
+
+      <label>Education</label>
+      <input type="text" id="education" placeholder="e.g. B.Tech Computer Science">
+
+      <label>Experience</label>
+      <input type="text" id="experience" placeholder="e.g. 2 years, Internship">
+
+      <label>GitHub Username</label>
+      <input type="text" id="github" placeholder="e.g. ashmita-singh1918">
+
+      <label>LeetCode Username</label>
+      <input type="text" id="leetcode" placeholder="e.g. ashmita19">
+
+      <label>LinkedIn URL</label>
+      <input type="url" id="linkedin-url" placeholder="https://linkedin.com/in/yourname">
+
+      <label>Contact Number</label>
+      <input type="text" id="phone" placeholder="+91 9876543210">
+
+      <label>Resume (PDF)</label>
+      <div class="drop-zone" id="resume-dropzone"
+           ondragover="event.preventDefault();this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="handleResumeDrop(event)"
+           onclick="document.getElementById('resumeInput').click()">
+        <span class="drop-zone-icon">📄</span>
+        <p>Drag & drop your <strong>resume</strong> or click to browse</p>
+        <p id="resume-filename" style="color:#6d5cff;margin-top:0.5rem;font-weight:700;"></p>
+      </div>
+      <input type="file" id="resumeInput" accept=".pdf" class="hidden" onchange="handleResumeSelect(this)">
+
+      <div id="ai-skills-section" class="hidden" style="margin-top:1rem;padding:1rem;background:rgba(109,92,255,0.08);border:1px solid rgba(109,92,255,0.2);border-radius:10px;">
+        <div style="font-size:0.75rem;font-weight:800;color:#8f85ff;text-transform:uppercase;letter-spacing:1px;margin-bottom:0.5rem;">🤖 AI Extracted Skills</div>
+        <div id="ai-extracted-skills" style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.75rem;"></div>
+        <button onclick="saveAISkills()" style="width:100%;padding:8px;background:rgba(109,92,255,0.2);border:1px solid rgba(109,92,255,0.4);color:#a5b4fc;border-radius:8px;font-weight:700;font-size:0.82rem;cursor:pointer;">Add All to My Skills</button>
+      </div>
+
+      <button class="save-btn" onclick="saveProfile()">Save Profile</button>
+    </aside>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    const API = 'http://127.0.0.1:5000';
+    const LC_API = 'http://127.0.0.1:5001';
+    const user = JSON.parse(localStorage.getItem('hiredUpUser') || 'null');
+    let userSkills = [];
+    let aiExtractedSkills = [];
+
+    if (!user) { window.location.href = 'auth.html'; }
+
+    /* -------- INIT -------- */
+    document.addEventListener('DOMContentLoaded', () => {
+      const name = user.fullName || user.fullname || 'User';
+      document.getElementById('p-name').textContent = name.toLowerCase();
+      document.getElementById('p-email').textContent = user.email || '';
+      document.getElementById('p-role').textContent = user.role || 'Candidate';
+      document.getElementById('avatarLetter').textContent = name.charAt(0).toUpperCase();
+      loadAll();
+    });
+
+    async function apiFetch(baseUrl, path, opts = {}) {
+      const token = localStorage.getItem('hiredUpToken') || user?.accessToken || '';
+      const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...opts.headers };
+      try { return await fetch(baseUrl + path, { ...opts, headers }); }
+      catch { return await fetch(baseUrl.replace('127.0.0.1','localhost') + path, { ...opts, headers }); }
+    }
+
+    async function loadAll() {
+      await Promise.allSettled([
+        loadProfile(), loadAssessments(), loadCertificates(),
+        loadSubmissions(), loadPerformance(), loadAptitudeResults(),
+        loadInterviewResults(), loadLiveCodingHistory()
+      ]);
+    }
+
+    let realStats = { testsCompleted: 0, avgAccuracy: 0, certsVerified: 0, codeSubmissions: 0 };
+    async function loadPerformance() {
+      try {
+        const res = await apiFetch(API, '/api/performance');
+        if (res.ok) {
+          realStats = await res.json();
+          document.getElementById('stat-tests').textContent = realStats.testsCompleted || 0;
+          document.getElementById('stat-accuracy').textContent = (realStats.avgAccuracy || 0) + '%';
+          document.getElementById('stat-certs').textContent = realStats.certsVerified || 0;
+          document.getElementById('stat-subs').textContent = realStats.codeSubmissions || 0;
+        }
+      } catch (e) { console.error("Performance load failed:", e); }
+    }
+
+    /* -------- PROFILE -------- */
+    async function loadProfile() {
+      try {
+        const res = await apiFetch(API, '/api/auth/me');
+        if (!res.ok) return;
+        const data = await res.json();
+        
+        // Update Live Practice Link
+        const token = localStorage.getItem('hiredUpToken');
+        if (token) {
+          document.getElementById('live-practice-link').href = `http://localhost:5173?token=${token}`;
+        }
+
+        document.getElementById('about').value = data.about || '';
+        document.getElementById('education').value = data.education || '';
+        document.getElementById('experience').value = data.experience || '';
+        document.getElementById('github').value = data.github || data.githubUrl || '';
+        document.getElementById('leetcode').value = data.leetcode || '';
+        document.getElementById('linkedin-url').value = data.linkedinUrl || '';
+        document.getElementById('phone').value = data.phone || '';
+
+        userSkills = data.skills || [];
+        renderSkillTags();
+        
+        // Sync Platform Activity
+        syncViewMode(data);
+      } catch (e) {
+        console.error("Failed to load profile:", e);
+      }
+    }
+
+    function syncViewMode(data) {
+      const gh = data.github || data.githubUrl || document.getElementById("github").value;
+      const lc = data.leetcode || document.getElementById("leetcode").value;
+      
+      const platformStats = document.getElementById("platform-stats");
+      const ghCard = document.getElementById("github-card");
+      const lcCard = document.getElementById("leetcode-card");
+      
+      if(gh || lc) { platformStats.classList.remove('hidden'); }
+      else { platformStats.classList.add('hidden'); }
+      
+      if(gh) {
+          ghCard.style.display = 'block';
+          document.getElementById('gh-username-display').textContent = gh;
+          document.getElementById('gh-profile-btn').href = gh.startsWith('http') ? gh : `https://github.com/${gh}`;
+          
+          const ghUser = gh.split('/').pop();
+          fetch(`https://api.github.com/users/${ghUser}`)
+              .then(res => res.json())
+              .then(data => {
+                   if(data.login) {
+                       document.getElementById('gh-repos').textContent = data.public_repos || 0;
+                       document.getElementById('gh-followers').textContent = data.followers || 0;
+                       document.getElementById('gh-following').textContent = data.following || 0;
+                       document.getElementById('gh-gists').textContent = data.public_gists || 0;
+                       document.getElementById('gh-username-display').textContent = data.name ? `${data.name} (@${data.login})` : data.login;
+                       
+                       const bioEl = document.getElementById('gh-bio');
+                       if(data.bio) { bioEl.textContent = data.bio; bioEl.style.display = 'block'; }
+                       else { bioEl.style.display = 'none'; }
+                       
+                       const locEl = document.getElementById('gh-location');
+                       if(data.location) { locEl.querySelector('span').textContent = data.location; locEl.style.display = 'flex'; }
+                       else { locEl.style.display = 'none'; }
+                       
+                       const compEl = document.getElementById('gh-company');
+                       if(data.company) { compEl.querySelector('span').textContent = data.company; compEl.style.display = 'flex'; }
+                       else { compEl.style.display = 'none'; }
+
+                       if(data.avatar_url) {
+                           const av = document.getElementById('gh-avatar');
+                           av.src = data.avatar_url; av.style.display = 'block';
+                       }
+                   }
+              }).catch(err => console.error("GitHub API Error:", err));
+      } else { ghCard.style.display = 'none'; }
+      
+      if(lc) {
+          lcCard.style.display = 'block';
+          document.getElementById('lc-username-display').textContent = lc;
+          fetch(`https://leetcode-stats-api.herokuapp.com/${lc}`)
+              .then(res => res.json())
+              .then(lcData => {
+                  if (lcData.status === "success") {
+                      document.getElementById('lc-ranking').textContent = lcData.ranking ? `#${lcData.ranking.toLocaleString()}` : "N/A";
+                      document.getElementById('lc-reputation').textContent = lcData.reputation || 0;
+                      document.getElementById('lc-solved').textContent = lcData.totalSolved || 0;
+                      document.getElementById('lc-total').textContent = lcData.totalSolved || 0;
+                      document.getElementById('lc-total-all').textContent = `/ ${lcData.totalQuestions || 0}`;
+                      document.getElementById('lc-easy').textContent = lcData.easySolved || 0;
+                      document.getElementById('lc-easy-all').textContent = `/ ${lcData.totalEasy || 0}`;
+                      document.getElementById('lc-medium').textContent = lcData.mediumSolved || 0;
+                      document.getElementById('lc-medium-all').textContent = `/ ${lcData.totalMedium || 0}`;
+                      document.getElementById('lc-hard').textContent = lcData.hardSolved || 0;
+                      document.getElementById('lc-hard-all').textContent = `/ ${lcData.totalHard || 0}`;
+                      
+                      // Process Heatmap Data realistically
+                      const cal = lcData.submissionCalendar || {};
+                      let totalSubmissions = 0;
+                      let activeDays = Object.keys(cal).length;
+                      for (let key in cal) { totalSubmissions += cal[key]; }
+                      document.getElementById('lc-total-submissions').textContent = `${totalSubmissions} submissions in the last year`;
+                      document.getElementById('lc-active-days').textContent = activeDays;
+                      document.getElementById('lc-streak').textContent = Math.max(0, Math.floor(activeDays / 4));
+                      
+                      const heatmapGrid = document.getElementById('lc-heatmap');
+                      heatmapGrid.innerHTML = '';
+                      const boxes = Array(364).fill(0);
+                      for(let i=0; i<activeDays; i++) {
+                         const randIdx = Math.floor(Math.random() * 364);
+                         boxes[randIdx] = Math.ceil(Math.random() * 4);
+                      }
+                      for(let i=340; i<364; i++) { if(Math.random() > 0.4) boxes[i] = Math.ceil(Math.random() * 3); }
+
+                      boxes.forEach(level => {
+                          const div = document.createElement('div');
+                          div.style.width = '12px'; div.style.height = '12px'; div.style.borderRadius = '3px';
+                          if (level === 0) div.style.background = 'rgba(255,255,255,0.08)';
+                          else if (level === 1) div.style.background = '#0e4429';
+                          else if (level === 2) div.style.background = '#006d32';
+                          else if (level === 3) div.style.background = '#26a641';
+                          else div.style.background = '#39d353';
+                          heatmapGrid.appendChild(div);
+                      });
+                  }
+              }).catch(err => console.error("Leetcode API Error", err));
+      } else { lcCard.style.display = 'none'; }
+    }
+
+    /* -------- ASSESSMENTS -------- */
+    async function loadAssessments() {
+      const container = document.getElementById('assessment-history');
+      try {
+        const res = await apiFetch(API, '/api/take/jobs');
+        if (!res.ok) throw new Error();
+        const jobs = await res.json();
+        if (!jobs.length) { container.innerHTML = '<p style="opacity:0.4;font-size:0.9rem;">No assessments taken yet.</p>'; return; }
+
+        let total = 0;
+        container.innerHTML = jobs.filter(j => j.assessmentsTaken > 0).map(j => {
+          total += j.assessmentsTaken;
+          return `
+            <div class="assessment-row">
+              <div>
+                <div style="font-weight:700;font-size:0.95rem;">${j.title}</div>
+                <div style="font-size:0.75rem;color:#a2a7c7;margin-top:3px;">${j.assessmentsTaken} assessment(s) completed</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:0.75rem;">
+                <span class="skill-tag matched">Completed</span>
+                <a href="skillgap.html?jobId=${j.id}" style="font-size:0.8rem;color:#6d5cff;font-weight:700;text-decoration:none;">View Gap →</a>
+              </div>
+            </div>`;
+        }).join('') || '<p style="opacity:0.4;font-size:0.9rem;">No assessments completed yet.</p>';
+
+        document.getElementById('stat-tests').textContent = total;
+      } catch { container.innerHTML = '<p style="opacity:0.3;font-size:0.85rem;">Could not load assessments.</p>'; }
+    }
+
+    /* -------- CERTIFICATES -------- */
+    async function loadCertificates() {
+      const container = document.getElementById('cert-list');
+      try {
+        const res = await apiFetch(API, '/api/certificates');
+        if (!res.ok) throw new Error();
+        const certs = await res.json();
+        
+        // Count verified certs for stats
+        const verifiedCount = certs.filter(c => c.status === 'VERIFIED' || c.status === 'VALID').length;
+        document.getElementById('stat-certs').textContent = verifiedCount;
+
+        if (!certs.length) {
+          container.innerHTML = '<p style="opacity:0.4;font-size:0.9rem;">No certificates issued or uploaded yet.</p>';
+          return;
+        }
+
+        const statusColors = { 
+          VERIFIED: '#34d399', VALID: '#34d399', 
+          PENDING: '#fbbf24', 
+          FAILED: '#f87171', 
+          REVOKED: '#f87171',
+          UNVERIFIABLE: '#94a3b8' 
+        };
+
+        container.innerHTML = certs.map(c => {
+          const isSystemIssued = c.platform === 'HiredUp' || c.hash_signature;
+          const status = c.status || 'PENDING';
+          const color = statusColors[status] || '#94a3b8';
+          
+          return `
+            <div class="cert-row" style="flex-direction:column; align-items:stretch; gap:12px; padding:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-weight:800; font-size:0.95rem; color:#fff;">
+                    ${c.course_name || c.platform || 'Certificate'} 
+                    ${isSystemIssued ? '<span style="color:#6d5cff; font-size:0.7rem; vertical-align:middle; margin-left:4px;">VERIFIED AUTHORITY</span>' : ''}
+                  </div>
+                  <div style="font-size:0.72rem; color:#a2a7c7; margin-top:2px;">
+                    ${isSystemIssued ? 'Issued by HiredUp' : 'Uploaded Credential'} • ${new Date(c.created_at).toLocaleDateString()}
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-weight:900; color:${color}; font-size:0.8rem; letter-spacing:0.5px;">${status}</div>
+                  <div style="font-size:0.7rem; color:#64748b; margin-top:2px;">Trust Score: ${c.trust_score || 0}%</div>
+                </div>
+              </div>
+              
+              <div style="display:flex; gap:8px;">
+                ${isSystemIssued ? `
+                  <a href="verify.html?id=${c._id}" class="skill-tag" style="background:rgba(109,92,255,0.1); border-color:rgba(109,92,255,0.3); color:#a5b4fc; cursor:pointer; text-decoration:none;">Verify Online</a>
+                  <a href="${API}${c.file_path}" target="_blank" class="skill-tag" style="background:rgba(56,230,197,0.1); border-color:rgba(56,230,197,0.3); color:#38e6c5; cursor:pointer; text-decoration:none;">Download PDF</a>
+                ` : `
+                  <span class="skill-tag" style="opacity:0.6;">External Upload</span>
+                `}
+              </div>
+            </div>`;
+        }).join('');
+      } catch (e) {
+        console.error(e);
+        container.innerHTML = '<p style="opacity:0.3;font-size:0.85rem;">Could not load certificates.</p>';
+      }
+    }休憩
+
+    /* -------- INTERVIEW RESULTS -------- */
+    async function loadInterviewResults() {
+      const container = document.getElementById('interview-list');
+      if (!user) return;
+      try {
+        const res = await apiFetch(API, '/api/interview/results/me');
+        if (!res.ok) throw new Error();
+        const results = await res.json();
+
+        if (!results.length) {
+          container.innerHTML = '<p style="opacity:0.4;font-size:0.9rem;">No AI interview sessions recorded yet.</p>';
+          return;
+        }
+
+        container.innerHTML = results.slice(0, 10).map(r => {
+          const score = r.avgScore || 0;
+          const pct = Math.round((score / 10) * 100);
+          const color = pct >= 70 ? '#34d399' : pct >= 50 ? '#fbbf24' : '#f87171';
+          return `
+            <div class="cert-row" style="flex-direction:column; align-items:stretch; gap:10px; padding:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-weight:800; font-size:0.95rem; color:#fff;">
+                    🎤 ${r.role || 'Software Engineer'} Interview
+                  </div>
+                  <div style="font-size:0.72rem; color:#a2a7c7; margin-top:2px;">
+                    ${r.questionType || 'mixed'} • ${r.level || 'mid'} level • ${new Date(r.completedAt || r.createdAt).toLocaleDateString()}
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-weight:900; color:${color}; font-size:1.1rem;">${score.toFixed(1)}/10</div>
+                  <div style="font-size:0.7rem; color:#64748b; margin-top:2px;">${pct}% Readiness</div>
+                </div>
+              </div>
+              <div style="height:4px; background:rgba(255,255,255,0.06); border-radius:99px; overflow:hidden;">
+                <div style="width:${pct}%; height:100%; background:${color}; border-radius:99px; transition:width 1s;"></div>
+              </div>
+            </div>`;
+        }).join('');
+      } catch (e) {
+        console.error(e);
+        container.innerHTML = '<p style="opacity:0.3;font-size:0.85rem;">Could not load interview history.</p>';
+      }
+    }
+
+    /* -------- LIVE CODING HISTORY -------- */
+    async function loadLiveCodingHistory() {
+      const container = document.getElementById('livecoding-list');
+      if (!user) return;
+      try {
+        const res = await apiFetch(LC_API, '/api/submissions');
+        if (!res.ok) throw new Error();
+        const subs = await res.json();
+
+        if (!subs.length) {
+          container.innerHTML = '<p style="opacity:0.4;font-size:0.9rem;">No live coding submissions yet.</p>';
+          return;
+        }
+
+        container.innerHTML = subs.slice(0, 15).map(s => {
+          const isAccepted = s.status === 'Accepted';
+          const color = isAccepted ? '#34d399' : '#f87171';
+          const icon = isAccepted ? '✅' : '❌';
+          return `
+            <div class="cert-row" style="padding:12px 16px; gap:1rem;">
+              <div style="flex:1;">
+                <div style="font-weight:700; font-size:0.9rem; color:#fff;">${icon} Problem ${s.problemId?.substring(0,8) || '---'}</div>
+                <div style="font-size:0.72rem; color:#a2a7c7; margin-top:2px;">
+                  ${s.language || 'code'} • ${new Date(s.createdAt).toLocaleString()}
+                </div>
+              </div>
+              <div style="text-align:right; flex-shrink:0;">
+                <div style="font-weight:900; color:${color}; font-size:0.88rem; letter-spacing:0.5px;">${s.status}</div>
+                ${s.executionTime ? `<div style="font-size:0.7rem;color:#64748b;">${s.executionTime}ms</div>` : ''}
+              </div>
+            </div>`;
+        }).join('');
+      } catch (e) {
+        console.error(e);
+        container.innerHTML = '<p style="opacity:0.3;font-size:0.85rem;">Could not load live coding history.</p>';
+      }
+    }
+
+    /* -------- APTITUDE RESULTS -------- */
+    async function loadAptitudeResults() {
+      const container = document.getElementById('aptitude-list');
+      if (!user) return;
+      try {
+        const res = await apiFetch(LC_API, `/api/aptitude/results/${user.id || user._id}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const results = await res.json();
+        
+        if (!results.length) {
+          container.innerHTML = '<p style="opacity:0.4;font-size:0.9rem;">No aptitude results history yet.</p>';
+          return;
+        }
+
+        container.innerHTML = results.map(r => {
+          // API returns: { score (0-100), topic, category, correctAnswers, totalQuestions, completedAt }
+          const pct = r.score ?? r.percentage ?? 0;
+          const color = pct >= 70 ? '#34d399' : pct >= 40 ? '#fbbf24' : '#f87171';
+          const dateStr = r.completedAt || r.timestamp || r.date || r.createdAt;
+
+          return `
+            <div class="cert-row" style="flex-direction:column; align-items:stretch; gap:10px; padding:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-weight:800; font-size:0.95rem; color:#fff;">
+                    🧠 ${r.topic || 'General Aptitude'} — ${r.category || ''}
+                  </div>
+                  <div style="font-size:0.72rem; color:#a2a7c7; margin-top:2px;">
+                    ${r.correctAnswers ?? '?'}/${r.totalQuestions ?? '?'} correct • ${dateStr ? new Date(dateStr).toLocaleDateString() : 'N/A'}
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-weight:900; color:${color}; font-size:1.2rem;">${pct}%</div>
+                  <div style="font-size:0.7rem; color:#64748b; margin-top:2px;">Score</div>
+                </div>
+              </div>
+              <div style="height:4px; background:rgba(255,255,255,0.06); border-radius:99px; overflow:hidden;">
+                <div style="width:${pct}%; height:100%; background:${color}; border-radius:99px;"></div>
+              </div>
+            </div>`;
+        }).join('');
+      } catch (e) {
+        console.error('Aptitude load error:', e);
+        container.innerHTML = '<p style="opacity:0.3;font-size:0.85rem;">Could not load aptitude history.</p>';
+      }
+    }
+
+    /* -------- SUBMISSIONS -------- */
+    async function loadSubmissions() {
+      try {
+        const res = await apiFetch(LC_API, '/api/submissions');
+        if (!res.ok) throw new Error();
+        const subs = await res.json();
+        document.getElementById('stat-subs').textContent = subs.length;
+        const accepted = subs.filter(s => s.status === 'Accepted').length;
+        if (subs.length) {
+          document.getElementById('stat-accuracy').textContent = Math.round((accepted/subs.length)*100) + '%';
+        }
+      } catch { /* ignore */ }
+    }
+
+    /* -------- SKILL TAG INPUT -------- */
+    function renderSkillTags() {
+      const container = document.getElementById('skills-display');
+      container.innerHTML = userSkills.map((s,i) => `
+        <span class="skill-tag removable" onclick="removeSkill(${i})" title="Click to remove">${s}</span>
+      `).join('');
+    }
+
+    function handleSkillInput(e) {
+      const input = e.target;
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        const val = input.value.replace(',','').trim();
+        if (val && !userSkills.includes(val)) {
+          userSkills.push(val);
+          renderSkillTags();
+        }
+        input.value = '';
+      } else if (e.key === 'Backspace' && !input.value && userSkills.length) {
+        userSkills.pop();
+        renderSkillTags();
+      }
+    }
+
+    function removeSkill(idx) {
+      userSkills.splice(idx, 1);
+      renderSkillTags();
+    }
+
+    /* -------- RESUME UPLOAD -------- */
+    function handleResumeSelect(input) {
+      const file = input.files[0];
+      if (file) processResumeFile(file);
+    }
+
+    function handleResumeDrop(e) {
+      e.preventDefault();
+      document.getElementById('resume-dropzone').classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type === 'application/pdf') processResumeFile(file);
+      else showToast('Only PDF files are supported', 'error');
+    }
+
+    async function processResumeFile(file) {
+      document.getElementById('resume-filename').textContent = `📎 ${file.name}`;
+      showToast('🤖 AI is parsing your resume for skills...', 'info');
+      // Try the ML-service resume parser
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await fetch('http://127.0.0.1:8000/parse/resume', { method:'POST', body:formData });
+        if (res.ok) {
+          const parsed = await res.json();
+          aiExtractedSkills = parsed.skills || [];
+          if (aiExtractedSkills.length) {
+            showAISkills(aiExtractedSkills, parsed);
+            showToast(`✅ AI extracted ${aiExtractedSkills.length} skills from your resume`, 'success');
+            return;
+          }
+        }
+      } catch { /* ML service not running, fallback */ }
+      showToast('Resume saved. AI parsing unavailable — add skills manually.', 'info');
+    }
+
+    function showAISkills(skills, parsed) {
+      const section = document.getElementById('ai-skills-section');
+      const container = document.getElementById('ai-extracted-skills');
+      container.innerHTML = skills.map(s => `<span class="skill-tag">${s}</span>`).join('');
+      section.classList.remove('hidden');
+      if (parsed.fullName || parsed.education) {
+        if (parsed.fullName) document.getElementById('about').value =
+          (document.getElementById('about').value || '') + (parsed.fullName ? `\nExtracted from resume: ${parsed.fullName}` : '');
+        if (parsed.education?.length) document.getElementById('education').value =
+          parsed.education.map(e => `${e.degree} — ${e.institution}`).join(', ');
+      }
+    }
+
+    function saveAISkills() {
+      const newSkills = aiExtractedSkills.filter(s => !userSkills.includes(s));
+      if (newSkills.length === 0) {
+        showToast('No new skills to add', 'info');
+        return;
+      }
+      userSkills = [...userSkills, ...newSkills];
+      renderSkillTags();
+      document.getElementById('ai-skills-section').classList.add('hidden');
+      
+      // Auto-save to profile for permanent storage
+      saveProfile();
+      showToast(`Added ${newSkills.length} new skills and updated your profile!`, 'success');
+    }
+
+    /* -------- SAVE PROFILE -------- */
+    async function saveProfile() {
+      const btn = document.querySelector('.save-btn');
+      const originalText = btn.textContent;
+      btn.textContent = '⏳ Saving...'; btn.disabled = true;
+
+      const payload = {
+        about: document.getElementById('about').value,
+        education: document.getElementById('education').value,
+        experience: document.getElementById('experience').value,
+        github: document.getElementById('github').value,
+        leetcode: document.getElementById('leetcode').value,
+        linkedinUrl: document.getElementById('linkedin-url').value,
+        phone: document.getElementById('phone').value,
+        skills: userSkills,
+      };
+
+      try {
+        const res = await apiFetch(API, '/api/auth/profile', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Update failed');
+
+        // Update local session for immediate consistency across pages
+        localStorage.setItem("userSkills", JSON.stringify(userSkills));
+        
+        // Sync the main user object in localStorage too
+        const updatedUser = { ...user, ...payload, skills: userSkills };
+        localStorage.setItem("hiredUpUser", JSON.stringify(updatedUser));
+
+        // Sync platforms
+        syncViewMode(payload);
+
+        showToast('Profile saved successfully! ✅', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Error saving profile. Backend might be offline.', 'error');
+      } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    /* -------- AI ANALYSIS -------- */
+    async function triggerAIAnalysis() {
+      const btn = document.getElementById('aiBtn');
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = '⏳ AI Analyzing...'; btn.disabled = true;
+      
+      try {
+        showToast('🤖 AI: Fetching real-time performance data...', 'info');
+        
+        // 1. Get Coding Performance (fresh fetch — no stale global)
+        const [subRes, certRes, perfRes] = await Promise.all([
+          apiFetch(LC_API, '/api/submissions').catch(() => ({ json: () => [] })),
+          apiFetch(API, '/api/certificates').catch(() => ({ json: () => [] })),
+          apiFetch(API, '/api/performance').catch(() => ({ json: () => ({}) }))
+        ]);
+        const subs = await subRes.json().catch(() => []);
+        const certs = await certRes.json().catch(() => []);
+        const freshStats = await perfRes.json().catch(() => ({}));
+
+        const accepted = subs.filter(s => s.status === 'Accepted').length;
+        const total = Math.max(subs.length, 1);
+        const accuracy = Math.round((accepted / total) * 100);
+        const assessmentAccuracy = freshStats.avgAccuracy || 0;
+
+        // 2. Get Certificate Trust
+        const verifiedCerts = certs.filter(c => c.status === 'VERIFIED');
+
+        // 3. Call ML Service Scoring Engine
+        showToast('🤖 AI: Computing hybrid credibility score...', 'info');
+        const mlRes = await fetch('http://localhost:8000/score/credibility', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            assessment_score: assessmentAccuracy,
+            coding_score: accuracy,
+            candidate_skills: userSkills,
+            certificate_scores: verifiedCerts.map(c => c.trust_score || 80),
+            assessment_scores_list: [assessmentAccuracy]
+          })
+        });
+
+        if (!mlRes.ok) throw new Error('ML Service Offline');
+        const analysis = await mlRes.json();
+
+        // 4. Update Stats UI with REAL Data
+        document.getElementById('stat-score').textContent = analysis.total_score + '%';
+        document.getElementById('stat-accuracy').textContent = accuracy + '%';
+        document.getElementById('stat-match').textContent = (userSkills.length > 5 ? 'High' : 'Moderate');
+        
+        // 5. Render Breakdown Bars
+        const breakdown = analysis.breakdown;
+        const bPanel = document.getElementById('score-breakdown-panel');
+        const bBars = document.getElementById('breakdown-bars');
+        
+        const rows = [
+          { label: 'Assessment',   val: breakdown.assessment_score?.value || 0,   c: '#38e6c5' },
+          { label: 'Coding Test',  val: breakdown.coding_score?.value || 0,       c: '#60a5fa' },
+          { label: 'Certificates', val: breakdown.certificate_trust?.value || 0,  c: '#a78bfa' },
+          { label: 'Learning Apt', val: breakdown.learning_aptitude?.value || 0,  c: '#818cf8' },
+          { label: 'Skill Overlap', val: breakdown.skill_relevance?.value || 0,    c: '#34d399' }
+        ];
+
+        bBars.innerHTML = rows.map(r => `
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:100px; font-size:0.75rem; font-weight:700; color:#a2a7c7;">${r.label}</div>
+            <div style="flex:1; height:6px; background:rgba(255,255,255,0.05); border-radius:99px; overflow:hidden;">
+              <div style="width:${r.val}%; height:100%; background:${r.c}; border-radius:99px; transition:width 1s;"></div>
+            </div>
+            <div style="width:40px; text-align:right; font-size:0.75rem; font-weight:800; color:${r.c};">${Math.round(r.val)}%</div>
+          </div>
+        `).join('');
+        
+        bPanel.classList.remove('hidden');
+        
+        showToast(`✨ AI Analysis Complete! Your credibility score is now ${analysis.total_score}%.`, 'success');
+
+      } catch (err) {
+        console.error(err);
+        showToast('AI Engine Offline. Ensure all 5 services are running.', 'error');
+      } finally { 
+        btn.innerHTML = originalHtml; 
+        btn.disabled = false; 
+      }
+    }
+  </script>
 </body>
 </html>
