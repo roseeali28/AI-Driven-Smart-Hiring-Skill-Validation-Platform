@@ -12,23 +12,8 @@
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="style.css">
     <style>
-        :root {
-            --primary: #6366f1;
-            --accent: #06b6d4;
-            --bg-dark: #020617;
-            --bg-card: rgba(15, 23, 42, 0.6);
-            --border-glass: rgba(255, 255, 255, 0.1);
-        }
-
         body {
-            background: var(--bg-dark);
-            font-family: 'Outfit', sans-serif;
-            color: #fff;
-            overflow-x: hidden;
-            background-image:
-                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 40%);
-            min-height: 100vh;
+            color: var(--text-main);
         }
 
         .auth-container {
@@ -55,11 +40,11 @@
 
         .auth-tabs {
             display: flex;
-            background: rgba(0, 0, 0, 0.2);
+            background: var(--bg-glass);
             padding: 6px;
             border-radius: 14px;
             margin-bottom: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
         }
 
         .auth-tab {
@@ -68,16 +53,16 @@
             text-align: center;
             border-radius: 10px;
             cursor: pointer;
-            color: #94a3b8;
+            color: var(--text-muted);
             font-weight: 600;
             transition: all 0.3s ease;
         }
 
         .auth-tab.active {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--bg-card);
+            color: var(--text-main);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-subtle);
         }
 
         .role-selector {
@@ -88,8 +73,8 @@
         }
 
         .role-option {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-glass);
+            background: var(--bg-glass);
+            border: 1px solid var(--border-subtle);
             border-radius: 16px;
             padding: 1.25rem;
             text-align: center;
@@ -99,42 +84,42 @@
 
         .role-option:hover {
             border-color: var(--accent);
-            background: rgba(6, 182, 212, 0.05);
+            background: rgba(168, 85, 247, 0.05);
         }
 
         .role-option.selected {
             border-color: var(--accent);
-            background: rgba(6, 182, 212, 0.1);
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.1);
+            background: rgba(168, 85, 247, 0.1);
+            box-shadow: 0 0 20px var(--accent-glow);
         }
 
         .role-option .icon-box {
             width: 48px;
             height: 48px;
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--bg-glass);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 1rem;
-            color: #94a3b8;
+            color: var(--text-muted);
             transition: all 0.3s ease;
         }
 
         .role-option.selected .icon-box {
             background: var(--accent);
             color: #fff;
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+            box-shadow: 0 0 15px var(--accent-glow);
         }
 
         .role-option span {
             font-size: 0.85rem;
             font-weight: 600;
-            color: #94a3b8;
+            color: var(--text-muted);
         }
 
         .role-option.selected span {
-            color: #fff;
+            color: var(--text-main);
         }
 
         .input-group {
@@ -144,19 +129,19 @@
 
         .input-field {
             width: 100%;
-            background: rgba(0, 0, 0, 0.2) !important;
-            border: 1px solid var(--border-glass) !important;
+            background: var(--bg-glass) !important;
+            border: 1px solid var(--border-subtle) !important;
             border-radius: 12px !important;
             padding: 1.2rem 1rem 0.6rem !important;
-            color: #fff !important;
+            color: var(--text-main) !important;
             transition: all 0.3s ease !important;
             outline: none !important;
         }
 
         .input-field:focus {
             border-color: var(--primary) !important;
-            background: rgba(0, 0, 0, 0.3) !important;
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.1) !important;
+            background: var(--bg-card) !important;
+            box-shadow: 0 0 15px var(--primary-glow) !important;
         }
 
         .input-label {
@@ -214,13 +199,13 @@
             left: 0;
             right: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
         }
 
         .divider span {
-            background: #0f172a;
+            background: var(--bg-dark);
             padding: 0 1rem;
-            color: #475569;
+            color: var(--text-muted);
             font-size: 0.7rem;
             font-weight: 700;
             letter-spacing: 2px;
@@ -228,11 +213,11 @@
         }
 
         .social-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-glass);
+            background: var(--bg-glass);
+            border: 1px solid var(--border-subtle);
             border-radius: 12px;
             padding: 0.75rem;
-            color: #cbd5e1;
+            color: var(--text-muted);
             font-weight: 600;
             font-size: 0.9rem;
             cursor: pointer;
@@ -240,8 +225,8 @@
         }
 
         .social-btn:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(255, 255, 255, 0.2);
+            background: var(--bg-card);
+            border-color: var(--primary);
             transform: translateY(-1px);
         }
 
@@ -256,15 +241,43 @@
 
 <body>
 
-    <!-- Back Home -->
-    <a href="index.html"
-        style="position: absolute; top: 2rem; left: 2rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; z-index: 10;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M19 12H5" />
-            <path d="M12 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-    </a>
+    <!-- Back Home & Theme Toggle -->
+    <div style="position: absolute; top: 2rem; left: 2rem; right: 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 10;">
+        <a href="index.html"
+            style="color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5" />
+                <path d="M12 19l-7-7 7-7" />
+            </svg>
+            Back to Home
+        </a>
+
+        <button id="nav-theme-toggle" style="background:none;border:none;color:var(--text-main);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:8px;background:rgba(255,255,255,0.05);border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
+            🌙
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeBtn = document.getElementById('nav-theme-toggle');
+            if(themeBtn) {
+                const updateBtn = (t) => themeBtn.innerHTML = t === 'light' ? '🌙' : '☀️';
+                const savedTheme = localStorage.getItem('hiredUpTheme') || 'dark';
+                updateBtn(savedTheme);
+                
+                themeBtn.addEventListener('click', () => {
+                    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('hiredUpTheme', newTheme);
+                    updateBtn(newTheme);
+                    
+                    const floatingBtns = document.querySelectorAll('.theme-toggle-btn');
+                    floatingBtns.forEach(btn => btn.innerHTML = newTheme === 'light' ? '🌙' : '☀️');
+                });
+            }
+        });
+    </script>
 
     <div class="auth-container">
         <!-- Background Elements -->
