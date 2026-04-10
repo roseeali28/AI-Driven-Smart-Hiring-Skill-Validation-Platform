@@ -61,13 +61,8 @@ router.post('/submit', async (req, res) => {
     try {
         const { userId, topic, category, score, totalQuestions, correctAnswers, wrongAnswers } = req.body;
 
-        if (!userId || userId === 'undefined' || !topic || score === undefined) {
-            return res.status(400).json({ error: 'Missing or invalid required fields' });
-        }
-
-        // Validate ObjectId format
-        if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
-            return res.status(400).json({ error: 'Invalid User ID format' });
+        if (!userId || userId === 'undefined' || userId.trim() === '') {
+            return res.status(400).json({ error: 'Missing or invalid userId' });
         }
 
         const newResult = new AptitudeResult({
@@ -106,9 +101,8 @@ router.get('/results/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
         
-        // Basic validation for MongoDB ObjectId
-        if (!userId || userId === 'undefined' || !userId.match(/^[0-9a-fA-F]{24}$/)) {
-            return res.status(400).json({ error: 'Invalid User ID format' });
+        if (!userId || userId === 'undefined' || userId.trim() === '') {
+            return res.status(400).json({ error: 'Missing userId' });
         }
 
         const results = await AptitudeResult.find({ userId }).sort({ completedAt: -1 });
