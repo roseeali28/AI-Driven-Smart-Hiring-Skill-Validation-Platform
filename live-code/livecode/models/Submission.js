@@ -3,13 +3,12 @@ const mongoose = require('mongoose');
 
 const submissionSchema = new mongoose.Schema({
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String, // Matching main User _id (UUID)
         ref: 'User',
-        required: false // For MVP, allow anonymous or handle later
+        required: false 
     },
     problemId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Problem',
+        type: String,
         required: true
     },
     code: {
@@ -26,6 +25,10 @@ const submissionSchema = new mongoose.Schema({
     },
     output: String,
     executionTime: String,
+    aiFeedback: {
+        type: mongoose.Schema.Types.Mixed,
+        default: null
+    },
     createdAt: {
         type: Date,
         default: Date.now
