@@ -13,7 +13,35 @@
   <nav class="navbar">
     <div class="container nav-container">
       <a href="index.html" class="nav-logo"><span>HiredUp</span></a>
+      <div style="display:flex;align-items:center;gap:1.5rem;">
+        <button id="nav-theme-toggle" style="background:none;border:none;color:var(--text-main);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:5px;">
+          🌙
+        </button>
+        <a href="profile.html" class="nav-link" style="color:var(--text-muted);text-decoration:none;font-size:0.88rem;font-weight:600;">Profile</a>
+      </div>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeBtn = document.getElementById('nav-theme-toggle');
+            if(themeBtn) {
+                const updateBtn = (t) => themeBtn.innerHTML = t === 'light' ? '🌙' : '☀️';
+                const savedTheme = localStorage.getItem('hiredUpTheme') || 'dark';
+                updateBtn(savedTheme);
+                
+                themeBtn.addEventListener('click', () => {
+                    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('hiredUpTheme', newTheme);
+                    updateBtn(newTheme);
+                    
+                    const floatingBtns = document.querySelectorAll('.theme-toggle-btn');
+                    floatingBtns.forEach(btn => btn.innerHTML = newTheme === 'light' ? '🌙' : '☀️');
+                });
+            }
+        });
+    </script>
   </nav>
 
   <section style="padding:140px 0;">
