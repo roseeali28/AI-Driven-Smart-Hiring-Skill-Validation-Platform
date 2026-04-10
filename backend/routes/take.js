@@ -1,6 +1,8 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
-const pool = require('../config/db');
+const Job = require('../models/Job');
+const Assessment = require('../models/Assessment');
+const CandidateAssessment = require('../models/CandidateAssessment');
 const { authenticate, candidateOnly } = require('../middleware/auth');
 const { executeCode } = require('../services/codeExecutor');
 
@@ -19,20 +21,17 @@ router.get('/assessments', async (req, res) => {
     const { jobId } = req.query;
     if (!jobId) return res.status(400).json({ error: 'jobId required' });
 
-    const jobCheck = await pool.query(
-      'SELECT id, title FROM jobs WHERE id = $1 AND status = $2',
-      [jobId, 'ACTIVE']
-    );
-    if (jobCheck.rowCount === 0) return res.status(404).json({ error: 'Job not found' });
+    const jobCheck = await Job.findOne({ _id: jobId, status: 'ACTIVE' });
+    if (!jobCheck) return res.status(404).json({ error: 'Job not found' });
 
-    const result = await pool.query(
-      `SELECT a.id, a.name, a.type, 
-        (SELECT COUNT(*) FROM questions q WHERE q.assessment_id = a.id) as question_count
-       FROM assessments a WHERE a.job_id = $1 ORDER BY a.created_at`,
-      [jobId]
-    );
+    const assessments = await Assessment.find({ job_id: jobId }).sort({ created_at: 1 });
 
-    res.json(result.rows);
+    res.json(assessments.map(a => ({
+      id: a.id,
+      name: a.name,
+      type: a.type,
+      question_count: a.questions ? a.questions.length : 0
+    })));
   } catch (err) {
     console.error('Take assessments error:', err);
     res.status(500).json({ error: 'Failed to fetch assessments' });
@@ -44,22 +43,27 @@ router.get('/assessments', async (req, res) => {
  */
 router.get('/jobs', async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT j.id, j.title, j.description, j.skills_required,
-        (SELECT COUNT(*) FROM assessments a WHERE a.job_id = j.id) as assessment_count
-       FROM jobs j WHERE j.status = 'ACTIVE' ORDER BY j.created_at DESC`
-    );
+    const jobs = await Job.find({ status: 'ACTIVE' }).sort({ created_at: -1 });
 
-    for (const row of result.rows) {
-      const taken = await pool.query(
-        `SELECT COUNT(*) as c FROM candidate_assessments 
-         WHERE candidate_id = $1 AND job_id = $2`,
-        [req.user.id, row.id]
-      );
-      row.assessmentsTaken = parseInt(taken.rows[0].c, 10);
+    const result = [];
+    for (const job of jobs) {
+      const assessmentCount = await Assessment.countDocuments({ job_id: job.id });
+      const takenCount = await CandidateAssessment.countDocuments({
+        candidate_id: req.user.id,
+        job_id: job.id
+      });
+      
+      result.push({
+        id: job.id,
+        title: job.title,
+        description: job.description,
+        skills_required: job.skills_required,
+        assessment_count: assessmentCount,
+        assessmentsTaken: takenCount
+      });
     }
 
-    res.json(result.rows);
+    res.json(result);
   } catch (err) {
     console.error('Take jobs error:', err);
     res.status(500).json({ error: 'Failed to fetch jobs' });
@@ -75,58 +79,47 @@ router.get('/assessment/:assessmentId', async (req, res) => {
     const { jobId } = req.query;
     if (!jobId) return res.status(400).json({ error: 'jobId required' });
 
-    const jobCheck = await pool.query(
-      'SELECT id FROM jobs WHERE id = $1 AND status = $2',
-      [jobId, 'ACTIVE']
-    );
-    if (jobCheck.rowCount === 0) return res.status(404).json({ error: 'Job not found' });
+    const jobCheck = await Job.findOne({ _id: jobId, status: 'ACTIVE' });
+    if (!jobCheck) return res.status(404).json({ error: 'Job not found' });
 
-    const assessResult = await pool.query(
-      'SELECT id, name, type FROM assessments WHERE id = $1 AND job_id = $2',
-      [assessmentId, jobId]
-    );
-    if (assessResult.rowCount === 0) return res.status(404).json({ error: 'Assessment not found' });
+    const assessment = await Assessment.findOne({ _id: assessmentId, job_id: jobId });
+    if (!assessment) return res.status(404).json({ error: 'Assessment not found' });
 
-    const existing = await pool.query(
-      `SELECT id, status, completed_at FROM candidate_assessments 
-       WHERE candidate_id = $1 AND assessment_id = $2 AND job_id = $3`,
-      [req.user.id, assessmentId, jobId]
-    );
+    const existing = await CandidateAssessment.findOne({
+      candidate_id: req.user.id,
+      assessment_id: assessmentId,
+      job_id: jobId
+    });
 
-    if (existing.rowCount > 0) {
-      const ca = existing.rows[0];
-      if (ca.status === 'COMPLETED') {
-        return res.status(400).json({ error: 'Assessment already completed' });
-      }
+    if (existing && existing.status === 'COMPLETED') {
+      return res.status(400).json({ error: 'Assessment already completed' });
     }
 
-    const questionsResult = await pool.query(
-      `SELECT id, type, content, options, difficulty, points, order_index
-       FROM questions WHERE assessment_id = $1 ORDER BY order_index`
-    );
+    const filteredQuestions = assessment.questions.sort((a,b) => a.order_index - b.order_index).map(q => {
+      let filteredTestCases = [];
+      if (q.type === 'CODING') {
+        filteredTestCases = q.testCases.filter(tc => !tc.is_hidden).map(tc => ({
+          input_data: tc.input_data,
+          expected_output: tc.expected_output,
+          is_hidden: tc.is_hidden
+        }));
+      }
 
-    const questions = questionsResult.rows.map((q) => {
-      const { options, ...rest } = q;
       return {
-        ...rest,
-        options: options,
-        testCases: undefined,
+        id: q.id,
+        type: q.type,
+        content: q.content,
+        options: q.options,
+        difficulty: q.difficulty,
+        points: q.points,
+        order_index: q.order_index,
+        testCases: q.type === 'CODING' ? filteredTestCases : undefined
       };
     });
 
-    for (const q of questions) {
-      if (q.type === 'CODING') {
-        const tcs = await pool.query(
-          'SELECT input_data, expected_output, is_hidden FROM test_cases WHERE question_id = $1 AND is_hidden = false',
-          [q.id]
-        );
-        q.testCases = tcs.rows;
-      }
-    }
-
     res.json({
-      assessment: assessResult.rows[0],
-      questions,
+      assessment: { id: assessment.id, name: assessment.name, type: assessment.type },
+      questions: filteredQuestions,
     });
   } catch (err) {
     console.error('Take assessment error:', err);
@@ -144,37 +137,28 @@ router.post('/start', async (req, res) => {
       return res.status(400).json({ error: 'assessmentId and jobId required' });
     }
 
-    const jobCheck = await pool.query(
-      'SELECT id FROM jobs WHERE id = $1 AND status = $2',
-      [jobId, 'ACTIVE']
-    );
-    if (jobCheck.rowCount === 0) return res.status(404).json({ error: 'Job not found' });
+    const jobCheck = await Job.findOne({ _id: jobId, status: 'ACTIVE' });
+    if (!jobCheck) return res.status(404).json({ error: 'Job not found' });
 
-    const assessCheck = await pool.query(
-      'SELECT id FROM assessments WHERE id = $1 AND job_id = $2',
-      [assessmentId, jobId]
-    );
-    if (assessCheck.rowCount === 0) return res.status(404).json({ error: 'Assessment not found' });
+    const assessCheck = await Assessment.findOne({ _id: assessmentId, job_id: jobId });
+    if (!assessCheck) return res.status(404).json({ error: 'Assessment not found' });
 
-    let caResult = await pool.query(
-      `SELECT id, started_at FROM candidate_assessments 
-       WHERE candidate_id = $1 AND assessment_id = $2 AND job_id = $3`,
-      [req.user.id, assessmentId, jobId]
-    );
+    let ca = await CandidateAssessment.findOne({
+      candidate_id: req.user.id,
+      assessment_id: assessmentId,
+      job_id: jobId
+    });
 
-    let caId;
-    if (caResult.rowCount > 0) {
-      caId = caResult.rows[0].id;
-    } else {
-      caId = uuidv4();
-      await pool.query(
-        `INSERT INTO candidate_assessments (id, candidate_id, assessment_id, job_id)
-         VALUES ($1, $2, $3, $4)`,
-        [caId, req.user.id, assessmentId, jobId]
-      );
+    if (!ca) {
+      ca = new CandidateAssessment({
+        candidate_id: req.user.id,
+        assessment_id: assessmentId,
+        job_id: jobId
+      });
+      await ca.save();
     }
 
-    res.status(201).json({ candidateAssessmentId: caId });
+    res.status(201).json({ candidateAssessmentId: ca.id });
   } catch (err) {
     console.error('Start assessment error:', err);
     res.status(500).json({ error: 'Failed to start assessment' });
@@ -185,40 +169,36 @@ router.post('/start', async (req, res) => {
  * POST /take/submit - Submit answers and grade
  */
 router.post('/submit', async (req, res) => {
-  const client = await pool.connect();
   try {
-    await client.query('BEGIN');
     const { candidateAssessmentId, answers } = req.body;
     if (!candidateAssessmentId || !Array.isArray(answers)) {
       return res.status(400).json({ error: 'candidateAssessmentId and answers array required' });
     }
 
-    const caResult = await client.query(
-      `SELECT ca.id, ca.assessment_id, ca.job_id FROM candidate_assessments ca
-       WHERE ca.id = $1 AND ca.candidate_id = $2 AND ca.status = 'IN_PROGRESS'`,
-      [candidateAssessmentId, req.user.id]
-    );
+    const ca = await CandidateAssessment.findOne({
+      _id: candidateAssessmentId,
+      candidate_id: req.user.id,
+      status: 'IN_PROGRESS'
+    });
 
-    if (caResult.rowCount === 0) {
+    if (!ca) {
       return res.status(404).json({ error: 'Assessment not found or already completed' });
     }
 
-    const ca = caResult.rows[0];
+    const assessment = await Assessment.findById(ca.assessment_id);
+    if (!assessment) return res.status(404).json({ error: 'Referenced assessment not found' });
+
     let totalRaw = 0;
     let totalWeighted = 0;
     let totalWeight = 0;
+    const finalAnswers = [];
 
     for (const ans of answers) {
       const { questionId, response, timeSpentSeconds } = ans;
 
-      const qResult = await client.query(
-        'SELECT id, type, correct_answer, difficulty, points FROM questions WHERE id = $1 AND assessment_id = $2',
-        [questionId, ca.assessment_id]
-      );
+      const q = assessment.questions.find(x => x.id === questionId);
+      if (!q) continue;
 
-      if (qResult.rowCount === 0) continue;
-
-      const q = qResult.rows[0];
       const weight = DIFFICULTY_WEIGHTS[q.difficulty] || 2;
       let isCorrect = false;
       let pointsEarned = 0;
@@ -231,62 +211,90 @@ router.post('/submit', async (req, res) => {
           correct.every((c, i) => String(c).trim() === String(resp[i]).trim());
         pointsEarned = isCorrect ? q.points : 0;
       } else if (q.type === 'CODING') {
-        const testCases = await client.query(
-          'SELECT input_data, expected_output FROM test_cases WHERE question_id = $1',
-          [questionId]
-        );
-
         let passed = 0;
-        for (const tc of testCases.rows) {
+        for (const tc of q.testCases || []) {
           const runResult = await executeCode(response, tc.input_data || '');
           const expected = (tc.expected_output || '').trim();
           const actual = ((runResult.stdout || '') + (runResult.stderr || '')).trim();
           if (actual === expected) passed++;
         }
-        isCorrect = passed === testCases.rows.length && testCases.rows.length > 0;
-        pointsEarned = testCases.rows.length > 0 ? Math.round((passed / testCases.rows.length) * q.points) : 0;
+        const totalCases = (q.testCases || []).length;
+        isCorrect = passed === totalCases && totalCases > 0;
+        pointsEarned = totalCases > 0 ? Math.round((passed / totalCases) * q.points) : 0;
       }
 
       totalRaw += pointsEarned;
       totalWeighted += pointsEarned * weight;
       totalWeight += q.points * weight;
 
-      await client.query(
-        `INSERT INTO answers (candidate_assessment_id, question_id, response, is_correct, points_earned, time_spent_seconds)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [
-          candidateAssessmentId,
-          questionId,
-          typeof response === 'object' ? JSON.stringify(response) : response,
-          isCorrect,
-          pointsEarned,
-          timeSpentSeconds || 0,
-        ]
-      );
+      finalAnswers.push({
+        question_id: questionId,
+        response: response,
+        is_correct: isCorrect,
+        points_earned: pointsEarned,
+        time_spent_seconds: timeSpentSeconds || 0
+      });
     }
 
     const maxWeighted = totalWeight || 1;
     const weightedScore = totalWeight > 0 ? Math.round((totalWeighted / maxWeighted) * 100) : 0;
 
-    await client.query(
-      `UPDATE candidate_assessments SET status = 'COMPLETED', completed_at = CURRENT_TIMESTAMP, 
-       raw_score = $1, weighted_score = $2 WHERE id = $3`,
-      [totalRaw, weightedScore, candidateAssessmentId]
-    );
+    ca.status = 'COMPLETED';
+    ca.completed_at = new Date();
+    ca.raw_score = totalRaw;
+    ca.weighted_score = weightedScore;
+    ca.answers = finalAnswers;
 
-    await client.query('COMMIT');
+    const Application = require('../models/Application');
+    
+    await ca.save();
+
+    // Trigger Application Creation logic
+    try {
+      // Check if there are any other assessments for this job that the candidate hasn't completed
+      const totalAssessments = await Assessment.countDocuments({ job_id: ca.job_id });
+      const completedAssessments = await CandidateAssessment.countDocuments({
+        candidate_id: req.user.id,
+        job_id: ca.job_id,
+        status: 'COMPLETED'
+      });
+
+      if (completedAssessments >= totalAssessments) {
+        // All assessments done, create (or update) Application
+        const existingApp = await Application.findOne({ candidate_id: req.user.id, job_id: ca.job_id });
+        if (!existingApp) {
+          // Calculate an overall score (average of weighted scores)
+          const allCa = await CandidateAssessment.find({
+            candidate_id: req.user.id,
+            job_id: ca.job_id,
+            status: 'COMPLETED'
+          });
+          const avgScore = allCa.reduce((acc, curr) => acc + curr.weighted_score, 0) / (allCa.length || 1);
+
+          const newApp = new Application({
+            candidate_id: req.user.id,
+            job_id: ca.job_id,
+            status: 'APPLIED',
+            overall_score: Math.round(avgScore)
+          });
+          await newApp.save();
+          console.log(`✅ Application created for candidate ${req.user.id} and job ${ca.job_id}`);
+        }
+      }
+    } catch (appErr) {
+      console.error('Application auto-submission error:', appErr);
+      // Don't fail the response if application creation fails
+    }
 
     res.json({
       message: 'Assessment submitted',
       rawScore: totalRaw,
       weightedScore,
+      applied: true // hint to frontend
     });
   } catch (err) {
-    await client.query('ROLLBACK');
     console.error('Submit error:', err);
     res.status(500).json({ error: err.message || 'Failed to submit assessment' });
-  } finally {
-    client.release();
   }
 });
 
