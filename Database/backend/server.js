@@ -4,7 +4,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const authRoutes = require("./routes/auth");
-// const jobRoutes = require("./routes/job"); // File missing
+const jobRoutes = require("./routes/job");
 
 const app = express();
 
@@ -82,8 +82,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/auth", authRoutes);
-app.use("/api/auth", authRoutes);
-// app.use("/api/jobs", jobRoutes); // File missing
+app.use("/api/jobs", jobRoutes);
 app.use("/uploads", express.static("uploads"));
 
 // Error handling middleware
