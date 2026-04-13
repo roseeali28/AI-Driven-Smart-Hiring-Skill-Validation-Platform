@@ -22,6 +22,12 @@ const submissionSchema = new mongoose.Schema({
         type: String, // Accepted, Wrong Answer, Error
         required: true
     },
+    output: String,
+    executionTime: String,
+    aiFeedback: {
+        type: mongoose.Schema.Types.Mixed,
+        default: null
+    },
     createdAt: {
         type: Date,
         default: Date.now
