@@ -18,7 +18,7 @@ function processDirectory(dir) {
                 console.log(`Updated ${fullPath}`);
             }
         }
-    });
+    }); 
 }
 
 processDirectory(directory);
